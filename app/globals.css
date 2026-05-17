@@ -1,0 +1,293 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* -------------------------------------------------------------- DARK (default) */
+  :root,
+  .dark {
+    --background: 230 25% 4%; /* #06070D */
+    --foreground: 220 18% 96%;
+
+    --card: 232 18% 8%; /* #10121A */
+    --card-foreground: 220 18% 96%;
+
+    --popover: 232 22% 6%;
+    --popover-foreground: 220 18% 96%;
+
+    --primary: 191 100% 55%;
+    --primary-foreground: 230 25% 4%;
+
+    --secondary: 232 14% 14%;
+    --secondary-foreground: 220 18% 96%;
+
+    --muted: 232 14% 12%;
+    --muted-foreground: 220 10% 68%;
+
+    --accent: 191 100% 55%;
+    --accent-foreground: 230 25% 4%;
+
+    --destructive: 350 100% 64%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 232 12% 16%;
+    --input: 232 12% 12%;
+    --ring: 191 100% 55%;
+
+    --bull: 158 100% 50%;
+    --bull-glow: 158 100% 60%;
+    --bear: 350 100% 64%;
+    --bear-glow: 350 100% 74%;
+    --neutral: 41 100% 70%;
+    --neutral-glow: 41 100% 80%;
+
+    --sidebar: 230 28% 3%;
+    --sidebar-foreground: 220 14% 78%;
+    --sidebar-border: 232 12% 12%;
+    --sidebar-accent: 232 16% 10%;
+
+    --radius: 0.75rem;
+
+    --z-sticky: 10;
+    --z-header: 20;
+    --z-sidebar: 30;
+    --z-overlay: 40;
+    --z-dialog: 50;
+    --z-toast: 60;
+  }
+
+  /* -------------------------------------------------------------- LIGHT */
+  /* Tuned for ≥4.5:1 text contrast and clearly-visible borders.
+     Greens/reds shifted darker so they don't wash out on white. */
+  .light {
+    --background: 220 25% 99%; /* near-white with cool cast */
+    --foreground: 222 47% 11%; /* slate-900 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 199 95% 38%; /* deeper cyan-blue for contrast */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 215 16% 35%; /* slate-600 — passes 4.5:1 */
+
+    --accent: 199 95% 38%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 350 84% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 88%; /* gray-200-ish, visible */
+    --input: 220 13% 91%;
+    --ring: 199 95% 38%;
+
+    --bull: 158 70% 32%; /* darker emerald — readable on white */
+    --bull-glow: 158 70% 42%;
+    --bear: 350 84% 45%;
+    --bear-glow: 350 84% 55%;
+    --neutral: 38 92% 42%;
+    --neutral-glow: 38 92% 52%;
+
+    --sidebar: 220 20% 98%;
+    --sidebar-foreground: 215 25% 27%;
+    --sidebar-border: 220 13% 88%;
+    --sidebar-accent: 220 14% 94%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html.light {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Display family: tighter tracking + crisper rendering */
+  .font-display {
+    font-feature-settings: "ss01" 1, "ss02" 1, "cv11" 1;
+    letter-spacing: -0.018em;
+  }
+
+  /* Mono family: tabular figures + slashed zero for data clarity */
+  .font-mono {
+    font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1;
+  }
+
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+
+  /* Scrollbars — slim, non-distracting */
+  ::-webkit-scrollbar {
+    @apply h-1.5 w-1.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border/50 transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-border;
+  }
+
+  /* Universal focus ring (visible only on keyboard nav) */
+  :focus-visible {
+    @apply outline-none ring-1 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Honor user motion preferences globally */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---- Glassmorphism ----
+     Light mode needs higher opacity and a softer shadow so the surface
+     stays readable on white. Both themes share the same selector. */
+  .glass {
+    background-color: hsl(var(--card) / 0.55);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid hsl(var(--border) / 0.6);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.03),
+      0 1px 2px 0 rgb(0 0 0 / 0.4);
+  }
+
+  .light .glass {
+    background-color: hsl(var(--card) / 0.88);
+    border: 1px solid hsl(var(--border));
+    box-shadow:
+      0 1px 2px 0 rgb(15 23 42 / 0.04),
+      0 4px 12px -2px rgb(15 23 42 / 0.04);
+  }
+
+  .glass-strong {
+    background-color: hsl(var(--card) / 0.88);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .light .glass-strong {
+    background-color: hsl(var(--card) / 0.96);
+    box-shadow:
+      0 4px 14px -2px rgb(15 23 42 / 0.08),
+      0 24px 48px -12px rgb(15 23 42 / 0.16);
+  }
+
+  /* Subtle grid background for hero / placeholder surfaces */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.35) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  /* Diagonal gradient noise overlay — adds depth to large surfaces */
+  .bg-aurora {
+    background-image:
+      radial-gradient(at 18% 14%, hsl(var(--primary) / 0.10) 0px, transparent 50%),
+      radial-gradient(at 86% 8%, hsl(var(--bull) / 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 95%, hsl(var(--primary) / 0.06) 0px, transparent 50%);
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted) / 0.6) 0%,
+      hsl(var(--muted) / 0.3) 50%,
+      hsl(var(--muted) / 0.6) 100%
+    );
+    background-size: 1000px 100%;
+    @apply animate-shimmer;
+  }
+
+  /* Ticker badge */
+  .badge-ticker {
+    @apply inline-flex items-center rounded-md border border-border/60 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+
+  /* ---- Interactive surface ---- */
+  /* Apply to anything clickable to get a uniform hover/active feel */
+  .surface-interactive {
+    @apply cursor-pointer transition-[transform,box-shadow,background-color,border-color] duration-200 ease-out;
+  }
+
+  .surface-interactive:hover {
+    @apply -translate-y-px shadow-elevated;
+  }
+
+  .surface-interactive:active {
+    @apply translate-y-0;
+  }
+
+  /* Tooltip-ish hint chip */
+  .hint-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-[11px] text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--bull)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Hairline divider — 1px at any DPR via gradient mask */
+  .hairline {
+    background-image: linear-gradient(
+      to right,
+      transparent 0,
+      hsl(var(--border)) 20%,
+      hsl(var(--border)) 80%,
+      transparent 100%
+    );
+  }
+}
