@@ -38,7 +38,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https: https://logo.clearbit.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://www.alphavantage.co https://financialmodelingprep.com https://finnhub.io https://newsapi.org https://api.anthropic.com https://api.fred.stlouisfed.org https://www.cse.lk",
+      "connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://www.alphavantage.co https://financialmodelingprep.com https://finnhub.io https://newsapi.org https://api.anthropic.com https://api.fred.stlouisfed.org https://www.cse.lk https://openrouter.ai",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

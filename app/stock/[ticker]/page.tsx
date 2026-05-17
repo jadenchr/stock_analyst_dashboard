@@ -10,7 +10,7 @@ import { PriceChart } from "@/components/charts/price-chart";
 import { MetricsOverview } from "@/components/stock/metrics-overview";
 import { FinancialsGrid } from "@/components/stock/financials-grid";
 import { AnalystPanel } from "@/components/stock/analyst-panel";
-import { AIRatingPlaceholder } from "@/components/stock/ai-rating-placeholder";
+import { AIRating } from "@/components/stock/ai-rating";
 import { NewsFeed } from "@/components/stock/news-feed";
 import { InsiderFeed } from "@/components/stock/insider-feed";
 import { ExchangeLimitedNotice } from "@/components/stock/exchange-limited-notice";
@@ -76,7 +76,7 @@ export default async function StockPage({ params }: PageProps) {
           />
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <AIRatingPlaceholder />
+              <AIRating symbol={ticker} />
             </div>
             <div className="lg:col-span-1">
               <NewsFeed symbol={ticker} />
@@ -90,7 +90,7 @@ export default async function StockPage({ params }: PageProps) {
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <AIRatingPlaceholder />
+              <AIRating symbol={ticker} />
             </div>
             <div>
               <AnalystPanel symbol={ticker} />

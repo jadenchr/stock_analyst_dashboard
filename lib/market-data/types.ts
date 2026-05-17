@@ -57,6 +57,13 @@ export type HistoricalRange = (typeof HISTORICAL_RANGES)[number];
 
 export const FundamentalsSchema = z.object({
   symbol: z.string(),
+  // Optional profile from Yahoo's `assetProfile` module — used by AI analyzer
+  profile: z
+    .object({
+      sector: z.string().nullable(),
+      industry: z.string().nullable(),
+    })
+    .optional(),
   valuation: z.object({
     peTrailing: z.number().nullable(),
     peForward: z.number().nullable(),
@@ -88,6 +95,15 @@ export const FundamentalsSchema = z.object({
     yield: z.number().nullable(),
     payoutRatio: z.number().nullable(),
   }),
+  // Optional analyst price-target consensus from Yahoo's `financialData` module
+  priceTargets: z
+    .object({
+      mean: z.number().nullable(),
+      high: z.number().nullable(),
+      low: z.number().nullable(),
+      numberOfAnalystOpinions: z.number().nullable(),
+    })
+    .optional(),
   updatedAt: z.string(),
 });
 

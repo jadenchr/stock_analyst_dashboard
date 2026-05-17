@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiGet } from "@/app/providers";
+import { apiGet, ApiError } from "@/app/providers";
 import type {
   Fundamentals,
   HistoricalPoint,
@@ -79,6 +79,58 @@ export function useRegional() {
     queryFn: ({ signal }) => apiGet<RegionalSnapshot>(`/api/market/regional`, { signal }),
     staleTime: 120_000,
     refetchInterval: 5 * 60_000,
+  });
+}
+
+/* ---------------------------------------------------- AI Analyst Rating --- */
+
+export type AIRating = "STRONG_BUY" | "BUY" | "HOLD" | "SELL" | "STRONG_SELL";
+
+export interface AIAnalysis {
+  rating: AIRating;
+  confidence: number;
+  priceTarget: number;
+  targetHorizon: string;
+  upside: number;
+  summary: string;
+  bullCase: string[];
+  bearCase: string[];
+  keyRisks: string[];
+  catalysts: string[];
+  valuation: string;
+  technicals: string;
+  sectorContext: string;
+  lastUpdated?: string;
+  // Metadata from route handler
+  stubbed: boolean;
+  model: string;
+  cached: boolean;
+  attempts?: number;
+  reason?:
+    | "cse-unsupported"
+    | "not-configured"
+    | "no-quote"
+    | "insufficient-credits"
+    | "model-error"
+    | "validation-error";
+}
+
+export function useStockAnalysis(symbol: string | null, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: symbol ? (["analysis", symbol] as const) : (["analysis", "_disabled"] as const),
+    queryFn: ({ signal }) =>
+      apiGet<AIAnalysis>(`/api/analyze?ticker=${encodeURIComponent(symbol ?? "")}`, { signal }),
+    enabled: Boolean(symbol) && (options?.enabled ?? true),
+    // Server caches 15 min; keep client a hair under so refetches hit cache
+    staleTime: 14 * 60_000,
+    gcTime: 30 * 60_000,
+    retry: (failureCount, err) => {
+      // Don't hammer the rate limiter on 429s
+      if (err instanceof ApiError && err.status === 429) return false;
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) return false;
+      return failureCount < 1;
+    },
+    refetchOnWindowFocus: false,
   });
 }
 

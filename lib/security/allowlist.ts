@@ -13,6 +13,8 @@ const ALLOWED_HOSTS = new Set<string>([
   // Colombo Stock Exchange — public website data feed
   "www.cse.lk",
   "cse.lk",
+  // OpenRouter — Phase 4 AI provider (brokers Gemini, Claude, GPT-4o, etc.)
+  "openrouter.ai",
 ]);
 
 export class DisallowedHostError extends Error {

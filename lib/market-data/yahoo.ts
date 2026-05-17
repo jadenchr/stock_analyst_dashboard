@@ -203,7 +203,13 @@ export async function getFundamentals(symbol: string): Promise<Fundamentals> {
   let summary;
   try {
     summary = await yf.quoteSummary(symbol, {
-      modules: ["summaryDetail", "financialData", "defaultKeyStatistics", "calendarEvents"],
+      modules: [
+        "summaryDetail",
+        "financialData",
+        "defaultKeyStatistics",
+        "calendarEvents",
+        "assetProfile",
+      ],
     });
   } catch (err) {
     throw new ProviderError(PROVIDER, `fundamentals failed: ${(err as Error).message}`);
@@ -214,9 +220,14 @@ export async function getFundamentals(symbol: string): Promise<Fundamentals> {
   const sd = (summary.summaryDetail ?? {}) as Record<string, unknown>;
   const fd = (summary.financialData ?? {}) as Record<string, unknown>;
   const ks = (summary.defaultKeyStatistics ?? {}) as Record<string, unknown>;
+  const ap = (summary.assetProfile ?? {}) as Record<string, unknown>;
 
   return {
     symbol,
+    profile: {
+      sector: typeof ap.sector === "string" ? ap.sector : null,
+      industry: typeof ap.industry === "string" ? ap.industry : null,
+    },
     valuation: {
       peTrailing: num(sd.trailingPE),
       peForward: num(sd.forwardPE),
@@ -247,6 +258,12 @@ export async function getFundamentals(symbol: string): Promise<Fundamentals> {
     dividend: {
       yield: num(sd.dividendYield),
       payoutRatio: num(sd.payoutRatio),
+    },
+    priceTargets: {
+      mean: num(fd.targetMeanPrice),
+      high: num(fd.targetHighPrice),
+      low: num(fd.targetLowPrice),
+      numberOfAnalystOpinions: num(fd.numberOfAnalystOpinions),
     },
     updatedAt: new Date().toISOString(),
   };
