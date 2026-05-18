@@ -74,6 +74,7 @@ export const GET = apiHandler({ bucket: "analyze", limit: 5 }, async ({ url }) =
     const outcome = await analyzeStock(stockData);
     return {
       ...outcome.result,
+      currency: stockData.currency,
       stubbed: outcome.stubbed,
       model: outcome.model,
       cached: false,

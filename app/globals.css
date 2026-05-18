@@ -3,63 +3,62 @@
 @tailwind utilities;
 
 /**
- * Palette
- * -------
- *   #18122B  near-black indigo (background)
- *   #393053  dark indigo       (card surface)
- *   #443C68  medium indigo     (secondary / elevated card)
- *   #635985  muted lavender    (borders, muted text)
- *
- * + Tuned accents that harmonize with the purple palette:
- *   electric lavender primary, mint-emerald bull, rose-coral bear,
- *   warm amber neutral.
+ * Palette — true black with soft-lavender accent.
+ *   Background:  #000000  (pure OLED black)
+ *   Card:        #0C0B10  (subtle indigo lift, 1px lavender-tinted border)
+ *   Secondary:   #14131A
+ *   Border:      #25232E  (lavender-tinted so it glows on black)
+ *   Primary:     #C5A4DC  (lavender accent — buttons, links, focus, AI glow)
+ *   Bull:        neon emerald   tuned to pop on pure black
+ *   Bear:        neon coral     same
+ *   Neutral:     bright amber
  */
 
 @layer base {
   /* -------------------------------------------------------------- DARK (default) */
   :root,
   .dark {
-    --background: 252 41% 12%; /* #18122B */
-    --foreground: 252 35% 96%;
+    --background: 0 0% 0%; /* pure black */
+    --foreground: 270 14% 96%; /* slight lavender-tinted white */
 
-    --card: 253 26% 26%; /* #393053 */
-    --card-foreground: 252 35% 96%;
+    --card: 270 14% 5%; /* #0C0B10 — subtle lift */
+    --card-foreground: 270 14% 96%;
 
-    --popover: 253 30% 16%; /* slightly deeper than card */
-    --popover-foreground: 252 35% 96%;
+    --popover: 270 16% 4%;
+    --popover-foreground: 270 14% 96%;
 
-    /* Electric lavender — pops on purple but stays in-family */
-    --primary: 258 68% 72%; /* ~#A78BFA */
-    --primary-foreground: 252 41% 12%;
+    /* Lavender — the new brand accent */
+    --primary: 280 38% 75%; /* ~#C5A4DC */
+    --primary-foreground: 270 30% 6%; /* deep purple-black for text on lavender */
 
-    --secondary: 252 27% 32%; /* #443C68 */
-    --secondary-foreground: 252 35% 96%;
+    --secondary: 270 12% 10%; /* #16151A */
+    --secondary-foreground: 270 14% 96%;
 
-    --muted: 252 24% 22%;
-    --muted-foreground: 254 18% 64%; /* readable on dark indigo */
+    --muted: 270 10% 9%;
+    --muted-foreground: 270 8% 62%;
 
-    --accent: 258 68% 72%;
-    --accent-foreground: 252 41% 12%;
+    --accent: 280 38% 75%;
+    --accent-foreground: 270 30% 6%;
 
-    --destructive: 350 90% 66%;
+    --destructive: 350 95% 65%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 254 18% 28%; /* derived from #635985 darkened */
-    --input: 252 24% 22%;
-    --ring: 258 68% 72%;
+    --border: 270 12% 18%; /* #28262E — lavender-tinted */
+    --input: 270 10% 12%;
+    --ring: 280 60% 70%; /* slightly more saturated for focus rings */
 
-    /* Financial semantic tokens — tuned for the purple background */
-    --bull: 158 78% 52%; /* mint emerald */
-    --bull-glow: 158 80% 62%;
-    --bear: 350 90% 66%; /* rose coral */
-    --bear-glow: 350 90% 76%;
-    --neutral: 38 92% 64%; /* warm amber */
-    --neutral-glow: 38 92% 74%;
+    /* Financial semantic tokens — neon-bright for true-black contrast */
+    --bull: 150 95% 55%; /* neon emerald */
+    --bull-glow: 150 95% 65%;
+    --bear: 350 100% 67%; /* neon coral */
+    --bear-glow: 350 100% 77%;
+    --neutral: 38 100% 66%; /* bright amber */
+    --neutral-glow: 38 100% 76%;
 
-    --sidebar: 252 45% 9%; /* deeper than bg */
-    --sidebar-foreground: 254 18% 78%;
-    --sidebar-border: 252 24% 18%;
-    --sidebar-accent: 253 26% 18%;
+    --sidebar: 0 0% 0%; /* match background */
+    --sidebar-foreground: 270 10% 78%;
+    --sidebar-border: 270 12% 14%;
+    --sidebar-accent: 270 14% 8%;
 
     --radius: 0.75rem;
 
@@ -72,48 +71,48 @@
   }
 
   /* -------------------------------------------------------------- LIGHT */
-  /* Tuned for ≥4.5:1 text contrast and visible borders. Lavender primary
-     stays consistent across themes so brand recognition is preserved. */
+  /* Tuned for ≥4.5:1 text contrast and visible borders. Same lavender
+     brand accent (deeper for white-bg contrast). */
   .light {
-    --background: 252 60% 99%; /* near-white with cool indigo cast */
-    --foreground: 252 47% 14%; /* near-black indigo */
+    --background: 270 30% 99%;
+    --foreground: 270 30% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 252 47% 14%;
+    --card-foreground: 270 30% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 252 47% 14%;
+    --popover-foreground: 270 30% 10%;
 
-    --primary: 258 60% 48%; /* deeper lavender for white-bg contrast */
+    --primary: 275 45% 42%; /* deeper lavender for contrast */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 252 30% 96%;
-    --secondary-foreground: 252 47% 14%;
+    --secondary: 270 18% 96%;
+    --secondary-foreground: 270 30% 10%;
 
-    --muted: 252 30% 96%;
-    --muted-foreground: 254 18% 38%;
+    --muted: 270 18% 96%;
+    --muted-foreground: 270 10% 38%;
 
-    --accent: 258 60% 48%;
+    --accent: 275 45% 42%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 350 84% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 252 22% 88%;
-    --input: 252 22% 92%;
-    --ring: 258 60% 48%;
+    --border: 270 15% 88%;
+    --input: 270 15% 92%;
+    --ring: 275 45% 42%;
 
-    --bull: 158 75% 30%;
-    --bull-glow: 158 75% 40%;
-    --bear: 350 84% 45%;
-    --bear-glow: 350 84% 55%;
+    --bull: 150 75% 32%;
+    --bull-glow: 150 75% 42%;
+    --bear: 350 84% 48%;
+    --bear-glow: 350 84% 58%;
     --neutral: 38 92% 42%;
     --neutral-glow: 38 92% 52%;
 
-    --sidebar: 252 40% 98%;
-    --sidebar-foreground: 252 25% 28%;
-    --sidebar-border: 252 22% 88%;
-    --sidebar-accent: 252 25% 94%;
+    --sidebar: 270 25% 98%;
+    --sidebar-foreground: 270 25% 28%;
+    --sidebar-border: 270 15% 88%;
+    --sidebar-accent: 270 20% 94%;
   }
 }
 
@@ -159,7 +158,7 @@
     @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-border/50 transition-colors;
+    @apply rounded-full bg-border/60 transition-colors;
   }
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-border;
@@ -182,69 +181,71 @@
 }
 
 @layer components {
-  /* ---- Glassmorphism (dark) ---- */
+  /* ---- Card surfaces ----
+     On true black we need a visible 1-px lavender-tinted border so cards
+     read as distinct panels without leaning on background contrast. */
   .glass {
-    background-color: hsl(var(--card) / 0.55);
+    background-color: hsl(var(--card) / 0.85);
     backdrop-filter: blur(14px) saturate(140%);
     -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border: 1px solid hsl(var(--border) / 0.6);
+    border: 1px solid hsl(var(--border) / 0.9);
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.03),
-      0 1px 2px 0 rgb(0 0 0 / 0.4);
+      inset 0 1px 0 0 hsl(var(--primary) / 0.04),
+      0 1px 2px 0 rgb(0 0 0 / 0.6);
   }
 
   .light .glass {
-    background-color: hsl(var(--card) / 0.92);
+    background-color: hsl(var(--card) / 0.94);
     border: 1px solid hsl(var(--border));
     box-shadow:
-      0 1px 2px 0 rgb(24 18 43 / 0.04),
-      0 4px 12px -2px rgb(24 18 43 / 0.04);
+      0 1px 2px 0 rgb(15 12 24 / 0.04),
+      0 4px 12px -2px rgb(15 12 24 / 0.04);
   }
 
   .glass-strong {
-    background-color: hsl(var(--card) / 0.92);
+    background-color: hsl(var(--card) / 0.96);
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     border: 1px solid hsl(var(--border));
   }
 
   .light .glass-strong {
-    background-color: hsl(var(--card) / 0.96);
+    background-color: hsl(var(--card) / 0.98);
     box-shadow:
-      0 4px 14px -2px rgb(24 18 43 / 0.08),
-      0 24px 48px -12px rgb(24 18 43 / 0.16);
+      0 4px 14px -2px rgb(15 12 24 / 0.08),
+      0 24px 48px -12px rgb(15 12 24 / 0.16);
   }
 
-  /* Grid background */
+  /* Grid background — uses border tint so it doesn't blow out on black */
   .bg-grid {
     background-image:
-      linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border) / 0.35) 1px, transparent 1px);
+      linear-gradient(to right, hsl(var(--border) / 0.55) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.55) 1px, transparent 1px);
     background-size: 64px 64px;
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
   }
 
-  /* Aurora — layered purple/bull radial gradients */
+  /* Aurora — lavender radial wash for hero / AI panels */
   .bg-aurora {
     background-image:
-      radial-gradient(at 18% 14%, hsl(var(--primary) / 0.14) 0px, transparent 50%),
+      radial-gradient(at 18% 14%, hsl(var(--primary) / 0.18) 0px, transparent 50%),
       radial-gradient(at 86% 8%, hsl(var(--bull) / 0.08) 0px, transparent 50%),
-      radial-gradient(at 50% 95%, hsl(var(--primary) / 0.08) 0px, transparent 50%);
+      radial-gradient(at 50% 95%, hsl(var(--primary) / 0.10) 0px, transparent 50%);
   }
 
   .skeleton {
     background: linear-gradient(
       90deg,
-      hsl(var(--muted) / 0.6) 0%,
+      hsl(var(--muted) / 0.7) 0%,
       hsl(var(--muted) / 0.3) 50%,
-      hsl(var(--muted) / 0.6) 100%
+      hsl(var(--muted) / 0.7) 100%
     );
     background-size: 1000px 100%;
     @apply animate-shimmer;
   }
 
   .badge-ticker {
-    @apply inline-flex items-center rounded-md border border-border/60 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground;
+    @apply inline-flex items-center rounded-md border border-border/70 bg-muted/60 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground;
   }
 
   .surface-interactive {
@@ -258,7 +259,7 @@
   }
 
   .hint-chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-[11px] text-muted-foreground;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-card/70 px-2 py-0.5 text-[11px] text-muted-foreground;
   }
 }
 
@@ -271,6 +272,7 @@
     text-wrap: pretty;
   }
 
+  /* Gradient text uses lavender → bull green for a soft halo */
   .gradient-text {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--bull)) 100%);
     -webkit-background-clip: text;

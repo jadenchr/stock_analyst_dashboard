@@ -11,11 +11,13 @@ interface Props {
 }
 
 const SEGMENTS = [
-  { id: "strongBuy", label: "Strong Buy", color: "hsl(160 100% 50%)" },
-  { id: "buy", label: "Buy", color: "hsl(160 70% 55%)" },
-  { id: "hold", label: "Hold", color: "hsl(41 100% 70%)" },
-  { id: "sell", label: "Sell", color: "hsl(15 95% 60%)" },
-  { id: "strongSell", label: "Strong Sell", color: "hsl(350 100% 62%)" },
+  // Tuned to match the global palette: neon emerald → bull,
+  // amber → hold, neon coral → bear. Pops on true black.
+  { id: "strongBuy", label: "Strong Buy", color: "hsl(150 95% 55%)" },
+  { id: "buy", label: "Buy", color: "hsl(150 70% 50%)" },
+  { id: "hold", label: "Hold", color: "hsl(38 100% 66%)" },
+  { id: "sell", label: "Sell", color: "hsl(15 95% 62%)" },
+  { id: "strongSell", label: "Strong Sell", color: "hsl(350 100% 67%)" },
 ] as const;
 
 /**

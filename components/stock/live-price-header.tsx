@@ -5,7 +5,12 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { useQuote } from "@/lib/api/client";
 import type { Quote } from "@/lib/market-data/types";
 import { cn } from "@/lib/utils";
-import { formatCompact, formatCurrency, formatPercent } from "@/lib/utils/format";
+import {
+  formatCompact,
+  formatCompactMoney,
+  formatCurrency,
+  formatPercent,
+} from "@/lib/utils/format";
 
 interface Props {
   symbol: string;
@@ -98,7 +103,7 @@ export function LivePriceHeader({ symbol, initial }: Props) {
               isLoading && "opacity-80",
             )}
           >
-            {formatCurrency(q.price)}
+            {formatCurrency(q.price, q.currency)}
           </p>
           <p
             className={cn(
@@ -107,7 +112,7 @@ export function LivePriceHeader({ symbol, initial }: Props) {
             )}
           >
             <Arrow className="h-3.5 w-3.5" aria-hidden />
-            {formatCurrency(Math.abs(q.change))} ({formatPercent(q.changePercent)})
+            {formatCurrency(Math.abs(q.change), q.currency)} ({formatPercent(q.changePercent)})
           </p>
         </div>
       </div>
@@ -116,8 +121,8 @@ export function LivePriceHeader({ symbol, initial }: Props) {
       {rangePct != null && (
         <div className="relative mt-6">
           <div className="mb-1 flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
-            <span>52w Low {formatCurrency(q.yearLow)}</span>
-            <span>52w High {formatCurrency(q.yearHigh)}</span>
+            <span>52w Low {formatCurrency(q.yearLow, q.currency)}</span>
+            <span>52w High {formatCurrency(q.yearHigh, q.currency)}</span>
           </div>
           <div className="relative h-1.5 rounded-full bg-muted">
             <div
@@ -138,10 +143,10 @@ export function LivePriceHeader({ symbol, initial }: Props) {
 
       {/* Stat strip */}
       <dl className="relative mt-6 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border/60 pt-4 sm:grid-cols-4 lg:grid-cols-6">
-        <Stat label="Market Cap" value={q.marketCap != null ? `$${formatCompact(q.marketCap)}` : "—"} />
+        <Stat label="Market Cap" value={formatCompactMoney(q.marketCap, q.currency)} />
         <Stat label="Volume" value={q.volume != null ? formatCompact(q.volume) : "—"} />
         <Stat label="P/E (TTM)" value={q.peRatio != null ? q.peRatio.toFixed(2) : "—"} />
-        <Stat label="EPS" value={q.eps != null ? `$${q.eps.toFixed(2)}` : "—"} />
+        <Stat label="EPS" value={q.eps != null ? formatCurrency(q.eps, q.currency) : "—"} />
         <Stat
           label="Day Range"
           value={

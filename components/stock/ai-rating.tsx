@@ -174,6 +174,8 @@ function RatingCard({
           {/* Badge + gauge + target */}
           <div className="relative mt-6 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
             {/* Rating badge */}
+            {/* note: price target uses the same currency as the quote so
+                INR/LKR stocks don't render "$X" */}
             <motion.div
               initial={{ scale: 0.92, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -207,7 +209,7 @@ function RatingCard({
                 Price Target
               </span>
               <span className="font-mono text-2xl font-semibold tabular-nums text-foreground">
-                {formatCurrency(data.priceTarget)}
+                {formatCurrency(data.priceTarget, data.currency)}
               </span>
               <span
                 className={cn(

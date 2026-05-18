@@ -54,7 +54,10 @@ export async function getCurrentUser() {
 
 /**
  * Convenience: fetch the user + their profile row in one round-trip.
- * Returns { user: null, profile: null } when not signed in.
+ * Returns { user: null, profile: null } when not signed in. When the user
+ * is signed in but the profile row is missing (trigger lag, RLS blip,
+ * or pre-schema signup), profile is null but user is still populated —
+ * the entitlement system treats this as `free`, not `guest`.
  */
 export async function getCurrentSession() {
   const supabase = await createSupabaseServerClient();
@@ -66,6 +69,6 @@ export async function getCurrentSession() {
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
   return { user, profile: (profile ?? null) as Profile | null };
 }

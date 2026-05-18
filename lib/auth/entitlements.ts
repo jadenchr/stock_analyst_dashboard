@@ -1,3 +1,4 @@
+import type { User } from "@supabase/supabase-js";
 import type { SubscriptionTier } from "@/lib/supabase/types";
 
 /**
@@ -44,7 +45,32 @@ export function canAccess(tier: Tier, feature: Feature): boolean {
   return MATRIX[feature].includes(tier);
 }
 
-export function tierFromProfile(profile: { subscription_tier?: SubscriptionTier } | null): Tier {
+/**
+ * Resolve a user's tier from auth + profile.
+ *
+ * Critically: a signed-in user with NO profile row yet is still treated
+ * as `free` (not `guest`). This covers:
+ *   • The brief window between OAuth signin and the on-signup trigger
+ *     inserting the profile row.
+ *   • Users who signed up before the schema was deployed (no row exists).
+ *   • Any transient RLS / network blip that fails the profile fetch.
+ */
+export function resolveTier(
+  user: User | null,
+  profile: { subscription_tier?: SubscriptionTier | null } | null,
+): Tier {
+  if (!user) return "guest";
+  return profile?.subscription_tier ?? "free";
+}
+
+/**
+ * @deprecated Prefer `resolveTier(user, profile)` so a signed-in user
+ * without a profile row doesn't get locked out as `guest`. Kept as a
+ * thin shim for any pre-existing call sites that don't have `user`.
+ */
+export function tierFromProfile(
+  profile: { subscription_tier?: SubscriptionTier | null } | null,
+): Tier {
   if (!profile) return "guest";
   return profile.subscription_tier ?? "free";
 }

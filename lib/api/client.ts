@@ -36,6 +36,7 @@ export interface Mover {
   price: number;
   change: number;
   changePercent: number;
+  currency: string;
 }
 
 export interface Movers {
@@ -101,6 +102,8 @@ export interface AIAnalysis {
   technicals: string;
   sectorContext: string;
   lastUpdated?: string;
+  /** Currency code of the underlying quote — defaults to USD when unknown. */
+  currency?: string;
   // Metadata from route handler
   stubbed: boolean;
   model: string;

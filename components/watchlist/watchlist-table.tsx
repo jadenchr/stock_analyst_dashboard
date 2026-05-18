@@ -23,7 +23,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useWatchlist } from "@/lib/store/watchlist";
 import { cn } from "@/lib/utils";
-import { formatCompact, formatCurrency, formatPercent } from "@/lib/utils/format";
+import { formatCompactMoney, formatCurrency, formatPercent } from "@/lib/utils/format";
 import { apiGet } from "@/app/providers";
 import { qk } from "@/lib/api/client";
 import type { Quote } from "@/lib/market-data/types";
@@ -174,7 +174,7 @@ function WatchlistRow({ symbol, quote, isLoading, onRemove }: RowProps) {
         {isLoading ? (
           <SkeletonBlock className="ml-auto h-4 w-16" />
         ) : quote ? (
-          formatCurrency(quote.price)
+          formatCurrency(quote.price, quote.currency)
         ) : (
           "—"
         )}
@@ -198,7 +198,7 @@ function WatchlistRow({ symbol, quote, isLoading, onRemove }: RowProps) {
         {isLoading ? (
           <SkeletonBlock className="ml-auto h-4 w-14" />
         ) : quote?.marketCap != null ? (
-          `$${formatCompact(quote.marketCap)}`
+          formatCompactMoney(quote.marketCap, quote.currency)
         ) : (
           "—"
         )}

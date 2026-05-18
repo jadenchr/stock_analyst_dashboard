@@ -33,19 +33,22 @@ interface Props {
 
 const COLORS = {
   bg: "transparent",
-  text: "rgba(228, 230, 235, 0.6)",
-  grid: "rgba(255, 255, 255, 0.04)",
-  bull: "#00FFB2",
-  bear: "#FF3B5C",
-  line: "#00D4FF",
-  area: "#00D4FF",
-  // Overlay palette (consistent hues, distinguishable)
-  sma20: "#FFD166",
-  sma50: "#FF8FAA",
-  sma200: "#B49EFF",
-  ema12: "#7DF4D0",
-  ema26: "#F7B267",
-  bb: "rgba(0, 212, 255, 0.45)",
+  // Slight lavender tint on chart text + grid to harmonize with the new palette
+  text: "rgba(220, 215, 230, 0.62)",
+  grid: "rgba(180, 160, 220, 0.06)",
+  // Neon up/down tuned to pop on true black
+  bull: "#26F58E",
+  bear: "#FF5575",
+  // Lavender primary for line/area mode (matches CTA color)
+  line: "#C5A4DC",
+  area: "#C5A4DC",
+  // Overlay palette — distinguishable + on-brand
+  sma20: "#F2C45C", // amber
+  sma50: "#FF8FAA", // soft pink
+  sma200: "#C5A4DC", // lavender
+  ema12: "#7DF4D0", // mint
+  ema26: "#F7B267", // tangerine
+  bb: "rgba(197, 164, 220, 0.45)", // lavender semi-transparent
 };
 
 function toUnix(iso: string): Time {
@@ -138,8 +141,9 @@ export default function PriceChartCanvas({
     } else if (chartType === "area") {
       mainSeries = chart.addAreaSeries({
         lineColor: COLORS.area,
-        topColor: "rgba(0, 212, 255, 0.35)",
-        bottomColor: "rgba(0, 212, 255, 0.02)",
+        // Lavender area gradient (replaces old cyan)
+        topColor: "rgba(197, 164, 220, 0.35)",
+        bottomColor: "rgba(197, 164, 220, 0.02)",
         lineWidth: 2,
         priceLineVisible: true,
         priceLineColor: "rgba(255,255,255,0.2)",
@@ -160,7 +164,8 @@ export default function PriceChartCanvas({
     // ----- Volume sub-series ---------------------------------------------
     if (showVolume) {
       const volumeSeries = chart.addHistogramSeries({
-        color: "rgba(0, 212, 255, 0.4)",
+        // Default volume color (lavender) — overridden per-bar by close vs open
+        color: "rgba(197, 164, 220, 0.4)",
         priceFormat: { type: "volume" },
         priceScaleId: "volume",
       });
@@ -173,8 +178,8 @@ export default function PriceChartCanvas({
           value: d.volume,
           color:
             d.close >= d.open
-              ? "rgba(0, 255, 178, 0.5)"
-              : "rgba(255, 59, 92, 0.5)",
+              ? "rgba(38, 245, 142, 0.55)" // neon emerald
+              : "rgba(255, 85, 117, 0.55)", // neon coral
         })),
       );
     }
@@ -226,7 +231,8 @@ export default function PriceChartCanvas({
         crosshairMarkerVisible: false,
       });
       const midSeries = chart.addLineSeries({
-        color: "rgba(0, 212, 255, 0.25)",
+        // Lavender middle band (dotted)
+        color: "rgba(197, 164, 220, 0.30)",
         lineWidth: 1,
         lineStyle: LineStyle.Dotted,
         priceLineVisible: false,

@@ -20,7 +20,12 @@ import { apiGet } from "@/app/providers";
 import type { ScreenerId, ScreenerResult } from "@/lib/market-data";
 import { useUser } from "@/app/auth/user-provider";
 import { cn } from "@/lib/utils";
-import { formatCompact, formatCurrency, formatPercent } from "@/lib/utils/format";
+import {
+  formatCompact,
+  formatCompactMoney,
+  formatCurrency,
+  formatPercent,
+} from "@/lib/utils/format";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { SkeletonBlock } from "@/components/ui/skeleton-block";
 
@@ -233,7 +238,9 @@ function ScreenerResults({
       key: "price",
       header: "Price",
       align: "right",
-      render: (r) => <span className="font-mono tabular-nums">{formatCurrency(r.price)}</span>,
+      render: (r) => (
+        <span className="font-mono tabular-nums">{formatCurrency(r.price, r.currency)}</span>
+      ),
     },
     {
       key: "changePercent",
@@ -261,7 +268,7 @@ function ScreenerResults({
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.marketCap != null ? `$${formatCompact(r.marketCap)}` : "—"}
+          {r.marketCap != null ? formatCompactMoney(r.marketCap, r.currency) : "—"}
         </span>
       ),
     },

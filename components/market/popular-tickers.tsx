@@ -64,7 +64,7 @@ export function PopularTickers() {
 
                     <div className="mt-4 flex items-end justify-between">
                       <p className="font-mono text-xl font-semibold tabular-nums text-foreground">
-                        {formatCurrency(q.price)}
+                        {formatCurrency(q.price, q.currency)}
                       </p>
                       <p
                         className={cn(

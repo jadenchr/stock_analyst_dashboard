@@ -8,13 +8,6 @@ const compactFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 const percentFormatter = new Intl.NumberFormat("en-US", {
   style: "percent",
   minimumFractionDigits: 2,
@@ -27,9 +20,73 @@ const decimalFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
-export function formatCurrency(value: number | null | undefined): string {
+/**
+ * Per-currency formatters memoized in a Map. The set of currencies in
+ * play is tiny (USD / INR / LKR / GBP / EUR), so a cache prevents
+ * recreating Intl.NumberFormat on every render.
+ */
+const currencyFormatters = new Map<string, Intl.NumberFormat>();
+
+function getCurrencyFormatter(currency: string): Intl.NumberFormat {
+  const key = currency.toUpperCase();
+  let fmt = currencyFormatters.get(key);
+  if (!fmt) {
+    try {
+      fmt = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: key,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    } catch {
+      // Unknown currency code — fall back to USD format
+      fmt = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+    currencyFormatters.set(key, fmt);
+  }
+  return fmt;
+}
+
+/**
+ * Format a value in the supplied currency. Defaults to USD when not specified
+ * so existing US-centric call sites keep working unchanged.
+ */
+export function formatCurrency(
+  value: number | null | undefined,
+  currency: string = "USD",
+): string {
   if (value == null || Number.isNaN(value)) return "—";
-  return currencyFormatter.format(value);
+  return getCurrencyFormatter(currency).format(value);
+}
+
+/**
+ * Compact currency: "$1.2B" / "₹4.4T" / "Rs 96.5K". Pairs the currency
+ * symbol (or 3-letter code if no symbol available) with our compact format.
+ */
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: "$",
+  CAD: "$",
+  AUD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+  INR: "₹",
+  LKR: "Rs ",
+};
+
+export function formatCompactMoney(
+  value: number | null | undefined,
+  currency: string = "USD",
+): string {
+  if (value == null || Number.isNaN(value)) return "—";
+  const code = currency.toUpperCase();
+  const symbol = CURRENCY_SYMBOLS[code] ?? `${code} `;
+  return `${symbol}${compactFormatter.format(value)}`;
 }
 
 export function formatCompact(value: number | null | undefined): string {

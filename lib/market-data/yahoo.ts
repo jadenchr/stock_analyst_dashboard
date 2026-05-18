@@ -399,6 +399,7 @@ export interface MoverQuote {
   price: number;
   change: number;
   changePercent: number;
+  currency: string;
 }
 
 interface YahooDailyMoversResponse {
@@ -409,6 +410,7 @@ interface YahooDailyMoversResponse {
     regularMarketPrice?: number;
     regularMarketChange?: number;
     regularMarketChangePercent?: number;
+    currency?: string;
   }>;
 }
 
@@ -423,6 +425,7 @@ function mapMovers(response: YahooDailyMoversResponse, limit = 5): MoverQuote[] 
       price: q.regularMarketPrice,
       change: q.regularMarketChange ?? 0,
       changePercent: q.regularMarketChangePercent ?? 0,
+      currency: q.currency ?? "USD",
     });
   }
   return out;
@@ -452,6 +455,7 @@ interface YahooScreenerResponse {
     trailingPE?: number;
     fullExchangeName?: string;
     exchange?: string;
+    currency?: string;
   }>;
 }
 
@@ -465,6 +469,7 @@ export interface ScreenerResult {
   volume: number | null;
   marketCap: number | null;
   peRatio: number | null;
+  currency: string;
 }
 
 export async function runScreener(id: ScreenerId, count = 25): Promise<ScreenerResult[]> {
@@ -488,6 +493,7 @@ export async function runScreener(id: ScreenerId, count = 25): Promise<ScreenerR
       volume: num(q.regularMarketVolume),
       marketCap: num(q.marketCap),
       peRatio: num(q.trailingPE),
+      currency: q.currency ?? "USD",
     });
   }
   return rows;

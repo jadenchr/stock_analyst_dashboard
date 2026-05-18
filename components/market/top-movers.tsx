@@ -103,7 +103,7 @@ function MoversColumn({
                   {m.name}
                 </span>
                 <span className="font-mono text-xs tabular-nums text-foreground">
-                  {formatCurrency(m.price)}
+                  {formatCurrency(m.price, m.currency)}
                 </span>
                 <span
                   className={cn(

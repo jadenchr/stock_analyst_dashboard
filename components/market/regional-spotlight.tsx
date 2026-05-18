@@ -6,7 +6,7 @@ import { ArrowUpRight, Loader2 } from "lucide-react";
 import { useRegional } from "@/lib/api/client";
 import type { Quote } from "@/lib/market-data/types";
 import { cn } from "@/lib/utils";
-import { formatCompact, formatPercent } from "@/lib/utils/format";
+import { formatCurrency, formatPercent } from "@/lib/utils/format";
 import { SkeletonBlock } from "@/components/ui/skeleton-block";
 
 export function RegionalSpotlight() {
@@ -117,11 +117,7 @@ function RegionColumn({
                   </div>
                   <div className="ml-auto flex flex-col items-end">
                     <span className="font-mono text-xs tabular-nums text-foreground">
-                      {currency === "₹"
-                        ? `₹${formatCompact(q.price)}`
-                        : currency === "LKR"
-                          ? `${formatCompact(q.price)} LKR`
-                          : q.price.toFixed(2)}
+                      {formatCurrency(q.price, q.currency)}
                     </span>
                     <span
                       className={cn(
