@@ -4,7 +4,6 @@ import { PopularTickers } from "@/components/market/popular-tickers";
 import { TopMovers } from "@/components/market/top-movers";
 import { SectorHeatmap } from "@/components/market/sector-heatmap";
 import { RegionalSpotlight } from "@/components/market/regional-spotlight";
-import { ComingSoon } from "@/components/market/coming-soon";
 
 export default function HomePage() {
   return (
@@ -15,7 +14,6 @@ export default function HomePage() {
       <TopMovers />
       <PopularTickers />
       <RegionalSpotlight />
-      <ComingSoon />
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useWatchlist } from "@/lib/store/watchlist";
+import { useWatchlistSync } from "@/lib/store/watchlist-sync";
 import { cn } from "@/lib/utils";
 import { formatPercent } from "@/lib/utils/format";
 import { apiGet } from "@/app/providers";
@@ -33,6 +34,9 @@ export function Watchlist() {
   const reorder = useWatchlist((s) => s.reorder);
   const remove = useWatchlist((s) => s.remove);
   const [hydrated, setHydrated] = useState(false);
+
+  // Mirrors the local watchlist to Supabase when the user is signed in.
+  useWatchlistSync();
 
   useEffect(() => setHydrated(true), []);
 

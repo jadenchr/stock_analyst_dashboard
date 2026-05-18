@@ -166,6 +166,20 @@ export async function sectorPerformance() {
   return cached(cacheKey("sectors"), TTL.marketOverview, () => yahoo.getSectorPerformance());
 }
 
+export async function trendingBusinessNews(country: string = "us") {
+  return cached(cacheKey("trending-news", country), TTL.news, () =>
+    newsapi.topBusinessHeadlines({ country, pageSize: 24 }).catch(() => []),
+  );
+}
+
+export type { ScreenerId, ScreenerResult } from "./yahoo";
+
+export async function screener(id: yahoo.ScreenerId, count = 25) {
+  return cached(cacheKey("screener", id, count), TTL.marketOverview, () =>
+    yahoo.runScreener(id, count),
+  );
+}
+
 /* ---------------------------------------------------------- news / insider */
 
 export async function news(symbol: string, companyName?: string): Promise<NewsArticle[]> {

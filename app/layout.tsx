@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/header";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { SearchOverlay } from "@/components/search/search-overlay";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { getCurrentSession } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
 /**
@@ -58,14 +59,23 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#06070D" },
-    { media: "(prefers-color-scheme: light)", color: "#FAFBFD" },
+    { media: "(prefers-color-scheme: dark)", color: "#18122B" },
+    { media: "(prefers-color-scheme: light)", color: "#FAFAFD" },
   ],
   width: "device-width",
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Best-effort: surface the signed-in user to the client tree without a flash.
+  // If Supabase isn't configured (local-dev fallback), getCurrentSession is a no-op.
+  let initial: Awaited<ReturnType<typeof getCurrentSession>> = { user: null, profile: null };
+  try {
+    initial = await getCurrentSession();
+  } catch (err) {
+    console.error("[layout] getCurrentSession failed:", err);
+  }
+
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
@@ -80,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           "min-h-screen bg-background font-sans text-foreground",
         )}
       >
-        <Providers>
+        <Providers initialUser={initial.user} initialProfile={initial.profile}>
           <ThemeProvider>
             <div className="relative flex min-h-screen">
               <Sidebar />

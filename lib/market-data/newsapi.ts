@@ -8,6 +8,7 @@ import type { NewsArticle } from "./types";
 
 const PROVIDER = "newsapi";
 const BASE = "https://newsapi.org/v2/everything";
+const TOP_BASE = "https://newsapi.org/v2/top-headlines";
 
 function getKey(): string {
   const key = process.env.NEWS_API_KEY;
@@ -32,6 +33,55 @@ const NewsApiResponseSchema = z.object({
     )
     .optional(),
 });
+
+/**
+ * Top headlines in the business category. Used by the global /news page.
+ * NewsAPI's free tier requires a country filter; we default to `us` since
+ * that's where most movers + earnings stories originate. Override via the
+ * `country` arg (e.g. "in", "gb") once the user picks a region in settings.
+ */
+export async function topBusinessHeadlines(
+  options: { country?: string; pageSize?: number } = {},
+): Promise<NewsArticle[]> {
+  const url = new URL(TOP_BASE);
+  url.searchParams.set("category", "business");
+  url.searchParams.set("country", options.country ?? "us");
+  url.searchParams.set("pageSize", String(Math.min(options.pageSize ?? 24, 50)));
+
+  const res = await safeFetch(url, {
+    headers: { "X-Api-Key": getKey() },
+    timeoutMs: 10_000,
+  });
+  if (res.status === 401 || res.status === 403) {
+    throw new ProviderError(PROVIDER, "Unauthorized", 503);
+  }
+  if (res.status === 429) throw new ProviderError(PROVIDER, "Rate limited", 429);
+  if (!res.ok) throw new ProviderError(PROVIDER, `HTTP ${res.status}`, 502);
+
+  const json: unknown = await res.json();
+  const parsed = NewsApiResponseSchema.safeParse(json);
+  if (!parsed.success || parsed.data.status !== "ok") return [];
+
+  return (parsed.data.articles ?? [])
+    .map<NewsArticle | null>((a, i) => {
+      const safeUrl = sanitizeUrl(a.url);
+      if (!safeUrl) return null;
+      const headline = sanitizeText(a.title, 240);
+      if (!headline) return null;
+      const summary = a.description ? sanitizeText(a.description, 480) : null;
+      return {
+        id: `${a.publishedAt}-${i}`,
+        headline,
+        summary,
+        url: safeUrl,
+        source: sanitizeText(a.source?.name, 80) || "Unknown",
+        imageUrl: a.urlToImage ? sanitizeUrl(a.urlToImage) : null,
+        publishedAt: a.publishedAt,
+        sentiment: classifySentiment(headline, summary),
+      };
+    })
+    .filter((n): n is NewsArticle => n !== null);
+}
 
 export async function searchNews(query: string, max = 12): Promise<NewsArticle[]> {
   const url = new URL(BASE);

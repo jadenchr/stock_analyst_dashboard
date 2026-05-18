@@ -2,49 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * Palette
+ * -------
+ *   #18122B  near-black indigo (background)
+ *   #393053  dark indigo       (card surface)
+ *   #443C68  medium indigo     (secondary / elevated card)
+ *   #635985  muted lavender    (borders, muted text)
+ *
+ * + Tuned accents that harmonize with the purple palette:
+ *   electric lavender primary, mint-emerald bull, rose-coral bear,
+ *   warm amber neutral.
+ */
+
 @layer base {
   /* -------------------------------------------------------------- DARK (default) */
   :root,
   .dark {
-    --background: 230 25% 4%; /* #06070D */
-    --foreground: 220 18% 96%;
+    --background: 252 41% 12%; /* #18122B */
+    --foreground: 252 35% 96%;
 
-    --card: 232 18% 8%; /* #10121A */
-    --card-foreground: 220 18% 96%;
+    --card: 253 26% 26%; /* #393053 */
+    --card-foreground: 252 35% 96%;
 
-    --popover: 232 22% 6%;
-    --popover-foreground: 220 18% 96%;
+    --popover: 253 30% 16%; /* slightly deeper than card */
+    --popover-foreground: 252 35% 96%;
 
-    --primary: 191 100% 55%;
-    --primary-foreground: 230 25% 4%;
+    /* Electric lavender — pops on purple but stays in-family */
+    --primary: 258 68% 72%; /* ~#A78BFA */
+    --primary-foreground: 252 41% 12%;
 
-    --secondary: 232 14% 14%;
-    --secondary-foreground: 220 18% 96%;
+    --secondary: 252 27% 32%; /* #443C68 */
+    --secondary-foreground: 252 35% 96%;
 
-    --muted: 232 14% 12%;
-    --muted-foreground: 220 10% 68%;
+    --muted: 252 24% 22%;
+    --muted-foreground: 254 18% 64%; /* readable on dark indigo */
 
-    --accent: 191 100% 55%;
-    --accent-foreground: 230 25% 4%;
+    --accent: 258 68% 72%;
+    --accent-foreground: 252 41% 12%;
 
-    --destructive: 350 100% 64%;
+    --destructive: 350 90% 66%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 232 12% 16%;
-    --input: 232 12% 12%;
-    --ring: 191 100% 55%;
+    --border: 254 18% 28%; /* derived from #635985 darkened */
+    --input: 252 24% 22%;
+    --ring: 258 68% 72%;
 
-    --bull: 158 100% 50%;
-    --bull-glow: 158 100% 60%;
-    --bear: 350 100% 64%;
-    --bear-glow: 350 100% 74%;
-    --neutral: 41 100% 70%;
-    --neutral-glow: 41 100% 80%;
+    /* Financial semantic tokens — tuned for the purple background */
+    --bull: 158 78% 52%; /* mint emerald */
+    --bull-glow: 158 80% 62%;
+    --bear: 350 90% 66%; /* rose coral */
+    --bear-glow: 350 90% 76%;
+    --neutral: 38 92% 64%; /* warm amber */
+    --neutral-glow: 38 92% 74%;
 
-    --sidebar: 230 28% 3%;
-    --sidebar-foreground: 220 14% 78%;
-    --sidebar-border: 232 12% 12%;
-    --sidebar-accent: 232 16% 10%;
+    --sidebar: 252 45% 9%; /* deeper than bg */
+    --sidebar-foreground: 254 18% 78%;
+    --sidebar-border: 252 24% 18%;
+    --sidebar-accent: 253 26% 18%;
 
     --radius: 0.75rem;
 
@@ -57,48 +72,48 @@
   }
 
   /* -------------------------------------------------------------- LIGHT */
-  /* Tuned for ≥4.5:1 text contrast and clearly-visible borders.
-     Greens/reds shifted darker so they don't wash out on white. */
+  /* Tuned for ≥4.5:1 text contrast and visible borders. Lavender primary
+     stays consistent across themes so brand recognition is preserved. */
   .light {
-    --background: 220 25% 99%; /* near-white with cool cast */
-    --foreground: 222 47% 11%; /* slate-900 */
+    --background: 252 60% 99%; /* near-white with cool indigo cast */
+    --foreground: 252 47% 14%; /* near-black indigo */
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 252 47% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 252 47% 14%;
 
-    --primary: 199 95% 38%; /* deeper cyan-blue for contrast */
+    --primary: 258 60% 48%; /* deeper lavender for white-bg contrast */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 252 30% 96%;
+    --secondary-foreground: 252 47% 14%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 35%; /* slate-600 — passes 4.5:1 */
+    --muted: 252 30% 96%;
+    --muted-foreground: 254 18% 38%;
 
-    --accent: 199 95% 38%;
+    --accent: 258 60% 48%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 350 84% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 88%; /* gray-200-ish, visible */
-    --input: 220 13% 91%;
-    --ring: 199 95% 38%;
+    --border: 252 22% 88%;
+    --input: 252 22% 92%;
+    --ring: 258 60% 48%;
 
-    --bull: 158 70% 32%; /* darker emerald — readable on white */
-    --bull-glow: 158 70% 42%;
+    --bull: 158 75% 30%;
+    --bull-glow: 158 75% 40%;
     --bear: 350 84% 45%;
     --bear-glow: 350 84% 55%;
     --neutral: 38 92% 42%;
     --neutral-glow: 38 92% 52%;
 
-    --sidebar: 220 20% 98%;
-    --sidebar-foreground: 215 25% 27%;
-    --sidebar-border: 220 13% 88%;
-    --sidebar-accent: 220 14% 94%;
+    --sidebar: 252 40% 98%;
+    --sidebar-foreground: 252 25% 28%;
+    --sidebar-border: 252 22% 88%;
+    --sidebar-accent: 252 25% 94%;
   }
 }
 
@@ -124,13 +139,11 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Display family: tighter tracking + crisper rendering */
   .font-display {
     font-feature-settings: "ss01" 1, "ss02" 1, "cv11" 1;
     letter-spacing: -0.018em;
   }
 
-  /* Mono family: tabular figures + slashed zero for data clarity */
   .font-mono {
     font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1;
   }
@@ -139,29 +152,23 @@
     @apply bg-primary/30 text-foreground;
   }
 
-  /* Scrollbars — slim, non-distracting */
   ::-webkit-scrollbar {
     @apply h-1.5 w-1.5;
   }
-
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
-
   ::-webkit-scrollbar-thumb {
     @apply rounded-full bg-border/50 transition-colors;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-border;
   }
 
-  /* Universal focus ring (visible only on keyboard nav) */
   :focus-visible {
     @apply outline-none ring-1 ring-ring ring-offset-2 ring-offset-background;
   }
 
-  /* Honor user motion preferences globally */
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,
@@ -175,9 +182,7 @@
 }
 
 @layer components {
-  /* ---- Glassmorphism ----
-     Light mode needs higher opacity and a softer shadow so the surface
-     stays readable on white. Both themes share the same selector. */
+  /* ---- Glassmorphism (dark) ---- */
   .glass {
     background-color: hsl(var(--card) / 0.55);
     backdrop-filter: blur(14px) saturate(140%);
@@ -189,15 +194,15 @@
   }
 
   .light .glass {
-    background-color: hsl(var(--card) / 0.88);
+    background-color: hsl(var(--card) / 0.92);
     border: 1px solid hsl(var(--border));
     box-shadow:
-      0 1px 2px 0 rgb(15 23 42 / 0.04),
-      0 4px 12px -2px rgb(15 23 42 / 0.04);
+      0 1px 2px 0 rgb(24 18 43 / 0.04),
+      0 4px 12px -2px rgb(24 18 43 / 0.04);
   }
 
   .glass-strong {
-    background-color: hsl(var(--card) / 0.88);
+    background-color: hsl(var(--card) / 0.92);
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     border: 1px solid hsl(var(--border));
@@ -206,11 +211,11 @@
   .light .glass-strong {
     background-color: hsl(var(--card) / 0.96);
     box-shadow:
-      0 4px 14px -2px rgb(15 23 42 / 0.08),
-      0 24px 48px -12px rgb(15 23 42 / 0.16);
+      0 4px 14px -2px rgb(24 18 43 / 0.08),
+      0 24px 48px -12px rgb(24 18 43 / 0.16);
   }
 
-  /* Subtle grid background for hero / placeholder surfaces */
+  /* Grid background */
   .bg-grid {
     background-image:
       linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
@@ -219,15 +224,14 @@
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
   }
 
-  /* Diagonal gradient noise overlay — adds depth to large surfaces */
+  /* Aurora — layered purple/bull radial gradients */
   .bg-aurora {
     background-image:
-      radial-gradient(at 18% 14%, hsl(var(--primary) / 0.10) 0px, transparent 50%),
+      radial-gradient(at 18% 14%, hsl(var(--primary) / 0.14) 0px, transparent 50%),
       radial-gradient(at 86% 8%, hsl(var(--bull) / 0.08) 0px, transparent 50%),
-      radial-gradient(at 50% 95%, hsl(var(--primary) / 0.06) 0px, transparent 50%);
+      radial-gradient(at 50% 95%, hsl(var(--primary) / 0.08) 0px, transparent 50%);
   }
 
-  /* Skeleton shimmer */
   .skeleton {
     background: linear-gradient(
       90deg,
@@ -239,26 +243,20 @@
     @apply animate-shimmer;
   }
 
-  /* Ticker badge */
   .badge-ticker {
     @apply inline-flex items-center rounded-md border border-border/60 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-muted-foreground;
   }
 
-  /* ---- Interactive surface ---- */
-  /* Apply to anything clickable to get a uniform hover/active feel */
   .surface-interactive {
     @apply cursor-pointer transition-[transform,box-shadow,background-color,border-color] duration-200 ease-out;
   }
-
   .surface-interactive:hover {
     @apply -translate-y-px shadow-elevated;
   }
-
   .surface-interactive:active {
     @apply translate-y-0;
   }
 
-  /* Tooltip-ish hint chip */
   .hint-chip {
     @apply inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-[11px] text-muted-foreground;
   }
@@ -280,7 +278,6 @@
     -webkit-text-fill-color: transparent;
   }
 
-  /* Hairline divider — 1px at any DPR via gradient mask */
   .hairline {
     background-image: linear-gradient(
       to right,

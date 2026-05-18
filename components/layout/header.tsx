@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, Menu, Search, Sparkles } from "lucide-react";
+import { Menu, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSearch } from "@/lib/store/search";
 import { MarketStatusPill } from "./market-status-pill";
 import { ThemeToggle } from "./theme-toggle";
+import { UserMenu } from "@/components/auth/user-menu";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -82,13 +83,7 @@ export function Header() {
 
         <ThemeToggle />
 
-        <button
-          type="button"
-          className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-colors duration-200 hover:border-border/70 hover:bg-card hover:text-foreground"
-          aria-label="Notifications"
-        >
-          <Bell className="h-4 w-4" aria-hidden />
-        </button>
+        <UserMenu />
 
         <button
           type="button"

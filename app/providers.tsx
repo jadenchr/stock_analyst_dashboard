@@ -2,13 +2,21 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
+import type { User } from "@supabase/supabase-js";
+import type { Profile } from "@/lib/supabase/types";
+import { UserProvider } from "./auth/user-provider";
+
+interface ProvidersProps {
+  children: ReactNode;
+  initialUser?: User | null;
+  initialProfile?: Profile | null;
+}
 
 /**
  * Client-side providers. TanStack Query handles all `/api/*` calls;
- * gcTime/staleTime defaults are tuned for financial data UX (fresh-feel
- * without thundering the server).
+ * UserProvider keeps the auth state in sync.
  */
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({ children, initialUser = null, initialProfile = null }: ProvidersProps) {
   const [client] = useState(
     () =>
       new QueryClient({
@@ -18,7 +26,6 @@ export function Providers({ children }: { children: ReactNode }) {
             gcTime: 5 * 60_000,
             refetchOnWindowFocus: false,
             retry: (failureCount, error) => {
-              // Don't retry on 4xx — those are deterministic failures.
               if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
                 return false;
               }
@@ -29,7 +36,13 @@ export function Providers({ children }: { children: ReactNode }) {
       }),
   );
 
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      <UserProvider initialUser={initialUser} initialProfile={initialProfile}>
+        {children}
+      </UserProvider>
+    </QueryClientProvider>
+  );
 }
 
 /* ----------------------------------------------------- typed fetch client */

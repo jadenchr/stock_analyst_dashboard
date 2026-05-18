@@ -14,6 +14,7 @@ import { AIRating } from "@/components/stock/ai-rating";
 import { NewsFeed } from "@/components/stock/news-feed";
 import { InsiderFeed } from "@/components/stock/insider-feed";
 import { ExchangeLimitedNotice } from "@/components/stock/exchange-limited-notice";
+import { FeatureGate } from "@/components/auth/feature-gate";
 
 interface PageProps {
   params: Promise<{ ticker: string }>;
@@ -62,7 +63,6 @@ export default async function StockPage({ params }: PageProps) {
 
       {isCSE ? (
         // CSE: free-tier providers only deliver live quote + news search.
-        // Show an honest notice instead of empty fundamentals / chart panels.
         <>
           <ExchangeLimitedNotice
             exchange="CSE"
@@ -76,32 +76,77 @@ export default async function StockPage({ params }: PageProps) {
           />
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <AIRating symbol={ticker} />
+              <FeatureGate
+                feature="ai_rating"
+                title="AI analyst rating"
+                description="Sign in to get a Gemini 2.5 Pro generated rating with confidence score, price target, bull/bear cases, and key risks."
+              >
+                <AIRating symbol={ticker} />
+              </FeatureGate>
             </div>
             <div className="lg:col-span-1">
-              <NewsFeed symbol={ticker} />
+              <FeatureGate
+                feature="news_feed"
+                title="News & sentiment"
+                description="Live headlines with sentiment classification."
+              >
+                <NewsFeed symbol={ticker} />
+              </FeatureGate>
             </div>
           </div>
         </>
       ) : (
         <>
-          <MetricsOverview symbol={ticker} />
+          {/* Quote header + chart stay visible to guests */}
+          <FeatureGate
+            feature="fundamentals"
+            variant="compact"
+            title="Key metrics are part of the free signup"
+            description="Sign in to unlock P/E, PEG, EV/EBITDA, margins, growth — all the institutional metrics."
+          >
+            <MetricsOverview symbol={ticker} />
+          </FeatureGate>
+
           <PriceChart symbol={ticker} />
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <AIRating symbol={ticker} />
+              <FeatureGate
+                feature="ai_rating"
+                title="AI analyst rating"
+                description="Sign in to get a Gemini 2.5 Pro generated rating with confidence score, price target, bull/bear cases, and key risks."
+              >
+                <AIRating symbol={ticker} />
+              </FeatureGate>
             </div>
             <div>
               <AnalystPanel symbol={ticker} />
             </div>
           </div>
 
-          <FinancialsGrid symbol={ticker} />
+          <FeatureGate
+            feature="financials"
+            title="5-tab financial breakdown"
+            description="Sign in to access valuation, income statement, balance sheet, cash flow, and growth — all annual + quarterly."
+          >
+            <FinancialsGrid symbol={ticker} />
+          </FeatureGate>
 
-          <NewsFeed symbol={ticker} />
+          <FeatureGate
+            feature="news_feed"
+            title="News & sentiment feed"
+            description="Sign in to see headlines from Finnhub + NewsAPI, tagged with sentiment for the last 14 days."
+          >
+            <NewsFeed symbol={ticker} />
+          </FeatureGate>
 
-          <InsiderFeed symbol={ticker} />
+          <FeatureGate
+            feature="insider_feed"
+            title="Insider transactions"
+            description="Sign in to see Form 4 / 144 filings — executives buying or selling shares with $ value classification."
+          >
+            <InsiderFeed symbol={ticker} />
+          </FeatureGate>
         </>
       )}
 

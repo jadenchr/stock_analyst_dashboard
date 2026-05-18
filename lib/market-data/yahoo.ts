@@ -428,6 +428,73 @@ function mapMovers(response: YahooDailyMoversResponse, limit = 5): MoverQuote[] 
   return out;
 }
 
+/* --------------------------------------------- screener (Yahoo screener) --- */
+
+export type ScreenerId =
+  | "day_gainers"
+  | "day_losers"
+  | "most_actives"
+  | "aggressive_small_caps"
+  | "growth_technology_stocks"
+  | "undervalued_large_caps"
+  | "top_mutual_funds";
+
+interface YahooScreenerResponse {
+  quotes?: Array<{
+    symbol?: string;
+    shortName?: string;
+    longName?: string;
+    regularMarketPrice?: number;
+    regularMarketChange?: number;
+    regularMarketChangePercent?: number;
+    regularMarketVolume?: number;
+    marketCap?: number;
+    trailingPE?: number;
+    fullExchangeName?: string;
+    exchange?: string;
+  }>;
+}
+
+export interface ScreenerResult {
+  symbol: string;
+  name: string;
+  exchange: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  volume: number | null;
+  marketCap: number | null;
+  peRatio: number | null;
+}
+
+export async function runScreener(id: ScreenerId, count = 25): Promise<ScreenerResult[]> {
+  let raw: YahooScreenerResponse;
+  try {
+    raw = (await yf.screener({ scrIds: id, count })) as YahooScreenerResponse;
+  } catch (err) {
+    throw new ProviderError(PROVIDER, `screener(${id}) failed: ${(err as Error).message}`);
+  }
+  const rows: ScreenerResult[] = [];
+  for (const q of raw.quotes ?? []) {
+    if (!q.symbol || q.regularMarketPrice == null) continue;
+    if (rows.length >= count) break;
+    rows.push({
+      symbol: q.symbol,
+      name: q.longName ?? q.shortName ?? q.symbol,
+      exchange: q.fullExchangeName ?? q.exchange ?? "—",
+      price: q.regularMarketPrice,
+      change: q.regularMarketChange ?? 0,
+      changePercent: q.regularMarketChangePercent ?? 0,
+      volume: num(q.regularMarketVolume),
+      marketCap: num(q.marketCap),
+      peRatio: num(q.trailingPE),
+    });
+  }
+  return rows;
+}
+
+/* --------------------------------------------------------- daily movers --- */
+
 export async function getDailyGainers(): Promise<MoverQuote[]> {
   try {
     // `dailyGainers` is deprecated upstream; screener is the supported path.
