@@ -1,18 +1,29 @@
 /**
  * Minimal hand-authored types for our Supabase schema.
  *
- * Keep these in sync with `supabase/schema.sql`. We do NOT use
- * `supabase gen types` here to keep deployment fully decoupled from
- * Supabase CLI.
- *
- * Note on Insert/Update shapes: Supabase's deep generic inference treats
- * `Omit<Row, k> & { k?: ... }` intersections differently from explicit
- * object types — the former occasionally collapses to `never` at deep
- * call sites. We spell each shape out explicitly to keep `.insert()` and
- * `.upsert()` typed end-to-end.
+ * Keep these in sync with `supabase/schema.sql` and
+ * `supabase/migrations/0002_full_profile.sql`. Insert/Update shapes are
+ * spelled out as explicit object types (not intersections) — Supabase's
+ * deep generic inference treats `Omit<Row, k> & { k?: ... }` differently
+ * from a plain object type, which collapses to `never` at deep call sites.
  */
 
 export type SubscriptionTier = "free" | "pro";
+export type InvestmentStyle = "growth" | "value" | "income" | "speculation";
+export type RiskTolerance = "conservative" | "moderate" | "aggressive";
+export type NotificationFrequency = "daily" | "weekly" | "monthly" | "never";
+
+/**
+ * The set of exchange-family codes the UI accepts. Stored as a `text[]`
+ * in the profile so the user can opt into multiple families at once.
+ */
+export type ExchangeKey =
+  | "US"
+  | "IN_NSE"
+  | "IN_BSE"
+  | "LK_CSE"
+  | "UK"
+  | "CRYPTO";
 
 export interface Profile {
   id: string;
@@ -22,6 +33,15 @@ export interface Profile {
   subscription_tier: SubscriptionTier;
   created_at: string;
   updated_at: string;
+  // Phase 7c extension
+  country: string | null;
+  preferred_exchanges: ExchangeKey[];
+  investment_styles: InvestmentStyle[];
+  years_investing: number | null;
+  default_currency: string;
+  notification_frequency: NotificationFrequency;
+  risk_tolerance: RiskTolerance;
+  onboarded: boolean;
 }
 
 export interface WatchlistRow {
@@ -45,6 +65,14 @@ export interface Database {
           subscription_tier?: SubscriptionTier;
           created_at?: string;
           updated_at?: string;
+          country?: string | null;
+          preferred_exchanges?: ExchangeKey[];
+          investment_styles?: InvestmentStyle[];
+          years_investing?: number | null;
+          default_currency?: string;
+          notification_frequency?: NotificationFrequency;
+          risk_tolerance?: RiskTolerance;
+          onboarded?: boolean;
         };
         Update: {
           id?: string;
@@ -54,6 +82,14 @@ export interface Database {
           subscription_tier?: SubscriptionTier;
           created_at?: string;
           updated_at?: string;
+          country?: string | null;
+          preferred_exchanges?: ExchangeKey[];
+          investment_styles?: InvestmentStyle[];
+          years_investing?: number | null;
+          default_currency?: string;
+          notification_frequency?: NotificationFrequency;
+          risk_tolerance?: RiskTolerance;
+          onboarded?: boolean;
         };
         Relationships: [];
       };
@@ -80,7 +116,23 @@ export interface Database {
     Functions: Record<string, never>;
     Enums: {
       subscription_tier: SubscriptionTier;
+      investment_style: InvestmentStyle;
+      risk_tolerance: RiskTolerance;
+      notification_frequency: NotificationFrequency;
     };
     CompositeTypes: Record<string, never>;
   };
 }
+
+/* ----------------------------------------------- exchange label helpers - */
+
+export const EXCHANGE_LABELS: Record<ExchangeKey, { label: string; flag: string; tz: string }> = {
+  US: { label: "US (NYSE / NASDAQ)", flag: "🇺🇸", tz: "America/New_York" },
+  IN_NSE: { label: "India NSE", flag: "🇮🇳", tz: "Asia/Kolkata" },
+  IN_BSE: { label: "India BSE", flag: "🇮🇳", tz: "Asia/Kolkata" },
+  LK_CSE: { label: "Sri Lanka CSE", flag: "🇱🇰", tz: "Asia/Colombo" },
+  UK: { label: "UK LSE", flag: "🇬🇧", tz: "Europe/London" },
+  CRYPTO: { label: "Crypto", flag: "₿", tz: "UTC" },
+};
+
+export const DEFAULT_GUEST_EXCHANGES: ExchangeKey[] = ["US", "IN_NSE", "LK_CSE"];

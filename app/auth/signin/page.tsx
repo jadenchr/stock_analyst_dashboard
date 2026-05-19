@@ -2,10 +2,14 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/server";
+import type { Metadata } from "next";
 import { SignInButton } from "@/components/auth/sign-in-button";
+import { LiquidEther } from "@/components/effects/liquid-ether";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Sign in",
+  description: "Sign in with Google to unlock AI ratings, financials, news, and watchlist sync.",
+  robots: { index: false, follow: false },
 };
 
 interface PageProps {
@@ -32,6 +36,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
       </Link>
 
       <div className="glass relative overflow-hidden rounded-2xl p-7">
+        <LiquidEther intensity={0.2} />
         <div className="bg-aurora absolute inset-0" aria-hidden />
         <div className="relative">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/15 ring-1 ring-primary/30">

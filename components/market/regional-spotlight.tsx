@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Loader2 } from "lucide-react";
 import { useRegional } from "@/lib/api/client";
+import { useExchangeFilter } from "@/lib/store/exchange-filter";
 import type { Quote } from "@/lib/market-data/types";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatPercent } from "@/lib/utils/format";
@@ -11,8 +12,14 @@ import { SkeletonBlock } from "@/components/ui/skeleton-block";
 
 export function RegionalSpotlight() {
   const { data, isLoading, isError } = useRegional();
-  const india = data?.india ?? [];
-  const sriLanka = data?.sriLanka ?? [];
+  const filter = useExchangeFilter((s) => s.filter);
+  // Hide Indian/CSE columns when the user has filtered to a region that
+  // doesn't include them.
+  const showIndia = filter === "all" || filter === "IN_NSE" || filter === "IN_BSE";
+  const showSriLanka = filter === "all" || filter === "LK_CSE";
+  if (!showIndia && !showSriLanka) return null;
+  const india = showIndia ? data?.india ?? [] : [];
+  const sriLanka = showSriLanka ? data?.sriLanka ?? [] : [];
 
   return (
     <section aria-labelledby="regional-heading" className="flex flex-col gap-4">
@@ -36,22 +43,31 @@ export function RegionalSpotlight() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <RegionColumn
-          title="India · NSE / BSE"
-          flag="🇮🇳"
-          currency="₹"
-          rows={india}
-          isLoading={isLoading && india.length === 0}
-        />
-        <RegionColumn
-          title="Sri Lanka · CSE"
-          flag="🇱🇰"
-          currency="LKR"
-          rows={sriLanka}
-          isLoading={isLoading && sriLanka.length === 0}
-          note="CSE coverage limited to live quotes — fundamentals & history unavailable on free tier"
-        />
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-4",
+          showIndia && showSriLanka ? "lg:grid-cols-2" : "lg:grid-cols-1",
+        )}
+      >
+        {showIndia && (
+          <RegionColumn
+            title="India · NSE / BSE"
+            flag="🇮🇳"
+            currency="₹"
+            rows={india}
+            isLoading={isLoading && india.length === 0}
+          />
+        )}
+        {showSriLanka && (
+          <RegionColumn
+            title="Sri Lanka · CSE"
+            flag="🇱🇰"
+            currency="LKR"
+            rows={sriLanka}
+            isLoading={isLoading && sriLanka.length === 0}
+            note="CSE coverage limited to live quotes — fundamentals & history unavailable on free tier"
+          />
+        )}
       </div>
     </section>
   );

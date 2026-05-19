@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { SignInButton } from "@/components/auth/sign-in-button";
+import { LiquidEther } from "@/components/effects/liquid-ether";
 
 const SLIDES = [
   {
@@ -103,7 +104,8 @@ export function OnboardingFlow({ nextPath }: Props) {
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      {/* Ambient background */}
+      {/* Ambient background — LiquidEther + aurora wash */}
+      <LiquidEther intensity={0.22} position="fixed" />
       <div className="bg-aurora pointer-events-none absolute inset-0" aria-hidden />
       <div
         className={cn(

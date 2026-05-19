@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useSectors, type Sector } from "@/lib/api/client";
+import { useExchangeFilter } from "@/lib/store/exchange-filter";
 import { cn } from "@/lib/utils";
 import { formatPercent } from "@/lib/utils/format";
 import { SkeletonBlock } from "@/components/ui/skeleton-block";
@@ -27,6 +28,9 @@ function backgroundForPct(pct: number): string {
 
 export function SectorHeatmap() {
   const { data, isLoading, isError } = useSectors();
+  const filter = useExchangeFilter((s) => s.filter);
+  // Sector ETFs are US-equity-only — hide when filtering to a non-US exchange.
+  if (filter !== "all" && filter !== "US") return null;
   const sectors = data ?? [];
 
   return (

@@ -53,17 +53,9 @@ export function Header() {
         <span className="flex-1 truncate text-left">Search ticker…</span>
       </button>
 
-      {/* Desktop center: market status */}
-      <div className="hidden flex-1 items-center gap-3 lg:flex">
+      {/* Desktop center: per-exchange market status driven by user prefs */}
+      <div className="hidden min-w-0 flex-1 items-center gap-3 overflow-x-auto lg:flex">
         <MarketStatusPill />
-        <span className="text-xs text-muted-foreground">
-          NYSE · NASDAQ ·{" "}
-          {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
       </div>
 
       {/* Right cluster */}

@@ -3,12 +3,30 @@
 import { motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Loader2 } from "lucide-react";
 import { useMarketOverview } from "@/lib/api/client";
+import { useExchangeFilter } from "@/lib/store/exchange-filter";
 import { cn } from "@/lib/utils";
 import { formatCompact, formatPercent } from "@/lib/utils/format";
 
+// Map our internal exchange keys to the symbols Yahoo returns for the
+// global indices grid. Filter the indices list when a non-"all" filter
+// is active.
+const INDEX_FILTER: Record<string, string[]> = {
+  US: ["^GSPC", "^IXIC", "^DJI"],
+  IN_NSE: ["^NSEI"],
+  IN_BSE: ["^BSESN"],
+  LK_CSE: ["ASPI", "SP-SL20"],
+  UK: ["^FTSE"],
+  CRYPTO: ["BTC-USD"],
+};
+
 export function IndicesGrid() {
   const { data, isLoading, isError } = useMarketOverview();
-  const indices = data?.indices ?? [];
+  const filter = useExchangeFilter((s) => s.filter);
+  const allIndices = data?.indices ?? [];
+  const indices =
+    filter === "all"
+      ? allIndices
+      : allIndices.filter((i) => (INDEX_FILTER[filter] ?? []).includes(i.symbol));
 
   return (
     <section aria-labelledby="indices-heading" className="flex flex-col gap-4">

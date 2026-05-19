@@ -6,7 +6,7 @@ import { quote } from "@/lib/market-data";
 import { TickerNotFoundError } from "@/lib/market-data/errors";
 import { LivePriceHeader } from "@/components/stock/live-price-header";
 import { WatchlistToggle } from "@/components/stock/watchlist-toggle";
-import { PriceChart } from "@/components/charts/price-chart";
+import { PriceChartSection } from "@/components/charts/price-chart-section";
 import { MetricsOverview } from "@/components/stock/metrics-overview";
 import { FinancialsGrid } from "@/components/stock/financials-grid";
 import { AnalystPanel } from "@/components/stock/analyst-panel";
@@ -14,7 +14,6 @@ import { AIRating } from "@/components/stock/ai-rating";
 import { NewsFeed } from "@/components/stock/news-feed";
 import { InsiderFeed } from "@/components/stock/insider-feed";
 import { ExchangeLimitedNotice } from "@/components/stock/exchange-limited-notice";
-import { CseTradingViewSection } from "@/components/stock/cse-tradingview-section";
 import { FeatureGate } from "@/components/auth/feature-gate";
 
 interface PageProps {
@@ -27,6 +26,7 @@ export async function generateMetadata({ params }: PageProps) {
   if (!ticker) return { title: "Not found" };
   return {
     title: `${ticker} · Live quote, fundamentals & AI rating`,
+    description: `Live quote, AI analyst rating, fundamentals, news, and insider activity for ${ticker}.`,
   };
 }
 
@@ -38,13 +38,11 @@ export default async function StockPage({ params }: PageProps) {
   const region = classifyTicker(ticker);
   const isCSE = region === "LK_CSE";
 
-  // Server-side initial fetch for instant LCP. Failures fall through to client polling.
   let initial: Awaited<ReturnType<typeof quote>> | null = null;
   try {
     initial = await quote(ticker);
   } catch (err) {
     if (err instanceof TickerNotFoundError) notFound();
-    // Other provider errors: render shell, client will retry.
   }
 
   return (
@@ -62,23 +60,22 @@ export default async function StockPage({ params }: PageProps) {
 
       <LivePriceHeader symbol={ticker} initial={initial} />
 
+      {/* Historical chart — universal across exchanges */}
+      <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={620} />
+
       {isCSE ? (
-        // CSE: free-tier providers only deliver live quote + news search.
-        // We embed a free TradingView Advanced Chart widget for the historical
-        // chart since cse.lk doesn't expose OHLCV history publicly.
+        // CSE: cse.lk doesn't expose fundamentals or financials, so the
+        // dashboard collapses to chart + AI placeholder + news.
         <>
           <ExchangeLimitedNotice
             exchange="CSE"
             sections={[
               "fundamentals",
-              "deep historical OHLCV",
+              "income statement",
               "analyst consensus",
               "insider transactions",
-              "financial statements",
             ]}
           />
-
-          <CseTradingViewSection symbol={ticker} />
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
@@ -103,7 +100,6 @@ export default async function StockPage({ params }: PageProps) {
         </>
       ) : (
         <>
-          {/* Quote header + chart stay visible to guests */}
           <FeatureGate
             feature="fundamentals"
             variant="compact"
@@ -112,8 +108,6 @@ export default async function StockPage({ params }: PageProps) {
           >
             <MetricsOverview symbol={ticker} />
           </FeatureGate>
-
-          <PriceChart symbol={ticker} />
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">

@@ -3,13 +3,15 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useSearch } from "@/lib/store/search";
+import { LiquidEther } from "@/components/effects/liquid-ether";
 
 export function HeroIntro() {
   const openSearch = useSearch((s) => s.setOpen);
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40">
-      {/* Layered background — aurora gradient + soft grid + radial vignette */}
+      {/* Layered background — Liquid Ether + aurora + soft grid + radial vignette */}
+      <LiquidEther intensity={0.22} />
       <div className="bg-aurora absolute inset-0" aria-hidden />
       <div className="bg-grid absolute inset-0 opacity-50" aria-hidden />
       <div

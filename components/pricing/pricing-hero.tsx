@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { LiquidEther } from "@/components/effects/liquid-ether";
 
 export function PricingHero() {
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40">
+      <LiquidEther intensity={0.22} />
       <div className="bg-aurora absolute inset-0" aria-hidden />
       <div className="bg-grid absolute inset-0 opacity-40" aria-hidden />
       <div

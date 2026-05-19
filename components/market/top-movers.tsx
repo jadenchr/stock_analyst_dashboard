@@ -4,12 +4,16 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Loader2, TrendingDown, TrendingUp } from "lucide-react";
 import { useMovers, type Mover } from "@/lib/api/client";
+import { useExchangeFilter } from "@/lib/store/exchange-filter";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatPercent } from "@/lib/utils/format";
 import { SkeletonBlock } from "@/components/ui/skeleton-block";
 
 export function TopMovers() {
   const { data, isLoading, isError } = useMovers();
+  const filter = useExchangeFilter((s) => s.filter);
+  // Yahoo's day_gainers / day_losers screener returns US tickers only.
+  if (filter !== "all" && filter !== "US") return null;
   const gainers = data?.gainers ?? [];
   const losers = data?.losers ?? [];
 

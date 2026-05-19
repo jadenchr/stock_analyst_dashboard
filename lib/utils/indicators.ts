@@ -2,6 +2,10 @@
  * Pure-function technical indicator computations. Operate on closing prices
  * (or any 1D series) and return values aligned to the input index — leading
  * positions are `null` until the lookback fills.
+ *
+ * Used by `lib/ai/stock-data.ts` to compute price-vs-MA and MACD signal
+ * inputs for the AI rating prompt. Cheap to run server-side; no need to
+ * burn Alpha Vantage's rate-limited indicator endpoints.
  */
 
 export function sma(values: readonly number[], period: number): (number | null)[] {
@@ -20,7 +24,6 @@ export function ema(values: readonly number[], period: number): (number | null)[
   if (period < 1 || values.length === 0) return values.map(() => null);
   const out: (number | null)[] = new Array(values.length).fill(null);
   const k = 2 / (period + 1);
-  // Seed with SMA of first `period` values
   if (values.length < period) return out;
   let seed = 0;
   for (let i = 0; i < period; i++) seed += values[i];
@@ -32,26 +35,4 @@ export function ema(values: readonly number[], period: number): (number | null)[
     prev = v;
   }
   return out;
-}
-
-export function bollinger(
-  values: readonly number[],
-  period = 20,
-  stdMul = 2,
-): { upper: (number | null)[]; mid: (number | null)[]; lower: (number | null)[] } {
-  const mid = sma(values, period);
-  const upper: (number | null)[] = new Array(values.length).fill(null);
-  const lower: (number | null)[] = new Array(values.length).fill(null);
-  for (let i = period - 1; i < values.length; i++) {
-    const m = mid[i];
-    if (m == null) continue;
-    let varSum = 0;
-    for (let j = i - period + 1; j <= i; j++) {
-      varSum += (values[j] - m) ** 2;
-    }
-    const stdev = Math.sqrt(varSum / period);
-    upper[i] = m + stdev * stdMul;
-    lower[i] = m - stdev * stdMul;
-  }
-  return { upper, mid, lower };
 }

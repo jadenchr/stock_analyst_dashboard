@@ -4,11 +4,15 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useMarketOverview } from "@/lib/api/client";
+import { useExchangeFilter } from "@/lib/store/exchange-filter";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatPercent } from "@/lib/utils/format";
 
 export function PopularTickers() {
   const { data, isLoading, isError } = useMarketOverview();
+  const filter = useExchangeFilter((s) => s.filter);
+  // The "popular" set on the overview endpoint is US-only.
+  if (filter !== "all" && filter !== "US") return null;
   const popular = data?.popular ?? [];
 
   return (

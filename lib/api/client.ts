@@ -66,6 +66,41 @@ export interface MoversExpanded {
   mostActive: import("@/lib/market-data").ScreenerResult[];
 }
 
+/* ---------------------------------------------------- AI-driven picks --- */
+
+export interface PickRow {
+  symbol: string;
+  name: string;
+  exchange: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  volume: number | null;
+  marketCap: number | null;
+  peRatio: number | null;
+  currency: string;
+  rationale: string;
+}
+
+export interface PicksResponse {
+  picks: PickRow[];
+  basis: {
+    style: "growth" | "value" | "income" | "speculation" | "default";
+    risk: "conservative" | "moderate" | "aggressive" | "default";
+    screenerId: string;
+  };
+  isOnboarded: boolean;
+}
+
+export function usePicks(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ["picks"] as const,
+    queryFn: ({ signal }) => apiGet<PicksResponse>(`/api/picks`, { signal }),
+    staleTime: 5 * 60_000,
+    enabled: options?.enabled ?? true,
+  });
+}
+
 export function useMoversExpanded() {
   return useQuery({
     queryKey: ["movers-expanded"] as const,
