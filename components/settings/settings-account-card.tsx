@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogIn, LogOut, Sparkles, User as UserIcon } from "lucide-react";
+import { Crown, LogIn, LogOut, Sparkles, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/auth/user-provider";
 import { TIER_LABEL } from "@/lib/auth/entitlements";
@@ -82,11 +82,6 @@ export function SettingsAccountCard() {
               <Sparkles className="h-2.5 w-2.5" aria-hidden />
               {TIER_LABEL[tier]} tier
             </span>
-            {tier === "free" && (
-              <span className="text-[11px] text-muted-foreground">
-                Stripe checkout ships in Phase 7b
-              </span>
-            )}
           </div>
         </div>
         <button
@@ -98,6 +93,26 @@ export function SettingsAccountCard() {
           Sign out
         </button>
       </div>
+
+      {tier === "free" && (
+        <Link
+          href="/pricing"
+          className="group flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/8 p-3 transition-colors hover:bg-primary/12"
+        >
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/30">
+            <Crown className="h-4 w-4 text-primary" aria-hidden />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground">Upgrade to Pro</p>
+            <p className="truncate text-[11px] text-muted-foreground">
+              Portfolio tracking, custom screeners, price alerts, and priority AI ratings.
+            </p>
+          </div>
+          <span className="inline-flex h-7 items-center rounded-md border border-primary/40 bg-primary/15 px-2 text-[11px] font-semibold text-primary transition-colors group-hover:bg-primary/20">
+            View pricing
+          </span>
+        </Link>
+      )}
     </section>
   );
 }

@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { ScreenerClient } from "@/components/screener/screener-client";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Screener",
+  description:
+    "Preset stock screens — day gainers, day losers, most active, aggressive small caps, growth tech, plus Pro-only undervalued large caps.",
+  openGraph: {
+    title: "Stock Screener · StockVision",
+    description:
+      "Curated screens across growth, value, momentum, and volume — built on the same data layer that powers our stock dashboards.",
+  },
 };
 
 export default function ScreenerPage() {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Activity,
+  Crown,
   LineChart,
   Newspaper,
   Search,
@@ -21,6 +22,7 @@ const navItems = [
   { href: "/movers", label: "Movers", icon: Activity },
   { href: "/news", label: "News", icon: Newspaper },
   { href: "/screener", label: "Screener", icon: LineChart },
+  { href: "/pricing", label: "Pricing", icon: Crown },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 

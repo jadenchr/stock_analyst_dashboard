@@ -48,7 +48,7 @@ export function FeatureGate({
   }
 
   const needsPro = tier === "free";
-  const ctaHref = needsPro ? "/settings#upgrade" : `/auth/signin?next=${encodeURIComponent(pathname)}`;
+  const ctaHref = needsPro ? "/pricing" : `/auth/signin?next=${encodeURIComponent(pathname)}`;
   const ctaLabel = needsPro ? "Upgrade to Pro" : "Sign in to unlock";
   const Icon = needsPro ? Sparkles : LogIn;
 

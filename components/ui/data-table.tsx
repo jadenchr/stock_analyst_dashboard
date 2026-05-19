@@ -5,8 +5,11 @@ import { cn } from "@/lib/utils";
 export interface DataTableColumn<T> {
   key: string;
   header: string;
-  /** Render content for a cell; if omitted, the value is read by `key`. */
-  render?: (row: T) => React.ReactNode;
+  /**
+   * Render content for a cell; if omitted, the value is read by `key`.
+   * Second arg is the row index — useful for rank / row-number columns.
+   */
+  render?: (row: T, index: number) => React.ReactNode;
   align?: "left" | "right" | "center";
   className?: string;
 }
@@ -61,7 +64,7 @@ export function DataTable<T>({ columns, rows, rowKey, empty = "No data", classNa
               >
                 {columns.map((c) => {
                   const content = c.render
-                    ? c.render(row)
+                    ? c.render(row, i)
                     : (row as unknown as Record<string, React.ReactNode>)[c.key];
                   return (
                     <td

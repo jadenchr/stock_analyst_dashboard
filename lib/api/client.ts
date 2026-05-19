@@ -60,6 +60,21 @@ export function useMovers() {
   });
 }
 
+export interface MoversExpanded {
+  gainers: import("@/lib/market-data").ScreenerResult[];
+  losers: import("@/lib/market-data").ScreenerResult[];
+  mostActive: import("@/lib/market-data").ScreenerResult[];
+}
+
+export function useMoversExpanded() {
+  return useQuery({
+    queryKey: ["movers-expanded"] as const,
+    queryFn: ({ signal }) => apiGet<MoversExpanded>(`/api/market/movers/expanded`, { signal }),
+    staleTime: 60_000,
+    refetchInterval: 90_000,
+  });
+}
+
 export function useSectors() {
   return useQuery({
     queryKey: qk.sectors(),

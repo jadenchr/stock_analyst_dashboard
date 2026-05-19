@@ -475,7 +475,15 @@ export interface ScreenerResult {
 export async function runScreener(id: ScreenerId, count = 25): Promise<ScreenerResult[]> {
   let raw: YahooScreenerResponse;
   try {
-    raw = (await yf.screener({ scrIds: id, count })) as YahooScreenerResponse;
+    // Yahoo recently started returning a `newListingDate` field that's not in
+    // yahoo-finance2 v3.14.1's strict schema, which causes a hard error on
+    // every screener call. We disable result validation here — we already
+    // defensively access fields below, so a malformed quote just gets skipped.
+    raw = (await yf.screener(
+      { scrIds: id, count },
+      undefined,
+      { validateResult: false },
+    )) as YahooScreenerResponse;
   } catch (err) {
     throw new ProviderError(PROVIDER, `screener(${id}) failed: ${(err as Error).message}`);
   }
@@ -504,7 +512,13 @@ export async function runScreener(id: ScreenerId, count = 25): Promise<ScreenerR
 export async function getDailyGainers(): Promise<MoverQuote[]> {
   try {
     // `dailyGainers` is deprecated upstream; screener is the supported path.
-    const raw = (await yf.screener({ scrIds: "day_gainers", count: 10 })) as YahooDailyMoversResponse;
+    // `validateResult: false` ignores Yahoo's new `newListingDate` field
+    // that v3.14.1's schema doesn't yet allow — see runScreener() above.
+    const raw = (await yf.screener(
+      { scrIds: "day_gainers", count: 10 },
+      undefined,
+      { validateResult: false },
+    )) as YahooDailyMoversResponse;
     return mapMovers(raw, 5);
   } catch (err) {
     throw new ProviderError(PROVIDER, `gainers failed: ${(err as Error).message}`);
@@ -513,7 +527,11 @@ export async function getDailyGainers(): Promise<MoverQuote[]> {
 
 export async function getDailyLosers(): Promise<MoverQuote[]> {
   try {
-    const raw = (await yf.screener({ scrIds: "day_losers", count: 10 })) as YahooDailyMoversResponse;
+    const raw = (await yf.screener(
+      { scrIds: "day_losers", count: 10 },
+      undefined,
+      { validateResult: false },
+    )) as YahooDailyMoversResponse;
     return mapMovers(raw, 5);
   } catch (err) {
     throw new ProviderError(PROVIDER, `losers failed: ${(err as Error).message}`);

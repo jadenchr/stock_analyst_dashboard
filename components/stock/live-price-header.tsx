@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Info } from "lucide-react";
+import Link from "next/link";
 import { useQuote } from "@/lib/api/client";
 import type { Quote } from "@/lib/market-data/types";
+import { classifyTicker } from "@/lib/utils/validators";
 import { cn } from "@/lib/utils";
 import {
   formatCompact,
@@ -48,6 +50,7 @@ export function LivePriceHeader({ symbol, initial }: Props) {
   const positive = q.changePercent >= 0;
   const Arrow = positive ? ArrowUpRight : ArrowDownRight;
   const state = MARKET_STATE_LABEL[q.marketState];
+  const isCSE = classifyTicker(q.symbol) === "LK_CSE";
 
   const rangePct =
     q.yearHigh != null && q.yearLow != null && q.yearHigh > q.yearLow
@@ -92,6 +95,16 @@ export function LivePriceHeader({ symbol, initial }: Props) {
               </span>
               {state.label}
             </span>
+            {isCSE && (
+              <Link
+                href="/pricing"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-neutral/40 bg-neutral/10 px-2 py-0.5 text-[11px] font-medium text-neutral transition-colors hover:bg-neutral/15"
+                title="CSE data on free tier is live quote only — historical and fundamentals available on Pro"
+              >
+                <Info className="h-3 w-3" aria-hidden />
+                Free-tier quote only · Pro unlocks history
+              </Link>
+            )}
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{q.name}</p>
         </div>

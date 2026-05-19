@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { NewsTrendingClient } from "@/components/news/news-trending-client";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "News",
+  description:
+    "Top business headlines tagged with positive / neutral / negative sentiment by our lexical classifier. Filter by country and source.",
+  openGraph: {
+    title: "Business News with Sentiment · StockVision",
+    description:
+      "Live business news from NewsAPI with automatic sentiment classification.",
+  },
 };
 
 export default function NewsPage() {

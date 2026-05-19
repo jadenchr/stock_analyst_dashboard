@@ -14,6 +14,7 @@ import { AIRating } from "@/components/stock/ai-rating";
 import { NewsFeed } from "@/components/stock/news-feed";
 import { InsiderFeed } from "@/components/stock/insider-feed";
 import { ExchangeLimitedNotice } from "@/components/stock/exchange-limited-notice";
+import { CseTradingViewSection } from "@/components/stock/cse-tradingview-section";
 import { FeatureGate } from "@/components/auth/feature-gate";
 
 interface PageProps {
@@ -63,17 +64,22 @@ export default async function StockPage({ params }: PageProps) {
 
       {isCSE ? (
         // CSE: free-tier providers only deliver live quote + news search.
+        // We embed a free TradingView Advanced Chart widget for the historical
+        // chart since cse.lk doesn't expose OHLCV history publicly.
         <>
           <ExchangeLimitedNotice
             exchange="CSE"
             sections={[
               "fundamentals",
-              "historical chart",
+              "deep historical OHLCV",
               "analyst consensus",
               "insider transactions",
               "financial statements",
             ]}
           />
+
+          <CseTradingViewSection symbol={ticker} />
+
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <FeatureGate

@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { SettingsThemeCard } from "@/components/settings/settings-theme-card";
 import { SettingsAccountCard } from "@/components/settings/settings-account-card";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Settings",
+  description: "Manage your StockVision account, plan, and appearance preferences.",
+  robots: { index: false, follow: false },
 };
 
 export default function SettingsPage() {

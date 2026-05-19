@@ -199,10 +199,10 @@ function ScreenerResults({
             Upgrade to Pro to unlock advanced screens powered by valuation models and analyst targets.
           </p>
           <Link
-            href="/settings#upgrade"
+            href="/pricing"
             className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
           >
-            Upgrade to Pro
+            View pricing
           </Link>
           <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
             Current tier: {userTier}

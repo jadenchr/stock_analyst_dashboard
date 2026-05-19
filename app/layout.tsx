@@ -45,16 +45,34 @@ const fontMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://stockvision-ai.vercel.app",
+  ),
   title: {
     default: "StockVision — AI-Powered Equity Intelligence",
+    // Per-page metadata.description is set on every route file; this
+    // template only governs <title> formatting.
     template: "%s · StockVision",
   },
   description:
-    "Analyst-grade dashboard for any public stock. Real-time quotes, fundamentals, AI ratings, sentiment, BSE / NSE / CSE coverage.",
+    "Analyst-grade dashboard for every public stock. Live quotes, Gemini 2.5 Pro AI ratings, financials, news sentiment, and insider activity across US, India (NSE / BSE), Sri Lanka (CSE), UK, and crypto.",
   applicationName: "StockVision",
   authors: [{ name: "Jaden Christy" }],
   creator: "Jaden Christy",
   robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    title: "StockVision — AI-Powered Equity Intelligence",
+    description:
+      "Live quotes, AI ratings, financials, news sentiment, and insider activity — for every public stock.",
+    siteName: "StockVision",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StockVision — AI-Powered Equity Intelligence",
+    description:
+      "Live quotes, AI ratings, financials, and sentiment — for every public stock.",
+  },
 };
 
 export const viewport: Viewport = {
