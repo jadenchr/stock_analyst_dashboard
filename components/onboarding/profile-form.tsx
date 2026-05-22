@@ -56,7 +56,8 @@ const TOTAL_STEPS = 3;
 
 export function ProfileForm({ initial, defaultName, nextPath }: Props) {
   const router = useRouter();
-  const { user, refresh } = useUser();
+  // user is read for the hydrated header bit only; auth is server-resolved.
+  const { user } = useUser();
 
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -116,7 +117,13 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
   };
 
   async function handleSave(opts: { skip?: boolean } = {}) {
-    if (!user) return;
+    // NOTE: do NOT early-return if `user` is null here. The client-side
+    // useUser() context can briefly resolve to null on first paint while
+    // it rehydrates the Supabase session from cookies. The server route
+    // re-derives identity from those same cookies, so the save still
+    // works. Returning early here was the bug that made the button look
+    // dead — the click fired, nothing happened, no error, no nav.
+    console.log("[profile-form] handleSave fired", { skip: opts.skip, hasUser: Boolean(user) });
     setSaving(true);
     setError(null);
     setWarning(null);
@@ -134,11 +141,25 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
           riskTolerance: form.riskTolerance,
         };
 
+    /**
+     * Race any fetch against a hard timeout so a hung network call cannot
+     * trap the user on this form. 6 seconds is plenty for a tiny upsert.
+     */
+    async function fetchWithTimeout(input: RequestInfo, init?: RequestInit, ms = 6000) {
+      const controller = new AbortController();
+      const t = window.setTimeout(() => controller.abort(), ms);
+      try {
+        return await fetch(input, { ...init, signal: controller.signal });
+      } finally {
+        window.clearTimeout(t);
+      }
+    }
+
     // 1) Try the full save.
     let saveOk = false;
     let serverError: string | null = null;
     try {
-      const res = await fetch("/api/onboarding/profile", {
+      const res = await fetchWithTimeout("/api/onboarding/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -161,9 +182,10 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
 
     // 2) If the rich save failed, fire the always-ok escape endpoint so
     //    the user is at least marked onboarded and not bounced back here.
+    //    Bounded by the same timeout — we MUST proceed to step 3.
     if (!saveOk) {
       try {
-        await fetch("/api/onboarding/profile", {
+        await fetchWithTimeout("/api/onboarding/profile", {
           method: "DELETE",
           cache: "no-store",
         });
@@ -172,25 +194,20 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
       }
     }
 
-    // 3) Refresh the client-side user/profile cache (best-effort).
-    try {
-      await refresh();
-    } catch (e) {
-      console.warn("[profile-form] refresh failed:", e);
-    }
-
-    // 4) Navigate ALWAYS. Hard reload via window.location so the layout
+    // 3) Navigate ALWAYS. Hard reload via window.location so the layout
     //    re-runs getCurrentSession() and the new onboarded state is
     //    unambiguously picked up. router.push has been observed to no-op
     //    when an RSC fetch is mid-flight, leaving the user staring at
     //    the form — window.location.assign cannot do that.
+    //    NOTE: we intentionally skip `await refresh()` here — the hard
+    //    reload re-runs the server session/profile fetch anyway, and a
+    //    flaky Supabase client roundtrip used to hang this step.
     const target = opts.skip ? "/" : nextPath;
     if (!saveOk && serverError) {
       // Surface the error briefly before navigating so the user can
       // screenshot / report it if needed.
       setError(serverError);
       setSaving(false);
-      // Still navigate after a short pause — they're not trapped.
       window.setTimeout(() => {
         window.location.assign(target);
       }, 1500);
@@ -200,16 +217,24 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
   }
 
   /**
-   * Emergency escape hatch — fires the always-ok DELETE endpoint and
-   * immediately hard-navigates. Never errors visibly. Always reaches the
-   * dashboard.
+   * Emergency escape hatch — fires the always-ok DELETE endpoint with a
+   * short timeout, then hard-navigates. Never errors visibly. Always
+   * reaches the dashboard.
    */
   async function handleEscape() {
     setSaving(true);
+    const controller = new AbortController();
+    const t = window.setTimeout(() => controller.abort(), 4000);
     try {
-      await fetch("/api/onboarding/profile", { method: "DELETE", cache: "no-store" });
+      await fetch("/api/onboarding/profile", {
+        method: "DELETE",
+        cache: "no-store",
+        signal: controller.signal,
+      });
     } catch (e) {
       console.warn("[profile-form] escape failed:", e);
+    } finally {
+      window.clearTimeout(t);
     }
     window.location.assign("/");
   }
