@@ -385,7 +385,6 @@ const INDEX_DEFS: ReadonlyArray<{ symbol: string; name: string; region: string }
   { symbol: "^GSPC", name: "S&P 500", region: "US" },
   { symbol: "^IXIC", name: "NASDAQ", region: "US" },
   { symbol: "^DJI", name: "Dow Jones", region: "US" },
-  { symbol: "^FTSE", name: "FTSE 100", region: "UK" },
   { symbol: "^NSEI", name: "NIFTY 50", region: "IN" },
   { symbol: "^BSESN", name: "SENSEX", region: "IN" }, // BSE benchmark
   { symbol: "BTC-USD", name: "Bitcoin", region: "Crypto" },
@@ -554,6 +553,61 @@ const SECTOR_ETFS: ReadonlyArray<{ symbol: string; name: string }> = [
   { symbol: "XLC", name: "Communication" },
 ];
 
+/**
+ * Sector / category baskets per exchange. We don't have clean sector
+ * indices for every market on Yahoo, so for non-US regions we route
+ * through sector-representative large caps. The result is a heatmap
+ * that gives the same intuition (what's hot today across the sleeve).
+ */
+const REGIONAL_SECTOR_BASKETS: Record<string, ReadonlyArray<{ symbol: string; name: string }>> = {
+  IN_NSE: [
+    { symbol: "TCS.NS", name: "IT" },
+    { symbol: "HDFCBANK.NS", name: "Banking" },
+    { symbol: "RELIANCE.NS", name: "Energy" },
+    { symbol: "BHARTIARTL.NS", name: "Telecom" },
+    { symbol: "SUNPHARMA.NS", name: "Pharma" },
+    { symbol: "TATAMOTORS.NS", name: "Auto" },
+    { symbol: "HINDUNILVR.NS", name: "FMCG" },
+    { symbol: "TATASTEEL.NS", name: "Metals" },
+    { symbol: "ULTRACEMCO.NS", name: "Cement" },
+    { symbol: "ASIANPAINT.NS", name: "Consumer" },
+  ],
+  IN_BSE: [
+    { symbol: "TCS.BO", name: "IT" },
+    { symbol: "HDFCBANK.BO", name: "Banking" },
+    { symbol: "RELIANCE.BO", name: "Energy" },
+    { symbol: "BHARTIARTL.BO", name: "Telecom" },
+    { symbol: "SUNPHARMA.BO", name: "Pharma" },
+    { symbol: "TATAMOTORS.BO", name: "Auto" },
+    { symbol: "HINDUNILVR.BO", name: "FMCG" },
+    { symbol: "TATASTEEL.BO", name: "Metals" },
+    { symbol: "ULTRACEMCO.BO", name: "Cement" },
+    { symbol: "ASIANPAINT.BO", name: "Consumer" },
+  ],
+  LK_CSE: [
+    { symbol: "JKH.N0000", name: "Diversified" },
+    { symbol: "COMB.N0000", name: "Banking" },
+    { symbol: "HNB.N0000", name: "Banking" },
+    { symbol: "DIAL.N0000", name: "Telecom" },
+    { symbol: "CTC.N0000", name: "Beverages" },
+    { symbol: "SAMP.N0000", name: "Banking" },
+    { symbol: "LOLC.N0000", name: "Finance" },
+    { symbol: "BIL.N0000", name: "Beverages" },
+  ],
+  CRYPTO: [
+    { symbol: "BTC-USD", name: "Bitcoin" },
+    { symbol: "ETH-USD", name: "Ethereum" },
+    { symbol: "SOL-USD", name: "Solana" },
+    { symbol: "BNB-USD", name: "BNB" },
+    { symbol: "XRP-USD", name: "XRP" },
+    { symbol: "ADA-USD", name: "Cardano" },
+    { symbol: "DOGE-USD", name: "Dogecoin" },
+    { symbol: "AVAX-USD", name: "Avalanche" },
+    { symbol: "DOT-USD", name: "Polkadot" },
+    { symbol: "MATIC-USD", name: "Polygon" },
+  ],
+};
+
 export interface SectorPerformance {
   symbol: string;
   name: string;
@@ -564,6 +618,29 @@ export interface SectorPerformance {
 export async function getSectorPerformance(): Promise<SectorPerformance[]> {
   const settled = await Promise.allSettled(
     SECTOR_ETFS.map(async (s) => {
+      const q = await getQuote(s.symbol);
+      return {
+        symbol: s.symbol,
+        name: s.name,
+        changePercent: q.changePercent,
+        price: q.price,
+      } satisfies SectorPerformance;
+    }),
+  );
+  return settled
+    .filter((r): r is PromiseFulfilledResult<SectorPerformance> => r.status === "fulfilled")
+    .map((r) => r.value);
+}
+
+/** Multi-exchange heatmap. For non-US regions we use sector-representative
+ *  large caps because Yahoo doesn't expose clean sector indices outside the US. */
+export async function getRegionalHeatmap(
+  region: "US" | "IN_NSE" | "IN_BSE" | "LK_CSE" | "CRYPTO",
+): Promise<SectorPerformance[]> {
+  if (region === "US") return getSectorPerformance();
+  const basket = REGIONAL_SECTOR_BASKETS[region] ?? [];
+  const settled = await Promise.allSettled(
+    basket.map(async (s) => {
       const q = await getQuote(s.symbol);
       return {
         symbol: s.symbol,

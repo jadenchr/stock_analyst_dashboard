@@ -166,6 +166,14 @@ export async function sectorPerformance() {
   return cached(cacheKey("sectors"), TTL.marketOverview, () => yahoo.getSectorPerformance());
 }
 
+export async function regionalHeatmap(
+  region: "US" | "IN_NSE" | "IN_BSE" | "LK_CSE" | "CRYPTO",
+) {
+  return cached(cacheKey("heatmap", region), TTL.marketOverview, () =>
+    yahoo.getRegionalHeatmap(region),
+  );
+}
+
 export async function trendingBusinessNews(country: string = "us") {
   return cached(cacheKey("trending-news", country), TTL.news, () =>
     newsapi.topBusinessHeadlines({ country, pageSize: 24 }).catch(() => []),

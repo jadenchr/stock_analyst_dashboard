@@ -26,11 +26,36 @@ function backgroundForPct(pct: number): string {
   return "hsl(240 6% 14% / 0.6)";
 }
 
+const HEATMAP_LABEL: Record<string, { title: string; subtitle: string }> = {
+  US: {
+    title: "Sector heatmap",
+    subtitle: "SPDR sector ETFs · click a tile to view the underlying fund",
+  },
+  IN_NSE: {
+    title: "Sector heatmap · NSE",
+    subtitle: "Sector-leading large caps · click a tile to dig into the name",
+  },
+  IN_BSE: {
+    title: "Sector heatmap · BSE",
+    subtitle: "Sector-leading large caps · click a tile to dig into the name",
+  },
+  LK_CSE: {
+    title: "Sector heatmap · CSE",
+    subtitle: "Sri Lanka sector leaders · click a tile to dig into the name",
+  },
+  CRYPTO: {
+    title: "Crypto heatmap",
+    subtitle: "Top tokens by market cap · click a tile to view the asset",
+  },
+};
+
 export function SectorHeatmap() {
-  const { data, isLoading, isError } = useSectors();
   const filter = useExchangeFilter((s) => s.filter);
-  // Sector ETFs are US-equity-only — hide when filtering to a non-US exchange.
-  if (filter !== "all" && filter !== "US") return null;
+  // Map "all" → US (SPDR sectors are the cleanest default). For specific
+  // non-US exchanges, swap in the sector-leading large-cap basket.
+  const region = filter === "all" ? "US" : filter;
+  const { data, isLoading, isError } = useSectors(region);
+  const labels = HEATMAP_LABEL[region] ?? HEATMAP_LABEL.US;
   const sectors = data ?? [];
 
   return (
@@ -38,11 +63,9 @@ export function SectorHeatmap() {
       <div className="flex items-end justify-between">
         <div>
           <h2 id="sectors-heading" className="font-display text-2xl tracking-tight text-foreground">
-            Sector heatmap
+            {labels.title}
           </h2>
-          <p className="text-xs text-muted-foreground">
-            SPDR sector ETFs · click a tile to view the underlying fund
-          </p>
+          <p className="text-xs text-muted-foreground">{labels.subtitle}</p>
         </div>
         {isLoading && (
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-hidden />

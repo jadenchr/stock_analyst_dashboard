@@ -73,7 +73,7 @@ export function HeroIntro() {
           </button>
           <span className="hint-chip">
             <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-bull" />
-            Live · Yahoo · Alpha Vantage · Finnhub
+            Live data · refreshed every minute
           </span>
         </motion.div>
       </div>

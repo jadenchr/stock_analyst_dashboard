@@ -1,23 +1,21 @@
-import { HeroIntro } from "@/components/market/hero-intro";
-import { IndicesGrid } from "@/components/market/indices-grid";
-import { PopularTickers } from "@/components/market/popular-tickers";
-import { TopMovers } from "@/components/market/top-movers";
-import { SectorHeatmap } from "@/components/market/sector-heatmap";
-import { RegionalSpotlight } from "@/components/market/regional-spotlight";
-import { ExchangeFilterBar } from "@/components/market/exchange-filter-bar";
-import { ForYou } from "@/components/market/for-you";
+import { getCurrentUser } from "@/lib/supabase/server";
+import { DashboardHome } from "@/components/dashboard/dashboard-home";
+import { LandingPage } from "@/components/landing/landing-page";
 
-export default function HomePage() {
-  return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 pt-2">
-      <HeroIntro />
-      <ExchangeFilterBar />
-      <ForYou />
-      <IndicesGrid />
-      <SectorHeatmap />
-      <TopMovers />
-      <PopularTickers />
-      <RegionalSpotlight />
-    </div>
-  );
+/**
+ * Root route — auth-aware:
+ *   • Guest visitors get the animated marketing landing.
+ *   • Signed-in users land straight on the markets dashboard.
+ *
+ * The header's UserMenu handles the top-right identity widget in both
+ * cases. We resolve the user server-side so there's no flash.
+ */
+export default async function HomePage() {
+  let user: Awaited<ReturnType<typeof getCurrentUser>> = null;
+  try {
+    user = await getCurrentUser();
+  } catch {
+    // If Supabase is misconfigured locally, default to the landing.
+  }
+  return user ? <DashboardHome /> : <LandingPage />;
 }

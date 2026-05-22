@@ -12,7 +12,6 @@ const OPTIONS: { id: ExchangeFilter; label: string; flag: string }[] = [
   { id: "IN_NSE", label: "NSE", flag: "🇮🇳" },
   { id: "IN_BSE", label: "BSE", flag: "🇮🇳" },
   { id: "LK_CSE", label: "CSE", flag: "🇱🇰" },
-  { id: "UK", label: "UK", flag: "🇬🇧" },
   { id: "CRYPTO", label: "Crypto", flag: "₿" },
 ];
 

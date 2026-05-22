@@ -3,7 +3,68 @@ import { cached, cacheKey, TTL } from "@/lib/cache";
 import { getCurrentSession } from "@/lib/supabase/server";
 import * as md from "@/lib/market-data";
 import type { ScreenerId, ScreenerResult } from "@/lib/market-data";
-import type { InvestmentStyle, RiskTolerance } from "@/lib/supabase/types";
+import type { ExchangeKey, InvestmentStyle, RiskTolerance } from "@/lib/supabase/types";
+
+/* ------------------------------------------------------------------ */
+/* Curated regional baskets — used when the user filters by exchange. */
+/* Yahoo screeners are US-centric, so for non-US exchanges we hand-   */
+/* picked the most-watched names per market and synthesize "picks"    */
+/* from live quotes ranked by intraday % change.                       */
+/* ------------------------------------------------------------------ */
+
+const REGIONAL_BASKETS: Partial<Record<ExchangeKey, string[]>> = {
+  IN_NSE: [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "HDFCBANK.NS",
+    "INFY.NS",
+    "ICICIBANK.NS",
+    "HINDUNILVR.NS",
+    "BHARTIARTL.NS",
+    "ITC.NS",
+    "SBIN.NS",
+    "BAJFINANCE.NS",
+  ],
+  IN_BSE: [
+    "RELIANCE.BO",
+    "TCS.BO",
+    "HDFCBANK.BO",
+    "INFY.BO",
+    "ICICIBANK.BO",
+    "HINDUNILVR.BO",
+    "BHARTIARTL.BO",
+    "ITC.BO",
+    "SBIN.BO",
+    "BAJFINANCE.BO",
+  ],
+  LK_CSE: [
+    "JKH.N0000",
+    "COMB.N0000",
+    "HNB.N0000",
+    "SAMP.N0000",
+    "DIAL.N0000",
+    "LOLC.N0000",
+    "CTC.N0000",
+    "BIL.N0000",
+  ],
+  CRYPTO: [
+    "BTC-USD",
+    "ETH-USD",
+    "SOL-USD",
+    "BNB-USD",
+    "XRP-USD",
+    "ADA-USD",
+    "DOGE-USD",
+    "AVAX-USD",
+  ],
+};
+
+const REGIONAL_LABELS: Partial<Record<ExchangeKey, string>> = {
+  IN_NSE: "India NSE",
+  IN_BSE: "India BSE",
+  LK_CSE: "Sri Lanka CSE",
+  CRYPTO: "Crypto",
+};
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -94,46 +155,89 @@ function buildRationale(
   }
 }
 
-export const GET = apiHandler({ bucket: "picks", limit: 30 }, async () => {
-  const { user, profile } = await getCurrentSession();
+/** Convert curated-basket quotes into screener-shaped Picks. */
+async function regionalPicks(
+  exchange: ExchangeKey,
+  primaryStyle: InvestmentStyle | "default",
+): Promise<Pick[]> {
+  const basket = REGIONAL_BASKETS[exchange] ?? [];
+  if (basket.length === 0) return [];
+  const quotes = await cached(
+    cacheKey("regional-picks", exchange),
+    TTL.marketOverview,
+    async () => md.quotes(basket),
+  );
+  // Rank by |intraday %| descending so the most-active names surface first.
+  const ranked = [...quotes].sort(
+    (a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent),
+  );
+  return ranked.slice(0, 5).map((q) => {
+    const row: ScreenerResult = {
+      symbol: q.symbol,
+      name: q.name,
+      exchange: q.exchange,
+      price: q.price,
+      change: q.change,
+      changePercent: q.changePercent,
+      volume: q.volume,
+      marketCap: q.marketCap ?? null,
+      peRatio: null,
+      currency: q.currency,
+    };
+    return { ...row, rationale: buildRationale(row, primaryStyle) };
+  });
+}
 
-  // Guests fall back to "Most Active" so the section still has value
-  if (!user) {
-    const rows = await cached(cacheKey("screener", "most_actives", 5), TTL.marketOverview, () =>
-      md.screener("most_actives", 5),
-    );
-    const picks: Pick[] = rows.slice(0, 5).map((r) => ({
-      ...r,
-      rationale: buildRationale(r, "default"),
-    }));
-    return {
-      picks,
-      basis: { style: "default" as const, risk: "default" as const, screenerId: "most_actives" as const },
-      isOnboarded: false,
-    } satisfies PicksResponse;
+function parseExchange(raw: string | null): ExchangeKey | "all" | "US" {
+  if (!raw) return "all";
+  if (raw === "all") return "all";
+  if (raw === "US") return "US";
+  if (raw === "IN_NSE" || raw === "IN_BSE" || raw === "LK_CSE" || raw === "CRYPTO") {
+    return raw;
   }
+  // Unknown / legacy (e.g. "UK") — treat as "all".
+  return "all";
+}
+
+export const GET = apiHandler({ bucket: "picks", limit: 30 }, async ({ url }) => {
+  const exchange = parseExchange(url.searchParams.get("exchange"));
+  const { user, profile } = await getCurrentSession();
 
   const styles = (profile?.investment_styles ?? []) as InvestmentStyle[];
   const risk = (profile?.risk_tolerance ?? "moderate") as RiskTolerance;
-  const { screenerId, primaryStyle } = mapProfileToScreener(styles, risk);
+  const { screenerId, primaryStyle } = user
+    ? mapProfileToScreener(styles, risk)
+    : { screenerId: "most_actives" as ScreenerId, primaryStyle: "default" as const };
+  const basisStyle: InvestmentStyle | "default" = user ? primaryStyle : "default";
+  const basisRisk: RiskTolerance | "default" = user ? risk : "default";
 
+  // Non-US exchange → use the curated regional basket. Yahoo screeners
+  // don't expose Indian / Sri Lankan / Crypto datasets, so we hand-rolled
+  // the lists above.
+  if (exchange !== "all" && exchange !== "US") {
+    const picks = await regionalPicks(exchange, basisStyle);
+    return {
+      picks,
+      basis: { style: basisStyle, risk: basisRisk, screenerId: `regional:${exchange}` as ScreenerId },
+      isOnboarded: Boolean(profile?.onboarded),
+      region: REGIONAL_LABELS[exchange] ?? exchange,
+    } satisfies PicksResponse & { region?: string };
+  }
+
+  // US / "all" — use the Yahoo screener path.
   const rows = await cached(
-    cacheKey("picks", user.id, screenerId),
+    cacheKey("picks", user?.id ?? "guest", screenerId),
     TTL.marketOverview,
     async () => md.screener(screenerId, 10),
   );
   const picks: Pick[] = rows.slice(0, 5).map((r) => ({
     ...r,
-    rationale: buildRationale(r, primaryStyle),
+    rationale: buildRationale(r, basisStyle),
   }));
 
   return {
     picks,
-    basis: {
-      style: primaryStyle,
-      risk,
-      screenerId,
-    },
+    basis: { style: basisStyle, risk: basisRisk, screenerId },
     isOnboarded: Boolean(profile?.onboarded),
   } satisfies PicksResponse;
 });

@@ -5,9 +5,19 @@ import { motion } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Loader2, Sparkles } from "lucide-react";
 import { usePicks } from "@/lib/api/client";
 import { useUser } from "@/app/auth/user-provider";
+import { useExchangeFilter } from "@/lib/store/exchange-filter";
 import { cn } from "@/lib/utils";
 import { formatCompactMoney, formatCurrency, formatPercent } from "@/lib/utils/format";
 import { SkeletonBlock } from "@/components/ui/skeleton-block";
+
+const EXCHANGE_LABEL: Record<string, string> = {
+  all: "all markets",
+  US: "US",
+  IN_NSE: "India NSE",
+  IN_BSE: "India BSE",
+  LK_CSE: "Sri Lanka CSE",
+  CRYPTO: "Crypto",
+};
 
 const STYLE_LABEL: Record<string, string> = {
   growth: "Growth",
@@ -31,8 +41,10 @@ const RISK_LABEL: Record<string, string> = {
  */
 export function ForYou() {
   const { user } = useUser();
-  const { data, isLoading, isError } = usePicks();
+  const exchange = useExchangeFilter((s) => s.filter);
+  const { data, isLoading, isError } = usePicks({ exchange });
   const picks = data?.picks ?? [];
+  const isRegional = exchange !== "all" && exchange !== "US";
 
   return (
     <section aria-labelledby="for-you-heading" className="flex flex-col gap-4">
@@ -48,12 +60,20 @@ export function ForYou() {
             {user ? "For you" : "Curated for you"}
           </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {user && data && data.basis.style !== "default" ? (
+            {isRegional ? (
+              <>
+                Most-active names on{" "}
+                <span className="text-foreground/90">{EXCHANGE_LABEL[exchange]}</span>{" "}
+                today · refreshed every 5 minutes.
+              </>
+            ) : user && data && data.basis.style !== "default" ? (
               <>
                 Tailored to your <span className="text-foreground/90">{STYLE_LABEL[data.basis.style]}</span>{" "}
                 style and <span className="text-foreground/90">{RISK_LABEL[data.basis.risk]}</span> risk
                 tolerance · refreshed every 5 minutes.
               </>
+            ) : user ? (
+              "Most-active names in the markets · refreshed every 5 minutes."
             ) : (
               "Sign in and complete your profile to see picks tailored to your style and risk."
             )}
@@ -135,20 +155,6 @@ export function ForYou() {
             })}
       </div>
 
-      {!user && (
-        <div className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4">
-          <p className="text-xs text-muted-foreground">
-            <span className="text-foreground/90">Sign in</span> to get picks matched to your style
-            and risk tolerance.
-          </p>
-          <Link
-            href="/auth/signin?next=/"
-            className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition-transform hover:-translate-y-px"
-          >
-            Sign in with Google
-          </Link>
-        </div>
-      )}
     </section>
   );
 }

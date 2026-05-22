@@ -23,9 +23,24 @@ interface Props {
 }
 
 /**
- * Wraps premium sections. When the current tier can access `feature`, renders
- * the children unchanged. Otherwise renders a CTA card with sign-in /
- * upgrade prompt while still hinting at what's behind it.
+ * Features that stay gated even when sign-in walls are disabled. These
+ * are the genuinely Pro-only sections (Portfolio, advanced screeners,
+ * custom alerts). Everything else — AI ratings, fundamentals, news,
+ * insider feed, etc. — is currently open to guests so the dashboard
+ * is fully explorable without an account.
+ */
+const STILL_GATED: ReadonlySet<Feature> = new Set([
+  "screener_pro",
+  "alerts",
+  "portfolio",
+  "cse_advanced",
+]);
+
+/**
+ * Wraps premium sections. The product is in an "open dashboard" phase:
+ * sign-in/subscribe walls are bypassed for non-Pro features so anyone
+ * can explore. Truly Pro-only features (see `STILL_GATED` above) keep
+ * their full gate card.
  */
 export function FeatureGate({
   feature,
@@ -44,6 +59,13 @@ export function FeatureGate({
   }
 
   if (can(feature)) {
+    return <>{children}</>;
+  }
+
+  // "Open dashboard" mode — anything not on the Pro-only list renders
+  // unconditionally. Removes the "sign in to continue" friction from
+  // AI ratings, fundamentals, news, insider, etc.
+  if (!STILL_GATED.has(feature)) {
     return <>{children}</>;
   }
 

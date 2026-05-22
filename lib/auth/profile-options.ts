@@ -29,7 +29,6 @@ export const EXCHANGE_OPTIONS: { id: ExchangeKey; label: string; flag: string; t
   { id: "IN_NSE", label: "India NSE", flag: "🇮🇳", tagline: "RELIANCE.NS, TCS.NS" },
   { id: "IN_BSE", label: "India BSE", flag: "🇮🇳", tagline: "RELIANCE.BO" },
   { id: "LK_CSE", label: "Sri Lanka CSE", flag: "🇱🇰", tagline: "JKH.N0000" },
-  { id: "UK", label: "UK LSE", flag: "🇬🇧", tagline: "BARC.L" },
   { id: "CRYPTO", label: "Crypto", flag: "₿", tagline: "BTC-USD, ETH-USD" },
 ];
 

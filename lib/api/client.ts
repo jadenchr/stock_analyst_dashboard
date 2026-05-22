@@ -92,10 +92,15 @@ export interface PicksResponse {
   isOnboarded: boolean;
 }
 
-export function usePicks(options?: { enabled?: boolean }) {
+export function usePicks(options?: { enabled?: boolean; exchange?: string }) {
+  const exchange = options?.exchange ?? "all";
   return useQuery({
-    queryKey: ["picks"] as const,
-    queryFn: ({ signal }) => apiGet<PicksResponse>(`/api/picks`, { signal }),
+    queryKey: ["picks", exchange] as const,
+    queryFn: ({ signal }) =>
+      apiGet<PicksResponse>(
+        `/api/picks${exchange && exchange !== "all" ? `?exchange=${encodeURIComponent(exchange)}` : ""}`,
+        { signal },
+      ),
     staleTime: 5 * 60_000,
     enabled: options?.enabled ?? true,
   });
@@ -110,10 +115,18 @@ export function useMoversExpanded() {
   });
 }
 
-export function useSectors() {
+export function useSectors(region: string = "US") {
+  const safeRegion =
+    region === "IN_NSE" || region === "IN_BSE" || region === "LK_CSE" || region === "CRYPTO"
+      ? region
+      : "US";
   return useQuery({
-    queryKey: qk.sectors(),
-    queryFn: ({ signal }) => apiGet<Sector[]>(`/api/market/sectors`, { signal }),
+    queryKey: ["sectors", safeRegion] as const,
+    queryFn: ({ signal }) =>
+      apiGet<Sector[]>(
+        `/api/market/sectors${safeRegion !== "US" ? `?region=${safeRegion}` : ""}`,
+        { signal },
+      ),
     staleTime: 60_000,
     refetchInterval: 5 * 60_000,
   });
