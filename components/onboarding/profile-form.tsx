@@ -120,61 +120,98 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
     setSaving(true);
     setError(null);
     setWarning(null);
-    try {
-      const body = opts.skip
-        ? { skip: true }
-        : {
-            fullName: form.fullName.trim() || undefined,
-            country: form.country,
-            preferredExchanges: form.preferredExchanges,
-            investmentStyles: form.investmentStyles,
-            yearsInvesting: form.yearsInvesting,
-            defaultCurrency: form.defaultCurrency,
-            notificationFrequency: form.notificationFrequency,
-            riskTolerance: form.riskTolerance,
-          };
 
+    const body = opts.skip
+      ? { skip: true }
+      : {
+          fullName: form.fullName.trim() || undefined,
+          country: form.country,
+          preferredExchanges: form.preferredExchanges,
+          investmentStyles: form.investmentStyles,
+          yearsInvesting: form.yearsInvesting,
+          defaultCurrency: form.defaultCurrency,
+          notificationFrequency: form.notificationFrequency,
+          riskTolerance: form.riskTolerance,
+        };
+
+    // 1) Try the full save.
+    let saveOk = false;
+    let serverError: string | null = null;
+    try {
       const res = await fetch("/api/onboarding/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        cache: "no-store",
       });
       const data = (await res.json().catch(() => null)) as
         | { ok?: boolean; warning?: string | null; error?: string }
         | null;
-      if (!res.ok) {
-        throw new Error(data?.error ?? `Save failed (${res.status})`);
+      if (res.ok && data?.ok !== false) {
+        saveOk = true;
+        if (data?.warning) setWarning(data.warning);
+      } else {
+        serverError = data?.error ?? `Save failed (${res.status})`;
+        console.error("[profile-form] save failed:", serverError);
       }
-      if (data?.warning) {
-        // Schema is older than v7c — partial save succeeded. Show a hint
-        // but still navigate them out so they aren't stuck.
-        setWarning(data.warning);
-      }
-      await refresh();
-      router.push(opts.skip ? "/" : nextPath);
-      router.refresh();
     } catch (e) {
-      console.error("[profile-form] save failed", e);
-      setError(e instanceof Error ? e.message : "Save failed");
-      setSaving(false);
+      serverError = e instanceof Error ? e.message : "Network error during save";
+      console.error("[profile-form] save threw:", e);
     }
+
+    // 2) If the rich save failed, fire the always-ok escape endpoint so
+    //    the user is at least marked onboarded and not bounced back here.
+    if (!saveOk) {
+      try {
+        await fetch("/api/onboarding/profile", {
+          method: "DELETE",
+          cache: "no-store",
+        });
+      } catch (e) {
+        console.warn("[profile-form] escape fallback failed:", e);
+      }
+    }
+
+    // 3) Refresh the client-side user/profile cache (best-effort).
+    try {
+      await refresh();
+    } catch (e) {
+      console.warn("[profile-form] refresh failed:", e);
+    }
+
+    // 4) Navigate ALWAYS. Hard reload via window.location so the layout
+    //    re-runs getCurrentSession() and the new onboarded state is
+    //    unambiguously picked up. router.push has been observed to no-op
+    //    when an RSC fetch is mid-flight, leaving the user staring at
+    //    the form — window.location.assign cannot do that.
+    const target = opts.skip ? "/" : nextPath;
+    if (!saveOk && serverError) {
+      // Surface the error briefly before navigating so the user can
+      // screenshot / report it if needed.
+      setError(serverError);
+      setSaving(false);
+      // Still navigate after a short pause — they're not trapped.
+      window.setTimeout(() => {
+        window.location.assign(target);
+      }, 1500);
+      return;
+    }
+    window.location.assign(target);
   }
 
   /**
-   * Emergency escape hatch — fires the lightweight "just mark me onboarded"
-   * DELETE endpoint and immediately navigates. Always works; never errors
-   * visibly. If something goes catastrophically wrong on the server it
-   * still navigates the user to the dashboard so they're not trapped.
+   * Emergency escape hatch — fires the always-ok DELETE endpoint and
+   * immediately hard-navigates. Never errors visibly. Always reaches the
+   * dashboard.
    */
   async function handleEscape() {
     setSaving(true);
     try {
-      await fetch("/api/onboarding/profile", { method: "DELETE" }).catch(() => null);
-    } finally {
-      await refresh().catch(() => undefined);
-      router.push("/");
-      router.refresh();
+      await fetch("/api/onboarding/profile", { method: "DELETE", cache: "no-store" });
+    } catch (e) {
+      console.warn("[profile-form] escape failed:", e);
     }
+    window.location.assign("/");
   }
 
   return (

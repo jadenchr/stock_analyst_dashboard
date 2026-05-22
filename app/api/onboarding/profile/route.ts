@@ -1,6 +1,5 @@
+import { NextResponse } from "next/server";
 import { z } from "zod";
-import { apiHandler } from "@/lib/api/handler";
-import { ValidationFailedError } from "@/lib/market-data/errors";
 import { getCurrentSession } from "@/lib/supabase/server";
 import { createServerWriteClient } from "@/lib/supabase/server-write";
 
@@ -10,19 +9,19 @@ export const dynamic = "force-dynamic";
 /**
  * Profile onboarding save endpoint.
  *
- * Goals:
- *   • Validate the full payload with Zod
- *   • Try a full upsert against the v7c schema (country, exchanges, styles, …)
- *   • If the live database is missing those columns (migration 0002 not yet
- *     applied), fall back to upserting only fields known to exist in v7a
- *     and STILL mark the user as onboarded so they aren't trapped in a
- *     redirect loop.
- *   • Return a clear `warning` so the UI can tell the user what to do next.
+ * Deliberately bypasses the project-wide `apiHandler` wrapper so that
+ * server-side database errors surface with their real messages on the
+ * client. The wrapper rewrites every non-typed error to a generic
+ * "Internal server error" which makes the onboarding form impossible to
+ * debug when something fails — that exact masking is what trapped users
+ * on the form during the v7c rollout.
  *
- * Why this exists: doing this from the client with the typed Supabase JS
- * client made errors invisible — when an unknown column caused 42703,
- * the form's Save handler appeared to hang. A server route gives us
- * structured errors AND lets us recover gracefully.
+ * Behaviour:
+ *   1. Validate the payload with Zod (loose — every field optional).
+ *   2. Try the full v7c upsert (country, exchanges, styles, …).
+ *   3. On Postgres 42703 (undefined_column) — i.e. schema is still v7a —
+ *      retry with just the columns guaranteed to exist on v7a.
+ *   4. Always return a structured JSON body the form can show verbatim.
  */
 
 const InvestmentStyleSchema = z.enum(["growth", "value", "income", "speculation"]);
@@ -35,129 +34,134 @@ const BodySchema = z.object({
   preferredExchanges: z.array(z.string().min(1).max(16)).max(20).optional(),
   investmentStyles: z.array(InvestmentStyleSchema).max(8).optional(),
   yearsInvesting: z.coerce.number().int().min(0).max(80).optional(),
-  defaultCurrency: z.enum(["USD", "INR", "LKR", "GBP", "EUR", "CAD", "AUD"]).optional(),
+  defaultCurrency: z
+    .enum(["USD", "INR", "LKR", "GBP", "EUR", "CAD", "AUD", "JPY"])
+    .optional(),
   notificationFrequency: NotificationFrequencySchema.optional(),
   riskTolerance: RiskToleranceSchema.optional(),
-  /** If true, mark the user as onboarded even though they're skipping the form. */
   skip: z.boolean().default(false),
 });
 
-/** Postgres error code for "undefined_column". */
 const UNDEFINED_COLUMN = "42703";
 
-interface UpsertResult {
-  ok: boolean;
-  warning: string | null;
-  error: string | null;
+function jsonError(message: string, status: number) {
+  return NextResponse.json(
+    { ok: false, error: message },
+    { status, headers: { "Cache-Control": "no-store" } },
+  );
 }
 
-export const POST = apiHandler(
-  { bucket: "onboarding-write", limit: 30 },
-  async ({ request }) => {
-    const { user } = await getCurrentSession();
-    if (!user) throw new ValidationFailedError("Not signed in");
+export async function POST(request: Request) {
+  let raw: unknown;
+  try {
+    raw = await request.json();
+  } catch {
+    return jsonError("Invalid JSON body", 400);
+  }
 
-    let raw: unknown;
-    try {
-      raw = await request.json();
-    } catch {
-      throw new ValidationFailedError("Invalid JSON body");
-    }
-    const parsed = BodySchema.safeParse(raw);
-    if (!parsed.success) {
-      throw new ValidationFailedError("Invalid profile payload");
-    }
-    const body = parsed.data;
+  const parsed = BodySchema.safeParse(raw);
+  if (!parsed.success) {
+    const fieldErrors = parsed.error.issues
+      .map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`)
+      .join("; ");
+    return jsonError(`Invalid payload — ${fieldErrors}`, 400);
+  }
+  const body = parsed.data;
 
-    const supabase = createServerWriteClient();
+  const { user } = await getCurrentSession();
+  if (!user) {
+    return jsonError("Not signed in. Please refresh and try again.", 401);
+  }
 
-    // ---------- Pass 1: full v7c-schema upsert ----------
-    const fullPayload: Record<string, unknown> = {
+  const supabase = createServerWriteClient();
+
+  // ---------- Pass 1: full v7c-schema upsert ----------
+  const fullPayload: Record<string, unknown> = {
+    id: user.id,
+    email: user.email ?? null,
+    full_name: body.fullName?.trim() || null,
+    onboarded: true,
+  };
+  if (body.country) fullPayload.country = body.country;
+  if (body.preferredExchanges) fullPayload.preferred_exchanges = body.preferredExchanges;
+  if (body.investmentStyles) fullPayload.investment_styles = body.investmentStyles;
+  if (body.yearsInvesting != null) fullPayload.years_investing = body.yearsInvesting;
+  if (body.defaultCurrency) fullPayload.default_currency = body.defaultCurrency;
+  if (body.notificationFrequency)
+    fullPayload.notification_frequency = body.notificationFrequency;
+  if (body.riskTolerance) fullPayload.risk_tolerance = body.riskTolerance;
+
+  const first = await supabase
+    .from("profiles")
+    .upsert(fullPayload, { onConflict: "id" })
+    .select("id")
+    .maybeSingle();
+
+  if (!first.error) {
+    return NextResponse.json(
+      { ok: true, warning: null },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
+  const firstCode = (first.error as { code?: string }).code;
+  const firstMessage = first.error.message ?? "Unknown error";
+  console.error("[onboarding] full upsert failed:", firstCode, firstMessage);
+
+  // ---------- Pass 2: drop v7c-only columns ----------
+  if (firstCode === UNDEFINED_COLUMN) {
+    const minimal: Record<string, unknown> = {
       id: user.id,
       email: user.email ?? null,
       full_name: body.fullName?.trim() || null,
-      onboarded: true,
     };
-    if (body.country) fullPayload.country = body.country;
-    if (body.preferredExchanges) fullPayload.preferred_exchanges = body.preferredExchanges;
-    if (body.investmentStyles) fullPayload.investment_styles = body.investmentStyles;
-    if (body.yearsInvesting != null) fullPayload.years_investing = body.yearsInvesting;
-    if (body.defaultCurrency) fullPayload.default_currency = body.defaultCurrency;
-    if (body.notificationFrequency)
-      fullPayload.notification_frequency = body.notificationFrequency;
-    if (body.riskTolerance) fullPayload.risk_tolerance = body.riskTolerance;
-
-    const first = await supabase
+    const second = await supabase
       .from("profiles")
-      .upsert(fullPayload, { onConflict: "id" })
+      .upsert(minimal, { onConflict: "id" })
       .select("id")
-      .single();
+      .maybeSingle();
 
-    if (!first.error) {
-      const out: UpsertResult = { ok: true, warning: null, error: null };
-      return out;
+    if (!second.error) {
+      return NextResponse.json(
+        {
+          ok: true,
+          warning:
+            "Your preferences couldn't be stored because the database is on an older schema. Run supabase/migrations/0004_profile_policies_fix.sql in your Supabase SQL editor to enable personalized picks.",
+        },
+        { headers: { "Cache-Control": "no-store" } },
+      );
     }
+    console.error("[onboarding] fallback upsert failed:", second.error.message);
+    return jsonError(
+      `Save failed even on the v7a fallback: ${second.error.message}. Apply migrations 0002 + 0004 in Supabase.`,
+      500,
+    );
+  }
 
-    // ---------- Pass 2: schema is older — drop extra columns ----------
-    const code = (first.error as { code?: string }).code;
-    const message = first.error.message ?? "Unknown error";
-
-    if (code === UNDEFINED_COLUMN) {
-      // The v7c migration (0002_full_profile.sql) hasn't been applied. Save
-      // what we can on v7a so the user is unblocked.
-      const minimal: Record<string, unknown> = {
-        id: user.id,
-        email: user.email ?? null,
-        full_name: body.fullName?.trim() || null,
-      };
-      const second = await supabase
-        .from("profiles")
-        .upsert(minimal, { onConflict: "id" })
-        .select("id")
-        .single();
-      if (second.error) {
-        const err = new Error(
-          `Save failed even after fallback: ${second.error.message}. Apply supabase/migrations/0004_profile_policies_fix.sql.`,
-        );
-        (err as Error & { status?: number }).status = 500;
-        throw err;
-      }
-      const out: UpsertResult = {
-        ok: true,
-        warning:
-          "Saved partially — your dashboard preferences couldn't be stored because the database is on an older schema. Apply migrations 0002 + 0004 in Supabase to enable personalized picks.",
-        error: null,
-      };
-      return out;
-    }
-
-    // ---------- Anything else — surface clearly, don't trap the user. ----------
-    const err = new Error(`Profile save failed: ${message}`);
-    (err as Error & { status?: number }).status = 500;
-    throw err;
-  },
-);
+  // ---------- Anything else — surface the real Postgres message ----------
+  return jsonError(`Profile save failed: ${firstMessage}`, 500);
+}
 
 /**
- * Quick "just mark me as onboarded so I can go to the dashboard" endpoint.
- * Used as the safety-net Skip button on the profile form. Tries to set
- * `onboarded=true`; if the column doesn't exist, returns ok anyway so the
- * client can navigate.
+ * Emergency escape hatch — used by the "Skip & continue" button on the form.
+ * Tries to set onboarded=true; if anything fails, still returns ok so the
+ * client can navigate away. This endpoint NEVER returns a non-2xx.
  */
-export const DELETE = apiHandler(
-  { bucket: "onboarding-write", limit: 30 },
-  async () => {
+export async function DELETE() {
+  try {
     const { user } = await getCurrentSession();
-    if (!user) throw new ValidationFailedError("Not signed in");
-    const supabase = createServerWriteClient();
-    const { error } = await supabase
-      .from("profiles")
-      .update({ onboarded: true })
-      .eq("id", user.id);
-    if (error && (error as { code?: string }).code !== UNDEFINED_COLUMN) {
-      // Don't block the user — just log and let them through.
-      console.warn("[onboarding] skip update failed:", error.message);
+    if (user) {
+      const supabase = createServerWriteClient();
+      await supabase
+        .from("profiles")
+        .update({ onboarded: true })
+        .eq("id", user.id);
     }
-    return { ok: true };
-  },
-);
+  } catch (err) {
+    console.warn("[onboarding] skip update failed:", err);
+  }
+  return NextResponse.json(
+    { ok: true },
+    { headers: { "Cache-Control": "no-store" } },
+  );
+}
