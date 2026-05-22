@@ -20,8 +20,11 @@ export default async function ProfileOnboardingPage({ searchParams }: PageProps)
   if (!user) {
     redirect(`/auth/signin?next=${encodeURIComponent("/onboarding/profile")}`);
   }
-  // If already onboarded and ?force isn't set, skip back to dashboard
-  if (profile?.onboarded && !force) {
+  // If already onboarded and ?force isn't set, skip back to dashboard.
+  // (Treat onboarded as boolean — a missing column would surface as
+  // undefined, in which case we still show the form so the user can
+  // configure preferences.)
+  if (profile?.onboarded === true && !force) {
     redirect(next ?? "/");
   }
 

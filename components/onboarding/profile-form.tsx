@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   Building2,
@@ -15,7 +16,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
 import { useUser } from "@/app/auth/user-provider";
 import { LiquidEther } from "@/components/effects/liquid-ether";
 import type {
@@ -54,13 +54,6 @@ interface FormState {
 
 const TOTAL_STEPS = 3;
 
-function rawClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-}
-
 export function ProfileForm({ initial, defaultName, nextPath }: Props) {
   const router = useRouter();
   const { user, refresh } = useUser();
@@ -69,6 +62,7 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
   const [direction, setDirection] = useState<1 | -1>(1);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
 
   const [form, setForm] = useState<FormState>(() => ({
     fullName: initial?.full_name ?? defaultName ?? "",
@@ -125,24 +119,37 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
     if (!user) return;
     setSaving(true);
     setError(null);
+    setWarning(null);
     try {
-      const supabase = rawClient();
-      const payload = {
-        id: user.id,
-        full_name: form.fullName.trim() || null,
-        country: form.country,
-        preferred_exchanges: form.preferredExchanges,
-        investment_styles: form.investmentStyles,
-        years_investing: form.yearsInvesting,
-        default_currency: form.defaultCurrency,
-        notification_frequency: form.notificationFrequency,
-        risk_tolerance: form.riskTolerance,
-        onboarded: true,
-      };
-      const { error: err } = await supabase
-        .from("profiles")
-        .upsert(payload, { onConflict: "id" });
-      if (err) throw new Error(err.message);
+      const body = opts.skip
+        ? { skip: true }
+        : {
+            fullName: form.fullName.trim() || undefined,
+            country: form.country,
+            preferredExchanges: form.preferredExchanges,
+            investmentStyles: form.investmentStyles,
+            yearsInvesting: form.yearsInvesting,
+            defaultCurrency: form.defaultCurrency,
+            notificationFrequency: form.notificationFrequency,
+            riskTolerance: form.riskTolerance,
+          };
+
+      const res = await fetch("/api/onboarding/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { ok?: boolean; warning?: string | null; error?: string }
+        | null;
+      if (!res.ok) {
+        throw new Error(data?.error ?? `Save failed (${res.status})`);
+      }
+      if (data?.warning) {
+        // Schema is older than v7c — partial save succeeded. Show a hint
+        // but still navigate them out so they aren't stuck.
+        setWarning(data.warning);
+      }
       await refresh();
       router.push(opts.skip ? "/" : nextPath);
       router.refresh();
@@ -150,6 +157,23 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
       console.error("[profile-form] save failed", e);
       setError(e instanceof Error ? e.message : "Save failed");
       setSaving(false);
+    }
+  }
+
+  /**
+   * Emergency escape hatch — fires the lightweight "just mark me onboarded"
+   * DELETE endpoint and immediately navigates. Always works; never errors
+   * visibly. If something goes catastrophically wrong on the server it
+   * still navigates the user to the dashboard so they're not trapped.
+   */
+  async function handleEscape() {
+    setSaving(true);
+    try {
+      await fetch("/api/onboarding/profile", { method: "DELETE" }).catch(() => null);
+    } finally {
+      await refresh().catch(() => undefined);
+      router.push("/");
+      router.refresh();
     }
   }
 
@@ -173,7 +197,7 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
         </Link>
         <button
           type="button"
-          onClick={() => handleSave({ skip: true })}
+          onClick={handleEscape}
           disabled={saving}
           className="cursor-pointer rounded-md text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
         >
@@ -385,10 +409,33 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
             )}
           </AnimatePresence>
 
+          {warning && (
+            <div
+              className="mt-4 flex items-start gap-2 rounded-lg border border-neutral/30 bg-neutral/10 px-3 py-2 text-xs text-foreground/85"
+              role="status"
+            >
+              <AlertCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-neutral" aria-hidden />
+              <span>{warning}</span>
+            </div>
+          )}
           {error && (
-            <p className="mt-4 text-center text-xs text-destructive" role="alert">
-              {error}
-            </p>
+            <div
+              className="mt-4 flex flex-col gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+              role="alert"
+            >
+              <div className="flex items-start gap-2">
+                <AlertCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" aria-hidden />
+                <span className="break-words">{error}</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleEscape}
+                disabled={saving}
+                className="self-start cursor-pointer rounded-md border border-destructive/40 bg-destructive/5 px-2 py-1 text-[11px] font-medium text-destructive transition-colors hover:bg-destructive/15 disabled:opacity-50"
+              >
+                Skip onboarding and continue to dashboard →
+              </button>
+            </div>
           )}
 
           {/* Footer controls */}

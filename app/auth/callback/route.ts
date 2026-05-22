@@ -27,24 +27,37 @@ export async function GET(request: NextRequest) {
     const supabase = await createSupabaseServerClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // Check whether the user has completed the profile form yet. The
-      // on-signup trigger seeds the row with onboarded=false, so a first-
-      // time visitor lands on the profile form before the dashboard.
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("onboarded")
-          .eq("id", user.id)
-          .maybeSingle();
-        const onboarded = (profile as { onboarded?: boolean } | null)?.onboarded;
-        if (!onboarded) {
-          const target = new URL("/onboarding/profile", url.origin);
-          target.searchParams.set("next", next);
-          return NextResponse.redirect(target);
+      // Best-effort: check whether the user has completed the profile form.
+      // The on-signup trigger seeds the row with onboarded=false, so a
+      // first-time visitor lands on the profile form before the dashboard.
+      //
+      // CRITICAL: if the profile fetch errors (e.g. the `onboarded` column
+      // doesn't exist yet because migration 0002 isn't applied), we MUST
+      // NOT trap the user on the onboarding form. Bail to `next` instead.
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("onboarded")
+            .eq("id", user.id)
+            .maybeSingle();
+          if (profileError) {
+            console.error("[auth/callback] profile fetch failed:", profileError.message);
+            // Schema unknown — assume onboarded so the user lands somewhere usable.
+            return NextResponse.redirect(new URL(next, url.origin));
+          }
+          const onboarded = (profile as { onboarded?: boolean } | null)?.onboarded;
+          if (onboarded === false) {
+            const target = new URL("/onboarding/profile", url.origin);
+            target.searchParams.set("next", next);
+            return NextResponse.redirect(target);
+          }
         }
+      } catch (err) {
+        console.error("[auth/callback] post-exchange flow failed:", err);
       }
       return NextResponse.redirect(new URL(next, url.origin));
     }
