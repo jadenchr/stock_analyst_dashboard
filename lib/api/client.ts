@@ -187,6 +187,32 @@ export function useStockAnalysis(symbol: string | null, options?: { enabled?: bo
   });
 }
 
+/* ------------------------------------------------------- portfolio ------ */
+
+import type { PortfolioResponse } from "@/lib/portfolio/types";
+
+export type {
+  PortfolioResponse,
+  PortfolioHolding,
+  PortfolioTotals,
+  PortfolioImportPreviewRow,
+  PortfolioImportResult,
+} from "@/lib/portfolio/types";
+
+export function usePortfolio(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ["portfolio"] as const,
+    queryFn: ({ signal }) => apiGet<PortfolioResponse>(`/api/portfolio`, { signal }),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    enabled: options?.enabled ?? true,
+    retry: (failureCount, err) => {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) return false;
+      return failureCount < 1;
+    },
+  });
+}
+
 /* ------------------------------------------------------------ hooks */
 
 export function useSearchQuery(query: string) {

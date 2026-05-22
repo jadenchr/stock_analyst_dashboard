@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, LogIn, LogOut, Settings, Sparkles, User as UserIcon } from "lucide-react";
+import {
+  ChevronDown,
+  LogIn,
+  LogOut,
+  Settings,
+  Sparkles,
+  User as UserIcon,
+  Wallet,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/app/auth/user-provider";
 import { TIER_LABEL } from "@/lib/auth/entitlements";
@@ -141,6 +149,17 @@ export function UserMenu() {
               >
                 <UserIcon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
                 My watchlist
+              </Link>
+              <Link
+                href="/portfolio"
+                onClick={() => setOpen(false)}
+                className="flex cursor-pointer items-center gap-2.5 px-3 py-2 text-xs text-foreground transition-colors hover:bg-muted/50"
+              >
+                <Wallet className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+                <span className="flex-1">Portfolio</span>
+                <span className="rounded-full border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary">
+                  Pro
+                </span>
               </Link>
               <form onSubmit={handleSignOut}>
                 <button

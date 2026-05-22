@@ -23,7 +23,8 @@ export type Feature =
   | "screener_basic"
   | "screener_pro"
   | "cse_advanced"
-  | "alerts";
+  | "alerts"
+  | "portfolio";
 
 const MATRIX: Record<Feature, ReadonlyArray<Tier>> = {
   // Guest-visible: nothing premium.
@@ -39,6 +40,7 @@ const MATRIX: Record<Feature, ReadonlyArray<Tier>> = {
   screener_pro: ["pro"],
   cse_advanced: ["pro"],
   alerts: ["pro"],
+  portfolio: ["pro"],
 };
 
 export function canAccess(tier: Tier, feature: Feature): boolean {

@@ -52,6 +52,19 @@ export interface WatchlistRow {
   created_at: string;
 }
 
+export interface PortfolioHoldingRow {
+  id: string;
+  user_id: string;
+  symbol: string;
+  shares: number;
+  cost_basis: number;
+  currency: string;
+  purchase_date: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -108,6 +121,34 @@ export interface Database {
           symbol?: string;
           position?: number;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      portfolio_holdings: {
+        Row: PortfolioHoldingRow;
+        Insert: {
+          id?: string;
+          user_id: string;
+          symbol: string;
+          shares: number;
+          cost_basis: number;
+          currency?: string;
+          purchase_date?: string;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          symbol?: string;
+          shares?: number;
+          cost_basis?: number;
+          currency?: string;
+          purchase_date?: string;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
