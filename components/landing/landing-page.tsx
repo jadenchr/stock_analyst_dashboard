@@ -55,7 +55,7 @@ export function LandingPage() {
   return (
     <div
       ref={containerRef}
-      className="relative -mx-4 -mb-24 overflow-x-hidden sm:-mx-6 lg:-mx-8 lg:-mb-8"
+      className="relative overflow-x-hidden"
     >
       {/* Top ticker tape — runs across the very top of the landing */}
       <TickerTape />

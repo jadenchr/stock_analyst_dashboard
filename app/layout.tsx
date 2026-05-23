@@ -110,19 +110,30 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       >
         <Providers initialUser={initial.user} initialProfile={initial.profile}>
           <ThemeProvider>
-            <div className="relative flex min-h-screen">
-              <Sidebar />
+            {initial.user ? (
+              /* Signed-in shell — full chrome (sidebar + header + bottom nav). */
+              <div className="relative flex min-h-screen">
+                <Sidebar />
 
-              <div className="flex min-h-screen min-w-0 flex-1 flex-col lg:pl-64">
-                <Header />
-                <main className="min-w-0 flex-1 px-4 pb-24 pt-4 sm:px-6 lg:px-8 lg:pb-8">
-                  {children}
-                </main>
+                <div className="flex min-h-screen min-w-0 flex-1 flex-col lg:pl-64">
+                  <Header />
+                  <main className="min-w-0 flex-1 px-4 pb-24 pt-4 sm:px-6 lg:px-8 lg:pb-8">
+                    {children}
+                  </main>
+                </div>
+
+                <BottomNav />
+                <SearchOverlay />
               </div>
-
-              <BottomNav />
-              <SearchOverlay />
-            </div>
+            ) : (
+              /* Guest shell — minimal. The landing page brings its own
+                 hero/CTA chrome; /pricing and /auth/* are self-contained.
+                 No sidebar, no bottom nav, no search overlay (sign-in
+                 gates search). */
+              <div className="relative min-h-screen">
+                <main className="min-h-screen">{children}</main>
+              </div>
+            )}
           </ThemeProvider>
         </Providers>
       </body>

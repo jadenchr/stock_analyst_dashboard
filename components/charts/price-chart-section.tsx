@@ -21,7 +21,8 @@ interface Props {
   symbol: string;
   /** Yahoo's exchange string from the quote — disambiguates NYSE vs NASDAQ. */
   exchange?: string;
-  /** Pixel height. Defaults to 600 — tall enough to read indicators. */
+  /** Pixel height. Defaults to 780 — tall enough to read indicators
+   *  comfortably without dwarfing the rest of the page. */
   height?: number;
 }
 
@@ -36,7 +37,7 @@ interface Props {
  * NSE, BSE, LSE, CSE, crypto, indices) and brings TradingView's full
  * indicator + drawing toolset for free.
  */
-export function PriceChartSection({ symbol, exchange, height = 600 }: Props) {
+export function PriceChartSection({ symbol, exchange, height = 780 }: Props) {
   const tvSymbol = toTradingViewSymbol(symbol, exchange);
 
   return (

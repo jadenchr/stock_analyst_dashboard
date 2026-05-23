@@ -59,11 +59,40 @@ export async function middleware(request: NextRequest) {
       },
     );
 
-    // Touch getUser() to refresh the JWT if needed
-    await supabase.auth.getUser();
+    // Touch getUser() to refresh the JWT if needed AND use it to gate
+    // protected routes. Mandatory sign-in: anything not on the public
+    // allow-list redirects guests to /auth/signin?next=<their target>.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user && !isPublicPath(pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/signin";
+      url.search = `?next=${encodeURIComponent(pathname + (request.nextUrl.search ?? ""))}`;
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
+}
+
+/**
+ * Routes a guest may visit without being redirected to sign-in.
+ *   • /              — landing page (renders dashboard once signed in)
+ *   • /auth/*        — sign-in / callback / sign-out
+ *   • /api/*         — API routes handle their own auth
+ *   • /pricing       — marketing
+ *   • /onboarding/*  — finish-profile flow
+ *   • static assets are excluded by the matcher already
+ */
+function isPublicPath(pathname: string): boolean {
+  if (pathname === "/") return true;
+  if (pathname === "/pricing") return true;
+  if (pathname.startsWith("/auth/")) return true;
+  if (pathname.startsWith("/api/")) return true;
+  if (pathname.startsWith("/onboarding/")) return true;
+  return false;
 }
 
 export const config = {

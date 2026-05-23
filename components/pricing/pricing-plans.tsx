@@ -12,37 +12,27 @@ type Cadence = "monthly" | "yearly";
 
 const PRO_MONTHLY = 9;
 const PRO_YEARLY = 90;
+const MAX_MONTHLY = 29;
+const MAX_YEARLY = 290;
 
 interface Plan {
-  id: "guest" | "free" | "pro";
+  id: "free" | "pro" | "max";
   name: string;
   tagline: string;
   highlight: boolean;
   features: string[];
-  cta: { label: string; href?: string; variant: "guest" | "free" | "pro" };
+  cta: { label: string; href?: string; variant: "free" | "pro" | "max" };
 }
 
 const PLANS: Plan[] = [
-  {
-    id: "guest",
-    name: "Guest",
-    tagline: "No signup needed",
-    highlight: false,
-    features: [
-      "Live quotes across US, India (NSE/BSE), Sri Lanka (CSE), UK, crypto",
-      "TradingView interactive charts with 6 indicators",
-      "Global indices, sector heatmap, top movers",
-      "Search any of 30,000+ tickers",
-    ],
-    cta: { label: "Open the markets", href: "/", variant: "guest" },
-  },
   {
     id: "free",
     name: "Free",
     tagline: "Sign in with Google",
     highlight: false,
     features: [
-      "Everything in Guest",
+      "Live quotes across US, India (NSE/BSE), Sri Lanka (CSE), crypto",
+      "TradingView interactive charts with 6 indicators",
       "AI Analyst Rating powered by Gemini 2.5 Pro",
       "5-tab financials grid (valuation, income, balance, cash flow, growth)",
       "Ticker-level news with sentiment classification",
@@ -60,7 +50,7 @@ const PLANS: Plan[] = [
       "Everything in Free",
       "Portfolio tracker with cost basis + P&L",
       "Custom screener filters (P/E, growth, margin, etc.)",
-      "Real-time price alerts (email + push)",
+      "Real-time price alerts (email + push) — up to 25",
       "Pro-only screens (Undervalued Large Caps, Top Institutional)",
       "Earnings calendar with EPS surprise history",
       "Advanced CSE coverage (historical, fundamentals)",
@@ -68,6 +58,24 @@ const PLANS: Plan[] = [
       "Export to CSV",
     ],
     cta: { label: "Join the waitlist", variant: "pro" },
+  },
+  {
+    id: "max",
+    name: "Max",
+    tagline: "For power users & small funds",
+    highlight: false,
+    features: [
+      "Everything in Pro",
+      "Unlimited price alerts",
+      "Up to 10 portfolios with attribution",
+      "REST API access with 50k req / month",
+      "Custom AI prompt — tune the analyst voice to your strategy",
+      "Higher Gemini 2.5 Pro quota (5× Pro)",
+      "Bulk CSV import (10,000 rows)",
+      "Webhook integrations (Slack, Discord, Zapier)",
+      "Priority human support",
+    ],
+    cta: { label: "Join the Max waitlist", variant: "max" },
   },
 ];
 
@@ -123,9 +131,19 @@ export function PricingPlans() {
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         {PLANS.map((plan, i) => {
           const isCurrentTier =
-            (plan.id === "guest" && !user) ||
             (plan.id === "free" && tier === "free") ||
             (plan.id === "pro" && tier === "pro");
+          // Resolve price for the row.
+          const priceMonthly =
+            plan.id === "pro"
+              ? PRO_MONTHLY
+              : plan.id === "max"
+                ? MAX_MONTHLY
+                : 0;
+          const priceYearly =
+            plan.id === "pro" ? PRO_YEARLY : plan.id === "max" ? MAX_YEARLY : 0;
+          const yearlyMonthly = priceYearly > 0 ? (priceYearly / 12).toFixed(2) : "0";
+          const isFree = plan.id === "free";
           return (
             <motion.div
               key={plan.id}
@@ -152,29 +170,29 @@ export function PricingPlans() {
               </header>
 
               <div className="mt-6 flex items-baseline gap-1">
-                {plan.id === "pro" ? (
-                  <>
-                    <span className="font-mono text-4xl font-semibold tabular-nums text-foreground">
-                      ${cadence === "monthly" ? PRO_MONTHLY : yearlyEquivalent}
-                    </span>
-                    <span className="text-xs text-muted-foreground">/ mo</span>
-                  </>
-                ) : (
+                {isFree ? (
                   <>
                     <span className="font-mono text-4xl font-semibold tabular-nums text-foreground">
                       $0
                     </span>
                     <span className="text-xs text-muted-foreground">forever</span>
                   </>
+                ) : (
+                  <>
+                    <span className="font-mono text-4xl font-semibold tabular-nums text-foreground">
+                      ${cadence === "monthly" ? priceMonthly : yearlyMonthly}
+                    </span>
+                    <span className="text-xs text-muted-foreground">/ mo</span>
+                  </>
                 )}
               </div>
-              {plan.id === "pro" && cadence === "yearly" && (
+              {!isFree && cadence === "yearly" && (
                 <p className="mt-1 text-[11px] text-muted-foreground">
-                  ${PRO_YEARLY} billed yearly · save{" "}
-                  <span className="text-bull">${PRO_MONTHLY * 12 - PRO_YEARLY}</span>
+                  ${priceYearly} billed yearly · save{" "}
+                  <span className="text-bull">${priceMonthly * 12 - priceYearly}</span>
                 </p>
               )}
-              {plan.id === "pro" && cadence === "monthly" && (
+              {!isFree && cadence === "monthly" && (
                 <p className="mt-1 text-[11px] text-muted-foreground">Billed monthly</p>
               )}
 
@@ -200,6 +218,13 @@ export function PricingPlans() {
               <div className="mt-6">
                 {plan.cta.variant === "pro" ? (
                   <ProWaitlistButton cadence={cadence} priceMonthly={PRO_MONTHLY} />
+                ) : plan.cta.variant === "max" ? (
+                  <ProWaitlistButton
+                    cadence={cadence}
+                    priceMonthly={MAX_MONTHLY}
+                    label="Join the Max waitlist"
+                    tier="max"
+                  />
                 ) : (
                   <Link
                     href={plan.cta.href ?? "/"}

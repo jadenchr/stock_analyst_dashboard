@@ -202,7 +202,13 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
     //    NOTE: we intentionally skip `await refresh()` here — the hard
     //    reload re-runs the server session/profile fetch anyway, and a
     //    flaky Supabase client roundtrip used to hang this step.
-    const target = opts.skip ? "/" : nextPath;
+    //    On success we append ?welcome=1 so the dashboard can pop a
+    //    transient confirmation banner. On skip, no banner.
+    const base = opts.skip ? "/" : nextPath;
+    const target =
+      saveOk && !opts.skip
+        ? base + (base.includes("?") ? "&" : "?") + "welcome=1"
+        : base;
     if (!saveOk && serverError) {
       // Surface the error briefly before navigating so the user can
       // screenshot / report it if needed.
