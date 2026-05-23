@@ -61,7 +61,7 @@ export default async function StockPage({ params }: PageProps) {
       <LivePriceHeader symbol={ticker} initial={initial} />
 
       {/* Historical chart — universal across exchanges */}
-      <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={820} />
+      <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={2460} />
 
       {isCSE ? (
         // CSE: cse.lk doesn't expose fundamentals or financials, so the
