@@ -174,10 +174,13 @@ function Hero() {
       onMouseMove={onMouseMove}
       className="relative overflow-hidden px-6 pt-16 pb-28 sm:px-10 sm:pt-24 sm:pb-36 lg:px-16 lg:pt-32 lg:pb-44"
     >
-      {/* Layered background */}
+      {/* Layered background — these MUST render before the content
+          motion.div so they stack underneath it. The candlestick chart
+          counts as background here so it can't paint over the CTAs. */}
       <LiquidEther intensity={0.32} />
       <div className="bg-aurora absolute inset-0" aria-hidden />
       <div className="bg-grid absolute inset-0 opacity-40" aria-hidden />
+      <CandlestickChart />
       <motion.div
         style={{ background: spotlight }}
         className="pointer-events-none absolute inset-0"
@@ -267,9 +270,6 @@ function Hero() {
           </span>
         </motion.div>
       </motion.div>
-
-      {/* Animated candlestick chart along the bottom of the hero */}
-      <CandlestickChart />
     </section>
   );
 }
@@ -378,18 +378,18 @@ function CandlestickChart() {
 
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-56 overflow-hidden sm:h-72"
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-40 overflow-hidden sm:h-48 lg:h-56"
       aria-hidden
     >
-      {/* Top-down fade so text above the chart never has to compete with
-          a candle wick.  Bottom fade dissolves the chart into the bg. */}
-      <div className="absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-background via-background/85 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-background to-transparent" />
+      {/* No top-fade overlay - the SVG opacity itself makes the candles
+          read as background. Slim height keeps them entirely below the
+          CTAs.  Bottom fade dissolves the chart into the page bg. */}
+      <div className="absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-background to-transparent" />
 
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         preserveAspectRatio="none"
-        className="absolute inset-0 h-full w-full opacity-70"
+        className="absolute inset-0 h-full w-full opacity-40"
       >
         {/* Subtle grid lines */}
         {gridYs.map((y, i) => (
