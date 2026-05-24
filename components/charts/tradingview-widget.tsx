@@ -45,12 +45,43 @@ export function TradingViewWidget({ symbol, interval = "1D", height = 440 }: Pro
       theme: "dark",
       style: "1",
       locale: "en",
-      enable_publishing: false,
-      hide_top_toolbar: false,
-      hide_legend: false,
-      hide_volume: false,
-      withdateranges: true,
-      allow_symbol_change: false,
+
+      // Full chrome — match TradingView's stand-alone Chart page as
+      // closely as the embed widget allows.
+      enable_publishing: true,         // top-right "Publish" button
+      withdateranges: true,            // bottom date-range bar
+      hide_top_toolbar: false,         // top symbol / interval / indicators bar
+      hide_side_toolbar: false,        // LEFT drawing-tools toolbar
+      hide_legend: false,              // OHLC legend at top-left of chart
+      hide_volume: false,              // volume sub-pane
+      allow_symbol_change: true,       // search a different symbol from the chart
+      save_image: true,                // top-right camera icon
+      show_popup_button: true,         // pop the chart out into its own window
+      popup_width: "1400",
+      popup_height: "900",
+
+      // Right side-panel — Watchlist + Details + News tabs
+      details: true,
+      hotlist: true,
+      calendar: true,
+      news: ["headlines"],
+      watchlist: [
+        "FOREXCOM:SPXUSD",
+        "FOREXCOM:NSXUSD",
+        "FOREXCOM:DJI",
+        "TVC:VIX",
+        "TVC:DXY",
+        "NASDAQ:AAPL",
+        "NASDAQ:NVDA",
+        "NASDAQ:TSLA",
+        "NASDAQ:META",
+        "NASDAQ:MSFT",
+      ],
+
+      // Pre-loaded studies — light-touch defaults that match what most
+      // users want when they open a stock for the first time.
+      studies: ["MASimple@tv-basicstudies", "Volume@tv-basicstudies"],
+
       backgroundColor: "rgba(0, 0, 0, 0)",
       gridColor: "rgba(180, 160, 220, 0.06)",
       support_host: "https://www.tradingview.com",
