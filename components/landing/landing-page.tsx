@@ -268,8 +268,8 @@ function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Floating animated chart line under the hero */}
-      <FloatingChart />
+      {/* Floating ticker constellation under the hero */}
+      <TickerConstellation />
     </section>
   );
 }
@@ -298,46 +298,81 @@ function WordReveal({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
-function FloatingChart() {
+/**
+ * Floating ticker constellation. Replaces the old wavy chart line.
+ * 12 stock-pill chips drift on independent slow orbits, each with its
+ * own colour temperature so the eye catches movement without
+ * tracking any single chip. Mimics a "market in motion" feel without
+ * looking like another chart.
+ */
+function TickerConstellation() {
+  const chips = [
+    { sym: "AAPL", pct: "+1.42%", tone: "bull", x: 8, y: 18, delay: 0, dur: 18 },
+    { sym: "NVDA", pct: "+2.14%", tone: "bull", x: 22, y: 60, delay: 0.4, dur: 22 },
+    { sym: "TSLA", pct: "-0.86%", tone: "bear", x: 16, y: 82, delay: 0.8, dur: 20 },
+    { sym: "MSFT", pct: "+0.55%", tone: "bull", x: 36, y: 32, delay: 0.2, dur: 24 },
+    { sym: "GOOGL", pct: "+1.07%", tone: "bull", x: 48, y: 78, delay: 1.0, dur: 19 },
+    { sym: "META", pct: "+1.89%", tone: "bull", x: 62, y: 25, delay: 0.6, dur: 23 },
+    { sym: "AMZN", pct: "-0.34%", tone: "bear", x: 70, y: 70, delay: 0.3, dur: 21 },
+    { sym: "BTC", pct: "+3.41%", tone: "bull", x: 80, y: 40, delay: 0.9, dur: 17 },
+    { sym: "ETH", pct: "+2.13%", tone: "bull", x: 88, y: 85, delay: 0.5, dur: 25 },
+    { sym: "RELIANCE", pct: "+0.94%", tone: "bull", x: 4, y: 50, delay: 1.2, dur: 26 },
+    { sym: "INFY", pct: "-1.12%", tone: "bear", x: 92, y: 18, delay: 0.7, dur: 20 },
+    { sym: "JKH", pct: "+0.68%", tone: "bull", x: 54, y: 55, delay: 1.1, dur: 22 },
+  ] as const;
+
   return (
-    <motion.svg
-      initial={{ opacity: 0, scaleY: 0.6 }}
-      animate={{ opacity: 1, scaleY: 1 }}
-      transition={{ duration: 1.4, delay: 0.6, ease: EASE }}
-      viewBox="0 0 1200 200"
-      preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-32 w-full sm:h-44"
+    <div
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-56 overflow-hidden sm:h-72"
       aria-hidden
     >
-      <defs>
-        <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-          <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="hsl(var(--bull))" stopOpacity="0.9" />
-        </linearGradient>
-        <linearGradient id="fillGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <motion.path
-        d="M0,150 C100,140 180,100 280,110 C380,120 460,80 560,70 C660,60 740,90 840,75 C940,60 1020,40 1120,30 L1200,30 L1200,200 L0,200 Z"
-        fill="url(#fillGradient)"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 1.8, delay: 0.8, ease: EASE }}
-      />
-      <motion.path
-        d="M0,150 C100,140 180,100 280,110 C380,120 460,80 560,70 C660,60 740,90 840,75 C940,60 1020,40 1120,30 L1200,30"
-        fill="none"
-        stroke="url(#lineGradient)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 2.4, delay: 0.4, ease: EASE }}
-      />
-    </motion.svg>
+      {/* Soft fade-out toward the bottom so chips dissolve into the bg */}
+      <div className="absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-background to-transparent" />
+      {chips.map((c, i) => {
+        // Random-ish drift offsets per chip so no two move identically.
+        const dx = ((i * 17) % 40) - 20;
+        const dy = ((i * 23) % 30) - 15;
+        return (
+          <motion.div
+            key={c.sym}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{
+              opacity: [0, 0.8, 0.8, 0.8, 0],
+              scale: 1,
+              x: [0, dx, -dx / 2, 0],
+              y: [0, dy / 2, dy, 0],
+            }}
+            transition={{
+              opacity: { duration: c.dur, repeat: Infinity, delay: c.delay, ease: "easeInOut" },
+              scale: { duration: 0.8, delay: c.delay, ease: EASE },
+              x: { duration: c.dur, repeat: Infinity, delay: c.delay, ease: "easeInOut" },
+              y: { duration: c.dur, repeat: Infinity, delay: c.delay, ease: "easeInOut" },
+            }}
+            className="absolute"
+            style={{ left: `${c.x}%`, top: `${c.y}%` }}
+          >
+            <span
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border bg-card/60 px-3 py-1.5 text-[11px] font-medium backdrop-blur-md",
+                c.tone === "bull"
+                  ? "border-bull/30 shadow-[0_0_24px_-6px_hsl(var(--bull)/0.4)]"
+                  : "border-bear/30 shadow-[0_0_24px_-6px_hsl(var(--bear)/0.4)]",
+              )}
+            >
+              <span className="font-mono font-semibold text-foreground/85">{c.sym}</span>
+              <span
+                className={cn(
+                  "font-mono tabular-nums",
+                  c.tone === "bull" ? "text-bull" : "text-bear",
+                )}
+              >
+                {c.pct}
+              </span>
+            </span>
+          </motion.div>
+        );
+      })}
+    </div>
   );
 }
 

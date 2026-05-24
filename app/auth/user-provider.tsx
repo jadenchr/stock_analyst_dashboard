@@ -110,6 +110,24 @@ export function UserProvider({ children, initialUser, initialProfile }: Props) {
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
+
+    // Backstop sync — if the server-rendered initialUser was missed
+    // (CDN cache, cookies set after a race, etc.), this re-reads the
+    // session on mount and updates the header to show the avatar
+    // immediately instead of stuck on "Sign in".
+    void (async () => {
+      const {
+        data: { user: liveUser },
+      } = await supabase.auth.getUser();
+      if (liveUser && !user) {
+        setUser(liveUser);
+        void refresh();
+      } else if (!liveUser && user) {
+        setUser(null);
+        setProfile(null);
+      }
+    })();
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -126,6 +144,8 @@ export function UserProvider({ children, initialUser, initialProfile }: Props) {
       }
     });
     return () => subscription.unsubscribe();
+    // user intentionally NOT in deps — we only want the backstop on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh]);
 
   const tier = useMemo(() => resolveTier(user, profile), [user, profile]);

@@ -12,6 +12,7 @@ export const QuoteSchema = z.object({
   currency: z.string(),
   price: z.number(),
   previousClose: z.number(),
+  open: z.number().nullable().optional(),
   change: z.number(),
   changePercent: z.number(),
   dayHigh: z.number().nullable(),
@@ -58,10 +59,18 @@ export type HistoricalRange = (typeof HISTORICAL_RANGES)[number];
 export const FundamentalsSchema = z.object({
   symbol: z.string(),
   // Optional profile from Yahoo's `assetProfile` module — used by AI analyzer
+  // and the rich overview on /stock/[ticker].
   profile: z
     .object({
       sector: z.string().nullable(),
       industry: z.string().nullable(),
+      country: z.string().nullable().optional(),
+      website: z.string().nullable().optional(),
+      fullTimeEmployees: z.number().nullable().optional(),
+      ceo: z.string().nullable().optional(),
+      ipoDate: z.string().nullable().optional(),
+      longBusinessSummary: z.string().nullable().optional(),
+      exchangeName: z.string().nullable().optional(),
     })
     .optional(),
   valuation: z.object({

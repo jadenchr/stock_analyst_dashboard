@@ -109,6 +109,7 @@ export async function getQuote(symbol: string): Promise<Quote> {
     currency: String(r.currency ?? "USD"),
     price,
     previousClose: prev,
+    open: num(r.regularMarketOpen),
     change: num(r.regularMarketChange) ?? price - prev,
     changePercent: num(r.regularMarketChangePercent) ?? ((price - prev) / prev) * 100,
     dayHigh: num(r.regularMarketDayHigh),
@@ -222,11 +223,40 @@ export async function getFundamentals(symbol: string): Promise<Fundamentals> {
   const ks = (summary.defaultKeyStatistics ?? {}) as Record<string, unknown>;
   const ap = (summary.assetProfile ?? {}) as Record<string, unknown>;
 
+  // Pick a CEO from companyOfficers — prefer titles containing CEO/Chief Exec.
+  const officers = (ap.companyOfficers as Array<Record<string, unknown>> | undefined) ?? [];
+  const ceoMatch = officers.find((o) => {
+    const t = typeof o.title === "string" ? o.title.toLowerCase() : "";
+    return t.includes("ceo") || t.includes("chief executive");
+  });
+  const ceoName = ceoMatch && typeof ceoMatch.name === "string" ? ceoMatch.name : null;
+
+  // First-trade date is in summaryDetail or defaultKeyStatistics as a Unix
+  // timestamp (seconds). Convert to ISO and slice to YYYY-MM-DD.
+  const firstTrade =
+    (sd.firstTradeDateMilliseconds as number | undefined) ??
+    ((ks.firstTradeDate as { raw?: number } | undefined)?.raw
+      ? (ks.firstTradeDate as { raw: number }).raw * 1000
+      : undefined);
+  const ipoDate =
+    typeof firstTrade === "number" && Number.isFinite(firstTrade)
+      ? new Date(firstTrade).toISOString().slice(0, 10)
+      : null;
+
   return {
     symbol,
     profile: {
       sector: typeof ap.sector === "string" ? ap.sector : null,
       industry: typeof ap.industry === "string" ? ap.industry : null,
+      country: typeof ap.country === "string" ? ap.country : null,
+      website: typeof ap.website === "string" ? ap.website : null,
+      fullTimeEmployees:
+        typeof ap.fullTimeEmployees === "number" ? ap.fullTimeEmployees : null,
+      ceo: ceoName,
+      ipoDate,
+      longBusinessSummary:
+        typeof ap.longBusinessSummary === "string" ? ap.longBusinessSummary : null,
+      exchangeName: null, // exchange comes from the quote, not the profile
     },
     valuation: {
       peTrailing: num(sd.trailingPE),

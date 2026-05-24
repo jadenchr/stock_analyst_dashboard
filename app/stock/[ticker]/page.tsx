@@ -7,6 +7,7 @@ import { TickerNotFoundError } from "@/lib/market-data/errors";
 import { LivePriceHeader } from "@/components/stock/live-price-header";
 import { WatchlistToggle } from "@/components/stock/watchlist-toggle";
 import { PriceChartSection } from "@/components/charts/price-chart-section";
+import { CompanyOverview } from "@/components/stock/company-overview";
 import { MetricsOverview } from "@/components/stock/metrics-overview";
 import { FinancialsGrid } from "@/components/stock/financials-grid";
 import { AnalystPanel } from "@/components/stock/analyst-panel";
@@ -60,8 +61,11 @@ export default async function StockPage({ params }: PageProps) {
 
       <LivePriceHeader symbol={ticker} initial={initial} />
 
+      {/* Perplexity Finance-style overview — key stats + company sidebar */}
+      <CompanyOverview symbol={ticker} />
+
       {/* Historical chart — universal across exchanges */}
-      <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={2460} />
+      <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={600} />
 
       {isCSE ? (
         // CSE: cse.lk doesn't expose fundamentals or financials, so the
