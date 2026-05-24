@@ -31,7 +31,7 @@ const RISK_LABEL: Record<string, string> = {
   conservative: "Conservative",
   moderate: "Moderate",
   aggressive: "Aggressive",
-  default: "—",
+  default: "-",
 };
 
 /**

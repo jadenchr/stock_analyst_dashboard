@@ -1,6 +1,6 @@
 /**
  * Pure-function technical indicator computations. Operate on closing prices
- * (or any 1D series) and return values aligned to the input index — leading
+ * (or any 1D series) and return values aligned to the input index - leading
  * positions are `null` until the lookback fills.
  *
  * Used by `lib/ai/stock-data.ts` to compute price-vs-MA and MACD signal

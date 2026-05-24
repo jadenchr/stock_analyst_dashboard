@@ -42,7 +42,7 @@ export function PricingHero() {
           className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base"
         >
           Browse markets for free. Sign in to unlock AI ratings, financials, and sentiment. Upgrade
-          to Pro for portfolio tracking, custom screeners, and price alerts — the institutional
+          to Pro for portfolio tracking, custom screeners, and price alerts - the institutional
           tools without the institutional bill.
         </motion.p>
       </div>

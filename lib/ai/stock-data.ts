@@ -12,11 +12,11 @@ import type { StockDataForAnalysis } from "./prompts";
  * derived technicals (50/200-MA distance, RSI, MACD signal) locally so we
  * don't burn Alpha Vantage's 5-req/min budget on every analysis.
  *
- * Returns `null` ONLY if the ticker doesn't even have a quote — every other
+ * Returns `null` ONLY if the ticker doesn't even have a quote - every other
  * field is allowed to be missing (the prompt builder renders "N/A").
  */
 export async function buildStockData(ticker: string): Promise<StockDataForAnalysis | null> {
-  // Quote is the only hard requirement — it gives price + exchange + currency
+  // Quote is the only hard requirement - it gives price + exchange + currency
   let quote;
   try {
     quote = await md.quote(ticker);
@@ -44,7 +44,7 @@ export async function buildStockData(ticker: string): Promise<StockDataForAnalys
   // Technicals from historical close
   const tech = computeTechnicals(hist, quote.price);
 
-  // Yahoo returns ratios as decimal fractions (0..1) — keep that scale but
+  // Yahoo returns ratios as decimal fractions (0..1) - keep that scale but
   // multiply when we want percent for the prompt. Profitability is already in
   // 0..1, so multiply by 100 for the human-facing prompt.
   return {
@@ -59,7 +59,7 @@ export async function buildStockData(ticker: string): Promise<StockDataForAnalys
     week52Low: quote.yearLow,
     week52High: quote.yearHigh,
     marketCap: quote.marketCap,
-    beta: f?.balanceSheet ? null : null, // beta isn't in our Fundamentals shape — leave for future
+    beta: f?.balanceSheet ? null : null, // beta isn't in our Fundamentals shape - leave for future
 
     peTrailing: f?.valuation.peTrailing ?? quote.peRatio,
     peForward: f?.valuation.peForward ?? quote.forwardPe,
@@ -142,10 +142,10 @@ function computeTechnicals(hist: HistoricalPoint[], currentPrice: number): Compu
   const priceVs200MA =
     lastSma200 != null ? ((currentPrice - lastSma200) / lastSma200) * 100 : null;
 
-  // RSI(14) — Wilder's smoothing
+  // RSI(14) - Wilder's smoothing
   const rsi14 = computeRSI(closes, 14);
 
-  // MACD signal — sign of (EMA12 - EMA26) at the latest bar
+  // MACD signal - sign of (EMA12 - EMA26) at the latest bar
   const ema12 = ema(closes, 12);
   const ema26 = ema(closes, 26);
   const macdLast = pairLast(ema12, ema26);

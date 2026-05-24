@@ -3,7 +3,7 @@ import { DashboardHome } from "@/components/dashboard/dashboard-home";
 import { LandingPage } from "@/components/landing/landing-page";
 
 /**
- * Root route — auth-aware:
+ * Root route - auth-aware:
  *   • Guest visitors get the animated marketing landing.
  *   • Signed-in users land straight on the markets dashboard.
  *

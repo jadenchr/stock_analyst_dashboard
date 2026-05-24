@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
  *   Body / Tables      → Roboto
  *   Chart / Data       → JetBrains Mono
  *
- * TT Hoves is a commercial typeface from TypeType — not on Google Fonts.
+ * TT Hoves is a commercial typeface from TypeType - not on Google Fonts.
  * Plus Jakarta Sans is the closest open-source match. To upgrade, drop
  * WOFF2s into `app/fonts/tt-hoves/` and swap `Plus_Jakarta_Sans` for
  * `localFont({ src: [...] })`.
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL ?? "https://stockvision-ai.vercel.app",
   ),
   title: {
-    default: "StockVision — AI-Powered Equity Intelligence",
+    default: "StockVision - AI-Powered Equity Intelligence",
     // Per-page metadata.description is set on every route file; this
     // template only governs <title> formatting.
     template: "%s · StockVision",
@@ -62,16 +62,16 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
-    title: "StockVision — AI-Powered Equity Intelligence",
+    title: "StockVision - AI-Powered Equity Intelligence",
     description:
-      "Live quotes, AI ratings, financials, news sentiment, and insider activity — for every public stock.",
+      "Live quotes, AI ratings, financials, news sentiment, and insider activity - for every public stock.",
     siteName: "StockVision",
   },
   twitter: {
     card: "summary_large_image",
-    title: "StockVision — AI-Powered Equity Intelligence",
+    title: "StockVision - AI-Powered Equity Intelligence",
     description:
-      "Live quotes, AI ratings, financials, and sentiment — for every public stock.",
+      "Live quotes, AI ratings, financials, and sentiment - for every public stock.",
   },
 };
 
@@ -97,7 +97,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        {/* Pre-hydration theme bootstrap — sets the html class before paint */}
+        {/* Pre-hydration theme bootstrap - sets the html class before paint */}
         <Script id="theme-init" src="/theme-init.js" strategy="beforeInteractive" />
       </head>
       <body
@@ -111,7 +111,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers initialUser={initial.user} initialProfile={initial.profile}>
           <ThemeProvider>
             {initial.user ? (
-              /* Signed-in shell — full chrome (sidebar + header + bottom nav). */
+              /* Signed-in shell - full chrome (sidebar + header + bottom nav). */
               <div className="relative flex min-h-screen">
                 <Sidebar />
 
@@ -126,7 +126,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <SearchOverlay />
               </div>
             ) : (
-              /* Guest shell — minimal. The landing page brings its own
+              /* Guest shell - minimal. The landing page brings its own
                  hero/CTA chrome; /pricing and /auth/* are self-contained.
                  No sidebar, no bottom nav, no search overlay (sign-in
                  gates search). */

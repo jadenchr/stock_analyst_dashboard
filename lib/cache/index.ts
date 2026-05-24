@@ -21,7 +21,7 @@ export interface CacheTtl {
 }
 
 export const TTL = {
-  quote: 60_000, //              60s — fast-moving
+  quote: 60_000, //              60s - fast-moving
   fundamentals: 60 * 60_000, //   1h
   financials: 24 * 60 * 60_000, // 24h
   historical: 5 * 60_000, //      5m
@@ -36,7 +36,7 @@ export const TTL = {
  * Read-through cache: if `key` is present and fresh, return it; otherwise
  * invoke `loader`, store the result, and return it.
  *
- * Loader errors are NOT cached — failed lookups always retry next call.
+ * Loader errors are NOT cached - failed lookups always retry next call.
  */
 export async function cached<T>(
   key: string,

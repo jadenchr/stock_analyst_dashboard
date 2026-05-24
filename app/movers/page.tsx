@@ -4,7 +4,7 @@ import { MoversClient } from "@/components/movers/movers-client";
 export const metadata: Metadata = {
   title: "Movers",
   description:
-    "Today's biggest gainers, losers, and most active stocks — filter by sector and market cap, ranked by absolute % move.",
+    "Today's biggest gainers, losers, and most active stocks - filter by sector and market cap, ranked by absolute % move.",
   openGraph: {
     title: "Today's Biggest Movers · StockVision",
     description:

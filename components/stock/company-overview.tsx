@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { formatCompactMoney, formatCurrency, formatPercent } from "@/lib/utils/format";
 
 /* ============================================================
- * CompanyOverview — Perplexity Finance-style stock summary.
+ * CompanyOverview - Perplexity Finance-style stock summary.
  * ============================================================
  * Two-column layout under the price header:
  *
@@ -56,7 +56,7 @@ export function CompanyOverview({ symbol }: Props) {
       aria-label="Company overview"
       className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]"
     >
-      {/* Left — key stats */}
+      {/* Left - key stats */}
       <div className="glass relative overflow-hidden rounded-2xl p-5">
         <header className="mb-4 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -71,22 +71,22 @@ export function CompanyOverview({ symbol }: Props) {
         </header>
 
         <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
-          <Stat label="Prev Close" value={quote?.previousClose != null ? formatCurrency(quote.previousClose, currency) : "—"} />
-          <Stat label="Market Cap" value={quote?.marketCap != null ? formatCompactMoney(quote.marketCap, currency) : "—"} />
+          <Stat label="Prev Close" value={quote?.previousClose != null ? formatCurrency(quote.previousClose, currency) : "-"} />
+          <Stat label="Market Cap" value={quote?.marketCap != null ? formatCompactMoney(quote.marketCap, currency) : "-"} />
           <Stat
             label="Open"
-            value={quote?.open != null ? formatCurrency(quote.open, currency) : "—"}
+            value={quote?.open != null ? formatCurrency(quote.open, currency) : "-"}
           />
           <Stat
             label="P/E Ratio"
-            value={fundamentals?.valuation.peTrailing != null ? fundamentals.valuation.peTrailing.toFixed(2) : "—"}
+            value={fundamentals?.valuation.peTrailing != null ? fundamentals.valuation.peTrailing.toFixed(2) : "-"}
           />
           <Stat
             label="Day Range"
             value={
               quote?.dayLow != null && quote?.dayHigh != null
                 ? `${formatCurrency(quote.dayLow, currency)} – ${formatCurrency(quote.dayHigh, currency)}`
-                : "—"
+                : "-"
             }
           />
           <Stat
@@ -94,7 +94,7 @@ export function CompanyOverview({ symbol }: Props) {
             value={
               fundamentals?.dividend.yield != null
                 ? formatPercent(fundamentals.dividend.yield * 100)
-                : "—"
+                : "-"
             }
           />
           <Stat
@@ -102,14 +102,14 @@ export function CompanyOverview({ symbol }: Props) {
             value={
               quote?.yearLow != null && quote?.yearHigh != null
                 ? `${formatCurrency(quote.yearLow, currency)} – ${formatCurrency(quote.yearHigh, currency)}`
-                : "—"
+                : "-"
             }
           />
-          <Stat label="EPS" value={quote?.eps != null ? formatCurrency(quote.eps, currency) : "—"} />
-          <Stat label="Volume" value={quote?.volume != null ? formatCompact(quote.volume) : "—"} />
+          <Stat label="EPS" value={quote?.eps != null ? formatCurrency(quote.eps, currency) : "-"} />
+          <Stat label="Volume" value={quote?.volume != null ? formatCompact(quote.volume) : "-"} />
         </div>
 
-        {/* 52-week range visualizer — shows where the current price sits */}
+        {/* 52-week range visualizer - shows where the current price sits */}
         {quote?.yearLow != null && quote?.yearHigh != null && quote?.price != null && (
           <YearRangeBar
             low={quote.yearLow}
@@ -120,7 +120,7 @@ export function CompanyOverview({ symbol }: Props) {
         )}
       </div>
 
-      {/* Right — company info sidebar */}
+      {/* Right - company info sidebar */}
       <aside className="glass relative flex flex-col gap-3 overflow-hidden rounded-2xl p-5">
         <header className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 ring-1 ring-primary/30">
@@ -131,19 +131,19 @@ export function CompanyOverview({ symbol }: Props) {
 
         <dl className="grid grid-cols-1 gap-2 text-xs">
           <InfoRow icon={Briefcase} label="Symbol" value={symbol} mono />
-          <InfoRow icon={Calendar} label="IPO Date" value={profile?.ipoDate ?? "—"} />
-          <InfoRow icon={UserIcon} label="CEO" value={profile?.ceo ?? "—"} />
+          <InfoRow icon={Calendar} label="IPO Date" value={profile?.ipoDate ?? "-"} />
+          <InfoRow icon={UserIcon} label="CEO" value={profile?.ceo ?? "-"} />
           <InfoRow
             icon={Users}
             label="Employees"
             value={
-              profile?.fullTimeEmployees != null ? formatCompact(profile.fullTimeEmployees) : "—"
+              profile?.fullTimeEmployees != null ? formatCompact(profile.fullTimeEmployees) : "-"
             }
           />
-          <InfoRow icon={Factory} label="Sector" value={profile?.sector ?? "—"} />
-          <InfoRow icon={Factory} label="Industry" value={profile?.industry ?? "—"} />
-          <InfoRow icon={MapPin} label="Country" value={profile?.country ?? "—"} />
-          <InfoRow icon={Globe2} label="Exchange" value={quote?.exchange ?? "—"} />
+          <InfoRow icon={Factory} label="Sector" value={profile?.sector ?? "-"} />
+          <InfoRow icon={Factory} label="Industry" value={profile?.industry ?? "-"} />
+          <InfoRow icon={MapPin} label="Country" value={profile?.country ?? "-"} />
+          <InfoRow icon={Globe2} label="Exchange" value={quote?.exchange ?? "-"} />
         </dl>
 
         {profile?.longBusinessSummary && (

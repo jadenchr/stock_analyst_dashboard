@@ -1,6 +1,6 @@
 /**
  * Typed errors for the data layer. Route handlers map these to HTTP codes
- * via `errorToResponse()` — clients NEVER see raw provider messages.
+ * via `errorToResponse()` - clients NEVER see raw provider messages.
  */
 
 export class ProviderError extends Error {

@@ -47,7 +47,7 @@ export function WelcomeBanner() {
             </div>
             <div className="min-w-0 pr-2">
               <p className="text-sm font-semibold text-foreground">
-                Profile saved — welcome to StockVision
+                Profile saved - welcome to StockVision
               </p>
               <p className="text-[11px] text-muted-foreground">
                 Your dashboard is now tuned to your style, risk, and markets.

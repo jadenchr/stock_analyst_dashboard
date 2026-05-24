@@ -247,7 +247,7 @@ function MoversTable({ rows, tab }: { rows: ScreenerResult[]; tab: Tab }) {
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.marketCap != null ? formatCompactMoney(r.marketCap, r.currency) : "—"}
+          {r.marketCap != null ? formatCompactMoney(r.marketCap, r.currency) : "-"}
         </span>
       ),
     },
@@ -257,7 +257,7 @@ function MoversTable({ rows, tab }: { rows: ScreenerResult[]; tab: Tab }) {
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.volume != null ? formatCompact(r.volume) : "—"}
+          {r.volume != null ? formatCompact(r.volume) : "-"}
         </span>
       ),
     },
@@ -267,7 +267,7 @@ function MoversTable({ rows, tab }: { rows: ScreenerResult[]; tab: Tab }) {
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.peRatio != null ? r.peRatio.toFixed(2) : "—"}
+          {r.peRatio != null ? r.peRatio.toFixed(2) : "-"}
         </span>
       ),
     },
@@ -291,7 +291,7 @@ function SummaryStrip({ data }: { data: { gainers: ScreenerResult[]; losers: Scr
   const topL = data.losers[0];
   const topA = data.mostActive[0];
 
-  // Aggregate stats — average move across the top 25 of each
+  // Aggregate stats - average move across the top 25 of each
   const avgGainPct =
     data.gainers.length > 0
       ? data.gainers.reduce((s, r) => s + r.changePercent, 0) / data.gainers.length
@@ -307,7 +307,7 @@ function SummaryStrip({ data }: { data: { gainers: ScreenerResult[]; losers: Scr
         icon={TrendingUp}
         iconTone="bull"
         label="Top gainer"
-        value={topG?.symbol ?? "—"}
+        value={topG?.symbol ?? "-"}
         hint={topG ? formatPercent(topG.changePercent) : ""}
         hintTone="bull"
       />
@@ -315,7 +315,7 @@ function SummaryStrip({ data }: { data: { gainers: ScreenerResult[]; losers: Scr
         icon={TrendingDown}
         iconTone="bear"
         label="Top loser"
-        value={topL?.symbol ?? "—"}
+        value={topL?.symbol ?? "-"}
         hint={topL ? formatPercent(topL.changePercent) : ""}
         hintTone="bear"
       />
@@ -330,7 +330,7 @@ function SummaryStrip({ data }: { data: { gainers: ScreenerResult[]; losers: Scr
         icon={Zap}
         iconTone="primary"
         label="Most active"
-        value={topA?.symbol ?? "—"}
+        value={topA?.symbol ?? "-"}
         hint={topA?.volume != null ? `${formatCompact(topA.volume)} shares` : ""}
       />
     </div>

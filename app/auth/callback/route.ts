@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
  *   3. Google redirects back to https://<supabase-project>/auth/v1/callback
  *   4. Supabase exchanges the code, then redirects HERE with ?code=...
  *   5. We exchange that code for a session cookie.
- *   6. We BOOTSTRAP the profile row — upsert id/email/name/avatar from
+ *   6. We BOOTSTRAP the profile row - upsert id/email/name/avatar from
  *      the auth metadata so a profile always exists before any
  *      downstream page tries to read it. This protects against the
  *      on-signup DB trigger being missing or skipped (existing users
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     // Bootstrap the row. We use the cookies-authed write client so RLS
     // attributes the INSERT to this user. Migration 0004 added the
-    // `profiles_insert_own` policy that allows this — without that
+    // `profiles_insert_own` policy that allows this - without that
     // migration this upsert silently fails, which is fine: the user
     // can still complete onboarding which calls the same logic.
     const writeClient = createServerWriteClient();
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
 
     if (profileError) {
-      // Schema doesn't have the column we expect — assume we can't gate
+      // Schema doesn't have the column we expect - assume we can't gate
       // and let them land on the dashboard. The dashboard will still
       // show their avatar via auth user_metadata even with no row.
       console.error("[auth/callback] profile fetch failed:", profileError.message);

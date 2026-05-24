@@ -67,7 +67,7 @@ export function SignInButton({ next = "/", className }: Props) {
   );
 }
 
-/* Minimal SVG of the Google "G" — avoids a network request for the logo. */
+/* Minimal SVG of the Google "G" - avoids a network request for the logo. */
 function GoogleGlyph() {
   return (
     <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>

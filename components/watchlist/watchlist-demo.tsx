@@ -90,7 +90,7 @@ export function WatchlistDemo() {
               See what a watchlist looks like
             </h3>
             <p className="text-xs text-muted-foreground">
-              Live data — the prices below are real, but the watchlist is sample-only until you
+              Live data - the prices below are real, but the watchlist is sample-only until you
               sign in.
             </p>
           </div>
@@ -137,7 +137,7 @@ export function WatchlistDemo() {
                     {quote && <span className="badge-ticker">{quote.exchange.slice(0, 8)}</span>}
                   </Link>
                   <span className="hidden truncate text-muted-foreground sm:block">
-                    {loading ? <SkeletonBlock className="h-3 w-32" /> : (quote?.name ?? "—")}
+                    {loading ? <SkeletonBlock className="h-3 w-32" /> : (quote?.name ?? "-")}
                   </span>
                   <span className="text-right font-mono tabular-nums text-foreground">
                     {loading ? (
@@ -145,7 +145,7 @@ export function WatchlistDemo() {
                     ) : quote ? (
                       formatCurrency(quote.price, quote.currency)
                     ) : (
-                      "—"
+                      "-"
                     )}
                   </span>
                   <span
@@ -160,7 +160,7 @@ export function WatchlistDemo() {
                     ) : quote ? (
                       formatPercent(quote.changePercent)
                     ) : (
-                      "—"
+                      "-"
                     )}
                   </span>
                   <span className="text-right font-mono tabular-nums text-muted-foreground">
@@ -169,7 +169,7 @@ export function WatchlistDemo() {
                     ) : quote?.marketCap != null ? (
                       formatCompactMoney(quote.marketCap, quote.currency)
                     ) : (
-                      "—"
+                      "-"
                     )}
                   </span>
                 </motion.li>

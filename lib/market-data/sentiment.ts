@@ -1,14 +1,14 @@
 /**
  * Lightweight, deterministic sentiment classifier for news headlines.
  *
- * Keyword-based and intentionally simple — runs server-side on every news
+ * Keyword-based and intentionally simple - runs server-side on every news
  * fetch, costs zero API calls. When ANTHROPIC_API_KEY ships in Phase 4, we
  * can swap this for a model call, but the public contract is the same:
  *   input: string  →  output: "positive" | "neutral" | "negative"
  *
  * Tuning notes:
  *   - Weighted lexicons of financial-context words (not generic sentiment).
- *   - Headlines often invert via "miss expectations", "beats estimates" —
+ *   - Headlines often invert via "miss expectations", "beats estimates" -
  *     the bigrams below capture the most common reversals.
  *   - Returns "neutral" when total |score| < 1 to avoid over-labeling.
  */

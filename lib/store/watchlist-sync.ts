@@ -14,7 +14,7 @@ const MERGED_FLAG_KEY = "stockvision.watchlist-merged.v1";
  *   • On signin: read Supabase rows + merge any localStorage entries that
  *     aren't yet on the server (one-time per session per user).
  *   • On every local change while signed in: write through to Supabase.
- *   • On signout: nothing — local store keeps whatever was last there.
+ *   • On signout: nothing - local store keeps whatever was last there.
  *
  * NOTE: we use the un-generic Supabase client here for write-side ops so
  * we don't fight the SDK's deep generic inference (which mis-resolves our

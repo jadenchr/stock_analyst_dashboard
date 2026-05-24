@@ -61,10 +61,10 @@ export default async function StockPage({ params }: PageProps) {
 
       <LivePriceHeader symbol={ticker} initial={initial} />
 
-      {/* Perplexity Finance-style overview — key stats + company sidebar */}
+      {/* Perplexity Finance-style overview - key stats + company sidebar */}
       <CompanyOverview symbol={ticker} />
 
-      {/* Historical chart — universal across exchanges */}
+      {/* Historical chart - universal across exchanges */}
       <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={600} />
 
       {isCSE ? (
@@ -108,7 +108,7 @@ export default async function StockPage({ params }: PageProps) {
             feature="fundamentals"
             variant="compact"
             title="Key metrics are part of the free signup"
-            description="Sign in to unlock P/E, PEG, EV/EBITDA, margins, growth — all the institutional metrics."
+            description="Sign in to unlock P/E, PEG, EV/EBITDA, margins, growth - all the institutional metrics."
           >
             <MetricsOverview symbol={ticker} />
           </FeatureGate>
@@ -131,7 +131,7 @@ export default async function StockPage({ params }: PageProps) {
           <FeatureGate
             feature="financials"
             title="5-tab financial breakdown"
-            description="Sign in to access valuation, income statement, balance sheet, cash flow, and growth — all annual + quarterly."
+            description="Sign in to access valuation, income statement, balance sheet, cash flow, and growth - all annual + quarterly."
           >
             <FinancialsGrid symbol={ticker} />
           </FeatureGate>
@@ -147,7 +147,7 @@ export default async function StockPage({ params }: PageProps) {
           <FeatureGate
             feature="insider_feed"
             title="Insider transactions"
-            description="Sign in to see Form 4 / 144 filings — executives buying or selling shares with $ value classification."
+            description="Sign in to see Form 4 / 144 filings - executives buying or selling shares with $ value classification."
           >
             <InsiderFeed symbol={ticker} />
           </FeatureGate>

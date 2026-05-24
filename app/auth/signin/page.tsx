@@ -20,7 +20,7 @@ export default async function SignInPage({ searchParams }: PageProps) {
   const { next, error } = await searchParams;
   const user = await getCurrentUser();
 
-  // Already signed in — just go where they were headed
+  // Already signed in - just go where they were headed
   if (user) {
     redirect(next ?? "/");
   }

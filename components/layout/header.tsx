@@ -13,7 +13,7 @@ export function Header() {
   const openSearch = useSearch((s) => s.setOpen);
   const [scrolled, setScrolled] = useState(false);
 
-  // Subtle elevation on scroll — gives the header weight when content moves under it
+  // Subtle elevation on scroll - gives the header weight when content moves under it
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();

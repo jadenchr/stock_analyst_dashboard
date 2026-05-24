@@ -65,7 +65,7 @@ export function RegionalSpotlight() {
             currency="LKR"
             rows={sriLanka}
             isLoading={isLoading && sriLanka.length === 0}
-            note="CSE coverage limited to live quotes — fundamentals & history unavailable on free tier"
+            note="CSE coverage limited to live quotes - fundamentals & history unavailable on free tier"
           />
         )}
       </div>

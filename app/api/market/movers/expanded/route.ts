@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 /**
  * Expanded movers feed used by the dedicated /movers page.
  * Pulls 25 of each (gainers, losers, most-active) via Yahoo's screener
- * module — the homepage only renders top 5 of each, so this isn't a
+ * module - the homepage only renders top 5 of each, so this isn't a
  * duplicate request, it's a deeper view. Cached for 60s.
  */
 export const GET = apiHandler({ bucket: "movers-expanded", limit: 60 }, async () => {

@@ -4,18 +4,18 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   /**
-   * Opacity multiplier for the whole effect. Defaults to 0.18 — very
+   * Opacity multiplier for the whole effect. Defaults to 0.18 - very
    * subtle, easy to scan content over the top.
    */
   intensity?: number;
-  /** Position relative to the parent — `fixed` covers the viewport. */
+  /** Position relative to the parent - `fixed` covers the viewport. */
   position?: "fixed" | "absolute";
   /** Extra Tailwind utilities; rarely needed. */
   className?: string;
 }
 
 /**
- * Liquid Ether — a CSS-only approximation of the reactbits.dev
+ * Liquid Ether - a CSS-only approximation of the reactbits.dev
  * `LiquidEther` WebGL effect. We use three large, soft, lavender-tinted
  * radial gradients that drift independently on slow keyframe orbits
  * with heavy blur. The result reads as a slowly-shifting plasma

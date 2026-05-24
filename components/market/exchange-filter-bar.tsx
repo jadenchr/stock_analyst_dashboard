@@ -18,7 +18,7 @@ const OPTIONS: { id: ExchangeFilter; label: string; flag: string }[] = [
 /**
  * Markets-page chip group. Drives the filter for IndicesGrid, TopMovers,
  * PopularTickers, RegionalSpotlight, and SectorHeatmap (sectors are
- * US-equity-only — hidden when filter is non-US).
+ * US-equity-only - hidden when filter is non-US).
  *
  * On first visit, seeds from the signed-in user's preferred_exchanges
  * (picking the first one) so a returning user lands in the right region.

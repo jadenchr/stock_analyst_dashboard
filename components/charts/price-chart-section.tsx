@@ -19,9 +19,9 @@ const TradingViewWidget = dynamic(
 interface Props {
   /** Internal symbol (AAPL, RELIANCE.BO, JKH.N0000, BTC-USD, ^GSPC, etc.) */
   symbol: string;
-  /** Yahoo's exchange string from the quote — disambiguates NYSE vs NASDAQ. */
+  /** Yahoo's exchange string from the quote - disambiguates NYSE vs NASDAQ. */
   exchange?: string;
-  /** Pixel height. Defaults to 780 — tall enough to read indicators
+  /** Pixel height. Defaults to 780 - tall enough to read indicators
    *  comfortably without dwarfing the rest of the page. */
   height?: number;
 }

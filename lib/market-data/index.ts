@@ -20,7 +20,7 @@ import type {
 } from "./types";
 
 /**
- * Provider-agnostic facade. Route handlers MUST go through this module —
+ * Provider-agnostic facade. Route handlers MUST go through this module -
  * never import provider adapters directly.
  *
  * Routing strategy:
@@ -90,7 +90,7 @@ export async function historical(
 /* ---------------------------------------------------------- search */
 
 /**
- * Unified search — fans out to both Yahoo and CSE, merges, deduplicates.
+ * Unified search - fans out to both Yahoo and CSE, merges, deduplicates.
  * CSE results are appended at the end so US/IN/UK matches surface first
  * unless the query matches a CSE-curated name directly.
  */
@@ -192,7 +192,7 @@ export async function screener(id: yahoo.ScreenerId, count = 25) {
 
 export async function news(symbol: string, companyName?: string): Promise<NewsArticle[]> {
   return cached(cacheKey("news", symbol), TTL.news, async () => {
-    // CSE: no per-company news endpoint available — fall straight to NewsAPI keyword search
+    // CSE: no per-company news endpoint available - fall straight to NewsAPI keyword search
     if (isCSE(symbol)) {
       const cleanedSymbol = symbol.split(".")[0];
       const q = companyName ? `${cleanedSymbol} ${companyName}` : cleanedSymbol;

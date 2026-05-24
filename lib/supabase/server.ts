@@ -13,7 +13,7 @@ interface CookieToSet {
  * Server-side Supabase client for Server Components, Route Handlers, and
  * Server Actions. Wraps Next's async `cookies()` for session reads /
  * refreshes during render. The `set` call is wrapped in try/catch because
- * cookies can't be mutated during a render of a Server Component — the
+ * cookies can't be mutated during a render of a Server Component - the
  * middleware (see /middleware.ts) handles refresh outside the render tree.
  */
 export async function createSupabaseServerClient() {
@@ -56,7 +56,7 @@ export async function getCurrentUser() {
  * Convenience: fetch the user + their profile row in one round-trip.
  * Returns { user: null, profile: null } when not signed in. When the user
  * is signed in but the profile row is missing (trigger lag, RLS blip,
- * or pre-schema signup), profile is null but user is still populated —
+ * or pre-schema signup), profile is null but user is still populated -
  * the entitlement system treats this as `free`, not `guest`.
  */
 export async function getCurrentSession() {

@@ -48,12 +48,12 @@ export function RevenueBars({ data, prefix = "$", className }: Props) {
                   transition={{ duration: 0.6, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
                   className="w-full rounded-sm bg-gradient-to-t from-primary/40 to-primary/80"
                   style={{ minHeight: 2 }}
-                  aria-label={`${b.label} ${b.value != null ? formatCompact(b.value) : "—"}`}
+                  aria-label={`${b.label} ${b.value != null ? formatCompact(b.value) : "-"}`}
                 />
               </div>
               <div className="flex flex-col items-center leading-tight">
                 <span className="font-mono text-[10px] tabular-nums text-foreground">
-                  {b.value != null ? `${prefix}${formatCompact(b.value)}` : "—"}
+                  {b.value != null ? `${prefix}${formatCompact(b.value)}` : "-"}
                 </span>
                 <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
                   {b.label}

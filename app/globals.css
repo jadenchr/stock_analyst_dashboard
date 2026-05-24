@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 /**
- * Palette — true black with soft-lavender accent.
+ * Palette - true black with soft-lavender accent.
  *   Background:  #000000  (pure OLED black)
  *   Card:        #0C0B10  (subtle indigo lift, 1px lavender-tinted border)
  *   Secondary:   #14131A
  *   Border:      #25232E  (lavender-tinted so it glows on black)
- *   Primary:     #C5A4DC  (lavender accent — buttons, links, focus, AI glow)
+ *   Primary:     #C5A4DC  (lavender accent - buttons, links, focus, AI glow)
  *   Bull:        neon emerald   tuned to pop on pure black
  *   Bear:        neon coral     same
  *   Neutral:     bright amber
@@ -21,13 +21,13 @@
     --background: 0 0% 0%; /* pure black */
     --foreground: 270 14% 96%; /* slight lavender-tinted white */
 
-    --card: 270 14% 5%; /* #0C0B10 — subtle lift */
+    --card: 270 14% 5%; /* #0C0B10 - subtle lift */
     --card-foreground: 270 14% 96%;
 
     --popover: 270 16% 4%;
     --popover-foreground: 270 14% 96%;
 
-    /* Lavender — the new brand accent */
+    /* Lavender - the new brand accent */
     --primary: 280 38% 75%; /* ~#C5A4DC */
     --primary-foreground: 270 30% 6%; /* deep purple-black for text on lavender */
 
@@ -43,11 +43,11 @@
     --destructive: 350 95% 65%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 12% 18%; /* #28262E — lavender-tinted */
+    --border: 270 12% 18%; /* #28262E - lavender-tinted */
     --input: 270 10% 12%;
     --ring: 280 60% 70%; /* slightly more saturated for focus rings */
 
-    /* Financial semantic tokens — neon-bright for true-black contrast */
+    /* Financial semantic tokens - neon-bright for true-black contrast */
     --bull: 150 95% 55%; /* neon emerald */
     --bull-glow: 150 95% 65%;
     --bear: 350 100% 67%; /* neon coral */
@@ -216,7 +216,7 @@
       0 24px 48px -12px rgb(15 12 24 / 0.16);
   }
 
-  /* Grid background — uses border tint so it doesn't blow out on black */
+  /* Grid background - uses border tint so it doesn't blow out on black */
   .bg-grid {
     background-image:
       linear-gradient(to right, hsl(var(--border) / 0.55) 1px, transparent 1px),
@@ -225,7 +225,7 @@
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
   }
 
-  /* Aurora — lavender radial wash for hero / AI panels */
+  /* Aurora - lavender radial wash for hero / AI panels */
   .bg-aurora {
     background-image:
       radial-gradient(at 18% 14%, hsl(var(--primary) / 0.18) 0px, transparent 50%),

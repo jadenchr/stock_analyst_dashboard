@@ -31,7 +31,7 @@ async function requireProUser() {
   return user;
 }
 
-/* -------------------------------------------------- GET — list + P&L ---- */
+/* -------------------------------------------------- GET - list + P&L ---- */
 
 export const GET = apiHandler({ bucket: "portfolio", limit: 60 }, async () => {
   const user = await requireProUser();
@@ -153,7 +153,7 @@ export const GET = apiHandler({ bucket: "portfolio", limit: 60 }, async () => {
   } satisfies PortfolioResponse;
 });
 
-/* -------------------------------------------------- POST — add lot ----- */
+/* -------------------------------------------------- POST - add lot ----- */
 
 const HoldingBodySchema = z.object({
   symbol: TickerSchema,

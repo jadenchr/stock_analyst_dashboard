@@ -18,7 +18,7 @@ interface CashRow {
 }
 
 function fmt(v: number | null): string {
-  return v == null ? "—" : `$${formatCompact(v)}`;
+  return v == null ? "-" : `$${formatCompact(v)}`;
 }
 
 export function CashflowTab({ financials }: Props) {

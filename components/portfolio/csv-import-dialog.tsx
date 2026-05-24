@@ -247,7 +247,7 @@ export function CsvImportDialog({ open, onClose, onImported }: Props) {
                 ))}
               </select>
               <p className="text-[11px] text-muted-foreground">
-                Applied to every row — your CSV doesn&rsquo;t need a currency column.
+                Applied to every row - your CSV doesn&rsquo;t need a currency column.
               </p>
             </div>
           </>
@@ -295,16 +295,16 @@ export function CsvImportDialog({ open, onClose, onImported }: Props) {
                       >
                         <td className="px-3 py-1.5 font-mono text-muted-foreground">{r.rowIndex}</td>
                         <td className="px-3 py-1.5 font-mono font-medium text-foreground">
-                          {r.symbol ?? "—"}
+                          {r.symbol ?? "-"}
                         </td>
                         <td className="px-3 py-1.5 text-right font-mono tabular-nums text-foreground">
-                          {r.shares ?? "—"}
+                          {r.shares ?? "-"}
                         </td>
                         <td className="px-3 py-1.5 text-right font-mono tabular-nums text-foreground">
-                          {r.costBasis ?? "—"}
+                          {r.costBasis ?? "-"}
                         </td>
                         <td className="px-3 py-1.5 font-mono text-muted-foreground">
-                          {r.purchaseDate ?? "—"}
+                          {r.purchaseDate ?? "-"}
                         </td>
                         <td className="px-3 py-1.5">
                           {r.valid ? (
@@ -349,7 +349,7 @@ export function CsvImportDialog({ open, onClose, onImported }: Props) {
               </h3>
               {result.skipped > 0 && (
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {result.skipped} row{result.skipped === 1 ? " was" : "s were"} skipped — see the
+                  {result.skipped} row{result.skipped === 1 ? " was" : "s were"} skipped - see the
                   preview for reasons.
                 </p>
               )}

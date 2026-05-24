@@ -16,7 +16,7 @@ const FAQ = [
   },
   {
     q: "When does Pro launch?",
-    a: "Soon. The infrastructure is built — Stripe checkout is the last piece. Join the waitlist and we'll email you the moment it goes live with a founder's discount.",
+    a: "Soon. The infrastructure is built - Stripe checkout is the last piece. Join the waitlist and we'll email you the moment it goes live with a founder's discount.",
   },
   {
     q: "Can I cancel anytime?",
@@ -36,7 +36,7 @@ const FAQ = [
   },
   {
     q: "What about taxes / brokerage integration?",
-    a: "Pro's portfolio tracker handles cost basis and P&L from manually entered or CSV-imported trades. Plaid-based brokerage sync (Robinhood, Schwab, Fidelity) is on the post-Pro-launch roadmap — let us know if it's a deal-breaker for you.",
+    a: "Pro's portfolio tracker handles cost basis and P&L from manually entered or CSV-imported trades. Plaid-based brokerage sync (Robinhood, Schwab, Fidelity) is on the post-Pro-launch roadmap - let us know if it's a deal-breaker for you.",
   },
 ];
 

@@ -8,7 +8,7 @@ import type { Quote, SearchResult } from "./types";
  * Colombo Stock Exchange (CSE) adapter.
  *
  * CSE does not publish an official API. We use the public AJAX endpoints
- * that power https://www.cse.lk — they are unauthenticated and stable
+ * that power https://www.cse.lk - they are unauthenticated and stable
  * enough for read-only equity data. Everything here is wrapped in a typed
  * Zod schema and defensive try/catch: if CSE changes the contract, the
  * facade falls through to a graceful "data unavailable" response instead

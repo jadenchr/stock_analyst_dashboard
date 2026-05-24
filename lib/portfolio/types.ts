@@ -26,7 +26,7 @@ export interface PortfolioHolding {
 
 /**
  * Per-currency aggregate totals. We don't FX-convert across currencies in
- * v1 — if a user holds both USD and INR stocks, they see two totals.
+ * v1 - if a user holds both USD and INR stocks, they see two totals.
  */
 export interface PortfolioTotals {
   currency: string;

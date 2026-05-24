@@ -45,7 +45,7 @@ export function PortfolioLocked({ variant }: { variant: "guest" | "free" }) {
             <p className="mt-2 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
               Add positions manually or drop in a broker CSV. We&rsquo;ll calculate
               cost-basis P&L on every lot, aggregate by currency, and refresh quotes
-              every minute. Multi-exchange — US, India, Sri Lanka, UK, crypto.
+              every minute. Multi-exchange - US, India, Sri Lanka, UK, crypto.
             </p>
             <ul className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <li className="inline-flex items-center gap-1.5">

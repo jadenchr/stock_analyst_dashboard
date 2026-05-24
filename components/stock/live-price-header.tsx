@@ -99,7 +99,7 @@ export function LivePriceHeader({ symbol, initial }: Props) {
               <Link
                 href="/pricing"
                 className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-neutral/40 bg-neutral/10 px-2 py-0.5 text-[11px] font-medium text-neutral transition-colors hover:bg-neutral/15"
-                title="CSE data on free tier is live quote only — historical and fundamentals available on Pro"
+                title="CSE data on free tier is live quote only - historical and fundamentals available on Pro"
               >
                 <Info className="h-3 w-3" aria-hidden />
                 Free-tier quote only · Pro unlocks history
@@ -157,15 +157,15 @@ export function LivePriceHeader({ symbol, initial }: Props) {
       {/* Stat strip */}
       <dl className="relative mt-6 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border/60 pt-4 sm:grid-cols-4 lg:grid-cols-6">
         <Stat label="Market Cap" value={formatCompactMoney(q.marketCap, q.currency)} />
-        <Stat label="Volume" value={q.volume != null ? formatCompact(q.volume) : "—"} />
-        <Stat label="P/E (TTM)" value={q.peRatio != null ? q.peRatio.toFixed(2) : "—"} />
-        <Stat label="EPS" value={q.eps != null ? formatCurrency(q.eps, q.currency) : "—"} />
+        <Stat label="Volume" value={q.volume != null ? formatCompact(q.volume) : "-"} />
+        <Stat label="P/E (TTM)" value={q.peRatio != null ? q.peRatio.toFixed(2) : "-"} />
+        <Stat label="EPS" value={q.eps != null ? formatCurrency(q.eps, q.currency) : "-"} />
         <Stat
           label="Day Range"
           value={
             q.dayHigh != null && q.dayLow != null
               ? `${q.dayLow.toFixed(2)} – ${q.dayHigh.toFixed(2)}`
-              : "—"
+              : "-"
           }
         />
         <Stat label="Currency" value={q.currency} />

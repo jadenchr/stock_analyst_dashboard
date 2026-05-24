@@ -15,7 +15,7 @@ interface Props {
   title?: string;
   /** Card body shown on the CTA. */
   description?: string;
-  /** Tag like "Pro" or "Free signup" — auto-derived if omitted. */
+  /** Tag like "Pro" or "Free signup" - auto-derived if omitted. */
   tag?: string;
   /** Full overlay (default) or compact strip. */
   variant?: "full" | "compact";
@@ -25,8 +25,8 @@ interface Props {
 /**
  * Features that stay gated even when sign-in walls are disabled. These
  * are the genuinely Pro-only sections (Portfolio, advanced screeners,
- * custom alerts). Everything else — AI ratings, fundamentals, news,
- * insider feed, etc. — is currently open to guests so the dashboard
+ * custom alerts). Everything else - AI ratings, fundamentals, news,
+ * insider feed, etc. - is currently open to guests so the dashboard
  * is fully explorable without an account.
  */
 const STILL_GATED: ReadonlySet<Feature> = new Set([
@@ -62,7 +62,7 @@ export function FeatureGate({
     return <>{children}</>;
   }
 
-  // "Open dashboard" mode — anything not on the Pro-only list renders
+  // "Open dashboard" mode - anything not on the Pro-only list renders
   // unconditionally. Removes the "sign in to continue" friction from
   // AI ratings, fundamentals, news, insider, etc.
   if (!STILL_GATED.has(feature)) {

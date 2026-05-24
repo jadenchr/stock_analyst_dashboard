@@ -32,12 +32,12 @@ function pctOrNull(num: number | null, denom: number | null): number | null {
 }
 
 function fmtMoney(v: number | null): string {
-  if (v == null) return "—";
+  if (v == null) return "-";
   return `$${formatCompact(v)}`;
 }
 
 function fmtPct(v: number | null): string {
-  if (v == null) return "—";
+  if (v == null) return "-";
   return `${v.toFixed(1)}%`;
 }
 
@@ -47,7 +47,7 @@ export function IncomeTab({ financials }: Props) {
   if (!financials) return null;
 
   const raw = financials.income[period];
-  // Yahoo returns most-recent first — reverse for chart, keep newest-first for table
+  // Yahoo returns most-recent first - reverse for chart, keep newest-first for table
   const chronological = [...raw].reverse();
 
   // Build derived rows with margins + YoY growth

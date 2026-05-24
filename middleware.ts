@@ -8,13 +8,13 @@ interface CookieToSet {
 }
 
 /**
- * Edge middleware — runs on every request before route handlers.
+ * Edge middleware - runs on every request before route handlers.
  *
  * Responsibilities:
  *   1. Defense-in-depth: re-apply critical security headers (also set in next.config.ts).
  *      Some hosting edges strip per-route headers, so re-applying here is belt-and-suspenders.
  *   2. Block clearly malicious paths (path traversal, raw script extensions).
- *   3. Refresh Supabase auth tokens — this is the ONLY place that can safely
+ *   3. Refresh Supabase auth tokens - this is the ONLY place that can safely
  *      mutate cookies on every request. Server components can READ them but
  *      can't write them during render.
  */
@@ -79,11 +79,11 @@ export async function middleware(request: NextRequest) {
 
 /**
  * Routes a guest may visit without being redirected to sign-in.
- *   • /              — landing page (renders dashboard once signed in)
- *   • /auth/*        — sign-in / callback / sign-out
- *   • /api/*         — API routes handle their own auth
- *   • /pricing       — marketing
- *   • /onboarding/*  — finish-profile flow
+ *   • /              - landing page (renders dashboard once signed in)
+ *   • /auth/*        - sign-in / callback / sign-out
+ *   • /api/*         - API routes handle their own auth
+ *   • /pricing       - marketing
+ *   • /onboarding/*  - finish-profile flow
  *   • static assets are excluded by the matcher already
  */
 function isPublicPath(pathname: string): boolean {

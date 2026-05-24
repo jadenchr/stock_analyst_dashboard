@@ -111,7 +111,7 @@ function InsiderContent({ rows }: { rows: InsiderTx[] }) {
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums">
-          {r.shares == null ? "—" : formatCompact(r.shares)}
+          {r.shares == null ? "-" : formatCompact(r.shares)}
         </span>
       ),
     },
@@ -121,7 +121,7 @@ function InsiderContent({ rows }: { rows: InsiderTx[] }) {
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.price == null ? "—" : `$${r.price.toFixed(2)}`}
+          {r.price == null ? "-" : `$${r.price.toFixed(2)}`}
         </span>
       ),
     },
@@ -136,7 +136,7 @@ function InsiderContent({ rows }: { rows: InsiderTx[] }) {
             r.transaction === "buy" ? "text-bull" : r.transaction === "sell" ? "text-bear" : "text-foreground",
           )}
         >
-          {r.value == null ? "—" : `$${formatCompact(r.value)}`}
+          {r.value == null ? "-" : `$${formatCompact(r.value)}`}
         </span>
       ),
     },

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const OPTIONS: Array<{ id: ThemePreference; label: string; description: string; icon: typeof Sun }> = [
   { id: "light", label: "Light", description: "Bright surfaces, high contrast", icon: Sun },
-  { id: "dark", label: "Dark", description: "Default — OLED-true terminal feel", icon: Moon },
+  { id: "dark", label: "Dark", description: "Default - OLED-true terminal feel", icon: Moon },
   { id: "system", label: "System", description: "Match your OS preference", icon: Monitor },
 ];
 

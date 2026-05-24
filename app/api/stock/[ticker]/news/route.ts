@@ -16,7 +16,7 @@ export async function GET(request: Request, { params }: Ctx) {
       const q = await md.quote(ticker);
       companyName = q.name;
     } catch {
-      // ignore — news fallback can still work with bare symbol
+      // ignore - news fallback can still work with bare symbol
     }
     return md.news(ticker, companyName);
   })(request);

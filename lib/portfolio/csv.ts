@@ -4,7 +4,7 @@
  *   • Mixed CRLF / LF line endings
  *   • Header row + auto-detection of common broker column names
  *
- * Intentionally avoids `papaparse` to keep the bundle small — broker
+ * Intentionally avoids `papaparse` to keep the bundle small - broker
  * CSVs are tiny (typically <100 rows) so a hand-rolled tokenizer is
  * plenty fast and easy to audit for security.
  */
@@ -119,7 +119,7 @@ function parseDate(raw: string): string | null {
   if (!trimmed) return null;
   // ISO already
   if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed.slice(0, 10);
-  // US (M/D/YYYY) or D/M/YYYY — ambiguous; assume US since Robinhood et al
+  // US (M/D/YYYY) or D/M/YYYY - ambiguous; assume US since Robinhood et al
   // emit it that way.
   const m = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
   if (m) {

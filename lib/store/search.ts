@@ -34,7 +34,7 @@ export const useSearch = create<SearchState>()(
     {
       name: STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
-      // Only persist recent searches — open state should always start false
+      // Only persist recent searches - open state should always start false
       partialize: (state) => ({ recent: state.recent }) as Pick<SearchState, "recent">,
     },
   ),

@@ -12,7 +12,7 @@ export default function StockError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Generic client-side log only — never include request bodies or PII
+    // Generic client-side log only - never include request bodies or PII
     console.error("Stock page error:", error.digest ?? error.message);
   }, [error]);
 

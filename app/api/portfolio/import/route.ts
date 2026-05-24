@@ -10,7 +10,7 @@ import type { PortfolioImportPreviewRow, PortfolioImportResult } from "@/lib/por
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const MAX_CSV_BYTES = 256 * 1024; // 256KB — plenty for thousands of lots
+const MAX_CSV_BYTES = 256 * 1024; // 256KB - plenty for thousands of lots
 const MAX_ROWS = 1_000;
 
 const BodySchema = z.object({
@@ -60,7 +60,7 @@ export const POST = apiHandler(
 
     const previewRows: PortfolioImportPreviewRow[] = mapRows(tokens);
 
-    // Preview mode — return parsed rows without inserting
+    // Preview mode - return parsed rows without inserting
     if (parsed.data.preview) {
       return {
         rows: previewRows,
@@ -70,7 +70,7 @@ export const POST = apiHandler(
       };
     }
 
-    // Commit — insert valid rows in one batch
+    // Commit - insert valid rows in one batch
     const validRows = previewRows.filter((r) => r.valid);
     const skipped = previewRows.length - validRows.length;
     if (validRows.length === 0) {

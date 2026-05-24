@@ -12,7 +12,7 @@ import {
 
 /**
  * Single shared Yahoo Finance client. Notices ("yahooSurvey", "ripHistorical")
- * are suppressed to keep server logs clean — the data is still valid.
+ * are suppressed to keep server logs clean - the data is still valid.
  */
 const yf = new YahooFinance();
 yf._notices.suppress(["yahooSurvey", "ripHistorical"]);
@@ -105,7 +105,7 @@ export async function getQuote(symbol: string): Promise<Quote> {
   return {
     symbol: String(r.symbol),
     name: String(r.longName ?? r.shortName ?? r.symbol),
-    exchange: String(r.fullExchangeName ?? r.exchange ?? "—"),
+    exchange: String(r.fullExchangeName ?? r.exchange ?? "-"),
     currency: String(r.currency ?? "USD"),
     price,
     previousClose: prev,
@@ -149,7 +149,7 @@ export async function search(query: string): Promise<SearchResult[]> {
       .map<SearchResult>((q) => ({
         symbol: String(q.symbol),
         name: String(q.longname ?? q.shortname ?? q.symbol),
-        exchange: String(q.exchDisp ?? q.exchange ?? "—"),
+        exchange: String(q.exchDisp ?? q.exchange ?? "-"),
         type: String(q.quoteType ?? q.typeDisp ?? "EQUITY"),
       }));
   } catch (err) {
@@ -223,7 +223,7 @@ export async function getFundamentals(symbol: string): Promise<Fundamentals> {
   const ks = (summary.defaultKeyStatistics ?? {}) as Record<string, unknown>;
   const ap = (summary.assetProfile ?? {}) as Record<string, unknown>;
 
-  // Pick a CEO from companyOfficers — prefer titles containing CEO/Chief Exec.
+  // Pick a CEO from companyOfficers - prefer titles containing CEO/Chief Exec.
   const officers = (ap.companyOfficers as Array<Record<string, unknown>> | undefined) ?? [];
   const ceoMatch = officers.find((o) => {
     const t = typeof o.title === "string" ? o.title.toLowerCase() : "";
@@ -317,7 +317,7 @@ function rowEndDate(v: unknown): string {
 }
 
 function rowPeriod(endDate: string, quarterly: boolean): string {
-  if (!endDate) return "—";
+  if (!endDate) return "-";
   const d = new Date(endDate);
   if (Number.isNaN(d.getTime())) return endDate;
   if (!quarterly) return String(d.getUTCFullYear());
@@ -506,7 +506,7 @@ export async function runScreener(id: ScreenerId, count = 25): Promise<ScreenerR
   try {
     // Yahoo recently started returning a `newListingDate` field that's not in
     // yahoo-finance2 v3.14.1's strict schema, which causes a hard error on
-    // every screener call. We disable result validation here — we already
+    // every screener call. We disable result validation here - we already
     // defensively access fields below, so a malformed quote just gets skipped.
     raw = (await yf.screener(
       { scrIds: id, count },
@@ -523,7 +523,7 @@ export async function runScreener(id: ScreenerId, count = 25): Promise<ScreenerR
     rows.push({
       symbol: q.symbol,
       name: q.longName ?? q.shortName ?? q.symbol,
-      exchange: q.fullExchangeName ?? q.exchange ?? "—",
+      exchange: q.fullExchangeName ?? q.exchange ?? "-",
       price: q.regularMarketPrice,
       change: q.regularMarketChange ?? 0,
       changePercent: q.regularMarketChangePercent ?? 0,
@@ -542,7 +542,7 @@ export async function getDailyGainers(): Promise<MoverQuote[]> {
   try {
     // `dailyGainers` is deprecated upstream; screener is the supported path.
     // `validateResult: false` ignores Yahoo's new `newListingDate` field
-    // that v3.14.1's schema doesn't yet allow — see runScreener() above.
+    // that v3.14.1's schema doesn't yet allow - see runScreener() above.
     const raw = (await yf.screener(
       { scrIds: "day_gainers", count: 10 },
       undefined,

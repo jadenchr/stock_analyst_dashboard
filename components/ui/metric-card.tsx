@@ -12,7 +12,7 @@ interface Props {
   hint?: string;
   /** Tone for delta/value coloring. */
   tone?: "bull" | "bear" | "neutral" | "default";
-  /** Sparkline series — optional. */
+  /** Sparkline series - optional. */
   spark?: readonly number[];
   /** Formatter for the numeric value. Defaults to fixed-2 with sign. */
   format?: (v: number) => string;
@@ -35,7 +35,7 @@ const TONE_COLOR: Record<NonNullable<Props["tone"]>, string> = {
 };
 
 function defaultFormat(v: number): string {
-  if (!Number.isFinite(v)) return "—";
+  if (!Number.isFinite(v)) return "-";
   if (Math.abs(v) >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(2)}B`;
   if (Math.abs(v) >= 1_000_000) return `${(v / 1_000_000).toFixed(2)}M`;
   if (Math.abs(v) >= 10_000) return v.toLocaleString("en-US", { maximumFractionDigits: 0 });
@@ -75,7 +75,7 @@ export function MetricCard({
 
       <div className="flex items-baseline gap-1">
         {value == null || !Number.isFinite(value) ? (
-          <span className="font-mono text-2xl tabular-nums text-muted-foreground">—</span>
+          <span className="font-mono text-2xl tabular-nums text-muted-foreground">-</span>
         ) : (
           <AnimatedNumber
             value={value}

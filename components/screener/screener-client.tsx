@@ -49,14 +49,14 @@ const PRESETS: Preset[] = [
   {
     id: "day_losers",
     label: "Day Losers",
-    description: "Largest one-day declines — often opportunity or breakdown.",
+    description: "Largest one-day declines - often opportunity or breakdown.",
     icon: TrendingDown,
     tone: "bear",
   },
   {
     id: "most_actives",
     label: "Most Active",
-    description: "Highest volume names — institutional flow indicator.",
+    description: "Highest volume names - institutional flow indicator.",
     icon: Zap,
     tone: "primary",
   },
@@ -268,7 +268,7 @@ function ScreenerResults({
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.marketCap != null ? formatCompactMoney(r.marketCap, r.currency) : "—"}
+          {r.marketCap != null ? formatCompactMoney(r.marketCap, r.currency) : "-"}
         </span>
       ),
     },
@@ -278,7 +278,7 @@ function ScreenerResults({
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.peRatio != null ? r.peRatio.toFixed(2) : "—"}
+          {r.peRatio != null ? r.peRatio.toFixed(2) : "-"}
         </span>
       ),
     },
@@ -288,7 +288,7 @@ function ScreenerResults({
       align: "right",
       render: (r) => (
         <span className="font-mono tabular-nums text-muted-foreground">
-          {r.volume != null ? formatCompact(r.volume) : "—"}
+          {r.volume != null ? formatCompact(r.volume) : "-"}
         </span>
       ),
     },

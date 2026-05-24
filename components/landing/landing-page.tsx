@@ -30,14 +30,14 @@ import { LiquidEther } from "@/components/effects/liquid-ether";
 import { cn } from "@/lib/utils";
 
 /* ============================================================
- * StockVision Landing — animated, minimalistic, dark-first.
+ * StockVision Landing - animated, minimalistic, dark-first.
  * ============================================================
  * Composition:
  *   1. Sticky-top ticker tape (live-feel)
  *   2. Cinematic hero with parallax + gradient mesh + word reveal
  *   3. KPI strip with count-up + spark traces
  *   4. Bento feature grid (Apple-style modular showcase)
- *   5. "How it works" — 3-step animated path
+ *   5. "How it works" - 3-step animated path
  *   6. Animated dashboard preview panel
  *   7. Final CTA + footer
  * All motion respects prefers-reduced-motion via Framer Motion's
@@ -54,7 +54,7 @@ export function LandingPage() {
       ref={containerRef}
       className="relative overflow-x-hidden"
     >
-      {/* Top ticker tape — runs across the very top of the landing */}
+      {/* Top ticker tape - runs across the very top of the landing */}
       <TickerTape />
 
       <Hero />
@@ -147,7 +147,7 @@ function Hero() {
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
-  // Cursor spotlight — follows the mouse with spring smoothing.
+  // Cursor spotlight - follows the mouse with spring smoothing.
   const mouseX = useMotionValue(50);
   const mouseY = useMotionValue(50);
   const spotX = useSpring(mouseX, { stiffness: 60, damping: 18 });
@@ -217,7 +217,7 @@ function Hero() {
         >
           A terminal-fast workspace for serious investors. Live fundamentals,
           technicals, Gemini-powered analyst ratings, news sentiment, insider
-          activity, and portfolio P&amp;L — across US, India, Sri Lanka, and crypto.
+          activity, and portfolio P&amp;L - across US, India, Sri Lanka, and crypto.
         </motion.p>
 
         <motion.div
@@ -268,8 +268,8 @@ function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Floating ticker constellation under the hero */}
-      <TickerConstellation />
+      {/* Animated candlestick chart along the bottom of the hero */}
+      <CandlestickChart />
     </section>
   );
 }
@@ -299,79 +299,166 @@ function WordReveal({ text, delay = 0 }: { text: string; delay?: number }) {
 }
 
 /**
- * Floating ticker constellation. Replaces the old wavy chart line.
- * 12 stock-pill chips drift on independent slow orbits, each with its
- * own colour temperature so the eye catches movement without
- * tracking any single chip. Mimics a "market in motion" feel without
- * looking like another chart.
+ * Animated candlestick chart that runs along the bottom of the hero.
+ * Deterministic random walk (seeded so it's identical between render
+ * passes), then each candle pops in left-to-right on a quick stagger.
+ * The whole strip lives behind a top-to-bottom fade so it dissolves
+ * under any text in the hero - no overlap, no reading problems.
  */
-function TickerConstellation() {
-  const chips = [
-    { sym: "AAPL", pct: "+1.42%", tone: "bull", x: 8, y: 18, delay: 0, dur: 18 },
-    { sym: "NVDA", pct: "+2.14%", tone: "bull", x: 22, y: 60, delay: 0.4, dur: 22 },
-    { sym: "TSLA", pct: "-0.86%", tone: "bear", x: 16, y: 82, delay: 0.8, dur: 20 },
-    { sym: "MSFT", pct: "+0.55%", tone: "bull", x: 36, y: 32, delay: 0.2, dur: 24 },
-    { sym: "GOOGL", pct: "+1.07%", tone: "bull", x: 48, y: 78, delay: 1.0, dur: 19 },
-    { sym: "META", pct: "+1.89%", tone: "bull", x: 62, y: 25, delay: 0.6, dur: 23 },
-    { sym: "AMZN", pct: "-0.34%", tone: "bear", x: 70, y: 70, delay: 0.3, dur: 21 },
-    { sym: "BTC", pct: "+3.41%", tone: "bull", x: 80, y: 40, delay: 0.9, dur: 17 },
-    { sym: "ETH", pct: "+2.13%", tone: "bull", x: 88, y: 85, delay: 0.5, dur: 25 },
-    { sym: "RELIANCE", pct: "+0.94%", tone: "bull", x: 4, y: 50, delay: 1.2, dur: 26 },
-    { sym: "INFY", pct: "-1.12%", tone: "bear", x: 92, y: 18, delay: 0.7, dur: 20 },
-    { sym: "JKH", pct: "+0.68%", tone: "bull", x: 54, y: 55, delay: 1.1, dur: 22 },
-  ] as const;
+function CandlestickChart() {
+  const CANDLE_COUNT = 96;
+  const WIDTH = 1600;
+  const HEIGHT = 320;
+  const CHART_TOP = 40;
+  const CHART_BOTTOM = HEIGHT - 30;
+
+  // Seeded PRNG so SSR/CSR agree on the same candle layout.
+  function mulberry32(seed: number) {
+    let t = seed;
+    return () => {
+      t = (t + 0x6d2b79f5) | 0;
+      let r = Math.imul(t ^ (t >>> 15), 1 | t);
+      r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const candles = useRef<
+    Array<{ x: number; open: number; close: number; high: number; low: number; bull: boolean }>
+  >([]);
+  if (candles.current.length === 0) {
+    const rand = mulberry32(42);
+    const slot = WIDTH / CANDLE_COUNT;
+    const candleWidth = slot * 0.55;
+    let price = 100;
+    let prevClose = price;
+    const built: typeof candles.current = [];
+    for (let i = 0; i < CANDLE_COUNT; i++) {
+      // Random walk with a mild trend so the eye reads "rising market"
+      const drift = (rand() - 0.45) * 4 + 0.18;
+      const open = prevClose;
+      const close = Math.max(40, open + drift);
+      const wickUp = rand() * 3;
+      const wickDown = rand() * 3;
+      const high = Math.max(open, close) + wickUp;
+      const low = Math.min(open, close) - wickDown;
+      built.push({
+        x: i * slot + slot / 2 - candleWidth / 2,
+        open,
+        close,
+        high,
+        low,
+        bull: close >= open,
+      });
+      prevClose = close;
+    }
+    // Normalise to the SVG viewport.
+    const allLow = Math.min(...built.map((c) => c.low));
+    const allHigh = Math.max(...built.map((c) => c.high));
+    const span = allHigh - allLow || 1;
+    const project = (v: number) =>
+      CHART_BOTTOM - ((v - allLow) / span) * (CHART_BOTTOM - CHART_TOP);
+    candles.current = built.map((c) => ({
+      ...c,
+      open: project(c.open),
+      close: project(c.close),
+      high: project(c.high),
+      low: project(c.low),
+    }));
+  }
+
+  const slot = WIDTH / CANDLE_COUNT;
+  const candleWidth = slot * 0.55;
+  // Horizontal grid lines for the trading-screen feel.
+  const gridYs = [
+    CHART_TOP + (CHART_BOTTOM - CHART_TOP) * 0.25,
+    CHART_TOP + (CHART_BOTTOM - CHART_TOP) * 0.5,
+    CHART_TOP + (CHART_BOTTOM - CHART_TOP) * 0.75,
+  ];
 
   return (
     <div
       className="pointer-events-none absolute inset-x-0 bottom-0 h-56 overflow-hidden sm:h-72"
       aria-hidden
     >
-      {/* Soft fade-out toward the bottom so chips dissolve into the bg */}
-      <div className="absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-t from-background to-transparent" />
-      {chips.map((c, i) => {
-        // Random-ish drift offsets per chip so no two move identically.
-        const dx = ((i * 17) % 40) - 20;
-        const dy = ((i * 23) % 30) - 15;
-        return (
-          <motion.div
-            key={c.sym}
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={{
-              opacity: [0, 0.8, 0.8, 0.8, 0],
-              scale: 1,
-              x: [0, dx, -dx / 2, 0],
-              y: [0, dy / 2, dy, 0],
-            }}
-            transition={{
-              opacity: { duration: c.dur, repeat: Infinity, delay: c.delay, ease: "easeInOut" },
-              scale: { duration: 0.8, delay: c.delay, ease: EASE },
-              x: { duration: c.dur, repeat: Infinity, delay: c.delay, ease: "easeInOut" },
-              y: { duration: c.dur, repeat: Infinity, delay: c.delay, ease: "easeInOut" },
-            }}
-            className="absolute"
-            style={{ left: `${c.x}%`, top: `${c.y}%` }}
-          >
-            <span
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border bg-card/60 px-3 py-1.5 text-[11px] font-medium backdrop-blur-md",
-                c.tone === "bull"
-                  ? "border-bull/30 shadow-[0_0_24px_-6px_hsl(var(--bull)/0.4)]"
-                  : "border-bear/30 shadow-[0_0_24px_-6px_hsl(var(--bear)/0.4)]",
-              )}
+      {/* Top-down fade so text above the chart never has to compete with
+          a candle wick.  Bottom fade dissolves the chart into the bg. */}
+      <div className="absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-background via-background/85 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-background to-transparent" />
+
+      <svg
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+        preserveAspectRatio="none"
+        className="absolute inset-0 h-full w-full opacity-70"
+      >
+        {/* Subtle grid lines */}
+        {gridYs.map((y, i) => (
+          <line
+            key={i}
+            x1={0}
+            x2={WIDTH}
+            y1={y}
+            y2={y}
+            stroke="hsl(var(--border))"
+            strokeWidth={1}
+            strokeDasharray="4 6"
+            opacity={0.35}
+          />
+        ))}
+        {/* Crosshair vertical that drifts slowly across the chart */}
+        <motion.line
+          x1={0}
+          x2={0}
+          y1={CHART_TOP - 10}
+          y2={CHART_BOTTOM + 10}
+          stroke="hsl(var(--primary))"
+          strokeWidth={1}
+          strokeDasharray="4 6"
+          opacity={0.3}
+          initial={{ x: 0 }}
+          animate={{ x: WIDTH }}
+          transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+        />
+
+        {candles.current.map((c, i) => {
+          const bodyTop = Math.min(c.open, c.close);
+          const bodyHeight = Math.max(2, Math.abs(c.close - c.open));
+          const color = c.bull ? "hsl(var(--bull))" : "hsl(var(--bear))";
+          return (
+            <motion.g
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.45,
+                delay: 0.4 + i * 0.012,
+                ease: [0.16, 1, 0.3, 1],
+              }}
             >
-              <span className="font-mono font-semibold text-foreground/85">{c.sym}</span>
-              <span
-                className={cn(
-                  "font-mono tabular-nums",
-                  c.tone === "bull" ? "text-bull" : "text-bear",
-                )}
-              >
-                {c.pct}
-              </span>
-            </span>
-          </motion.div>
-        );
-      })}
+              {/* Wick */}
+              <line
+                x1={c.x + candleWidth / 2}
+                x2={c.x + candleWidth / 2}
+                y1={c.high}
+                y2={c.low}
+                stroke={color}
+                strokeWidth={1.2}
+                opacity={0.85}
+              />
+              {/* Body */}
+              <rect
+                x={c.x}
+                y={bodyTop}
+                width={candleWidth}
+                height={bodyHeight}
+                fill={color}
+                opacity={0.9}
+                rx={0.6}
+              />
+            </motion.g>
+          );
+        })}
+      </svg>
     </div>
   );
 }
@@ -514,7 +601,7 @@ function FeatureBento() {
             className="md:col-span-2 md:row-span-1"
             icon={Sparkles}
             title="AI analyst ratings"
-            description="Gemini 2.5 Pro reads every 10-K, earnings call, and news headline so you don't have to. Confidence-scored ratings, price targets, bull/bear cases — refreshed every 15 minutes."
+            description="Gemini 2.5 Pro reads every 10-K, earnings call, and news headline so you don't have to. Confidence-scored ratings, price targets, bull/bear cases - refreshed every 15 minutes."
             accent="primary"
           >
             <AIRatingPreview />
@@ -549,7 +636,7 @@ function FeatureBento() {
           <BentoCard
             icon={LineChart}
             title="Pro charts"
-            description="TradingView Advanced Chart on every stock — drawing tools, 100+ indicators."
+            description="TradingView Advanced Chart on every stock - drawing tools, 100+ indicators."
           >
             <ChartPreview />
           </BentoCard>
@@ -788,7 +875,7 @@ const STEPS = [
   {
     icon: TrendingUp,
     title: "Read the tape",
-    body: "AI ratings, fundamentals, news sentiment, insider activity — every public stock, one search.",
+    body: "AI ratings, fundamentals, news sentiment, insider activity - every public stock, one search.",
   },
 ];
 
@@ -1082,7 +1169,7 @@ function FinalCta() {
           <span className="gradient-text">Start investing.</span>
         </h2>
         <p className="max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          One workspace for every public stock — across every market that matters.
+          One workspace for every public stock - across every market that matters.
           Free to start, no card required.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">

@@ -168,7 +168,7 @@ function WatchlistRow({ symbol, quote, isLoading, onRemove }: RowProps) {
         {quote && <span className="badge-ticker">{quote.exchange.slice(0, 8)}</span>}
       </Link>
       <span className="hidden truncate text-muted-foreground sm:block">
-        {isLoading ? <SkeletonBlock className="h-3 w-32" /> : (quote?.name ?? "—")}
+        {isLoading ? <SkeletonBlock className="h-3 w-32" /> : (quote?.name ?? "-")}
       </span>
       <span className="text-right font-mono tabular-nums text-foreground">
         {isLoading ? (
@@ -176,7 +176,7 @@ function WatchlistRow({ symbol, quote, isLoading, onRemove }: RowProps) {
         ) : quote ? (
           formatCurrency(quote.price, quote.currency)
         ) : (
-          "—"
+          "-"
         )}
       </span>
       <span
@@ -191,7 +191,7 @@ function WatchlistRow({ symbol, quote, isLoading, onRemove }: RowProps) {
         ) : quote ? (
           formatPercent(quote.changePercent)
         ) : (
-          "—"
+          "-"
         )}
       </span>
       <span className="text-right font-mono tabular-nums text-muted-foreground">
@@ -200,7 +200,7 @@ function WatchlistRow({ symbol, quote, isLoading, onRemove }: RowProps) {
         ) : quote?.marketCap != null ? (
           formatCompactMoney(quote.marketCap, quote.currency)
         ) : (
-          "—"
+          "-"
         )}
       </span>
       <button

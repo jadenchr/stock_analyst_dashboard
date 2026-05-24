@@ -7,7 +7,7 @@ export interface DataTableColumn<T> {
   header: string;
   /**
    * Render content for a cell; if omitted, the value is read by `key`.
-   * Second arg is the row index — useful for rank / row-number columns.
+   * Second arg is the row index - useful for rank / row-number columns.
    */
   render?: (row: T, index: number) => React.ReactNode;
   align?: "left" | "right" | "center";
@@ -17,7 +17,7 @@ export interface DataTableColumn<T> {
 interface Props<T> {
   columns: DataTableColumn<T>[];
   rows: T[];
-  /** Unique row id selector — used as React key. */
+  /** Unique row id selector - used as React key. */
   rowKey: (row: T, i: number) => string;
   /** Optional empty-state message. */
   empty?: string;

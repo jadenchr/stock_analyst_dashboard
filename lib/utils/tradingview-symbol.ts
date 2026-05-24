@@ -4,7 +4,7 @@
  * exchanges.
  *
  * Our internal format vs TradingView format:
- *   AAPL          → NASDAQ:AAPL  (US — we default to NASDAQ; if Yahoo says
+ *   AAPL          → NASDAQ:AAPL  (US - we default to NASDAQ; if Yahoo says
  *                                 NYSE, we prefix accordingly)
  *   RELIANCE.NS   → NSE:RELIANCE
  *   RELIANCE.BO   → BSE:RELIANCE
@@ -67,13 +67,13 @@ export function toTradingViewSymbol(ticker: string, yahooExchange?: string): str
   if (t.endsWith(".DE")) return `XETR:${t.slice(0, -3)}`;
   if (t.endsWith(".PA")) return `EURONEXT:${t.slice(0, -3)}`;
 
-  // 4) CSE — ticker.XNNNN format (e.g. JKH.N0000)
+  // 4) CSE - ticker.XNNNN format (e.g. JKH.N0000)
   if (/^[A-Z]{2,5}\.(N|X|P|R)\d{4}$/.test(t)) return `CSELK:${t}`;
 
-  // 5) US — pick NYSE vs NASDAQ based on Yahoo's exchange string
+  // 5) US - pick NYSE vs NASDAQ based on Yahoo's exchange string
   const ex = (yahooExchange ?? "").toUpperCase();
   if (ex.includes("NYSE")) return `NYSE:${t}`;
   if (ex.includes("NASDAQ")) return `NASDAQ:${t}`;
-  // 6) Fallback — let TradingView guess
+  // 6) Fallback - let TradingView guess
   return t;
 }

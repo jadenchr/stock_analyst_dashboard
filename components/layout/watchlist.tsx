@@ -164,7 +164,7 @@ function WatchlistRow({ symbol, quote, onRemove }: RowProps) {
             tone === "neutral" && "text-muted-foreground",
           )}
         >
-          {quote ? formatPercent(quote.changePercent) : "—"}
+          {quote ? formatPercent(quote.changePercent) : "-"}
         </span>
       </Link>
 

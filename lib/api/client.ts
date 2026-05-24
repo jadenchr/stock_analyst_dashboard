@@ -165,7 +165,7 @@ export interface AIAnalysis {
   technicals: string;
   sectorContext: string;
   lastUpdated?: string;
-  /** Currency code of the underlying quote — defaults to USD when unknown. */
+  /** Currency code of the underlying quote - defaults to USD when unknown. */
   currency?: string;
   // Metadata from route handler
   stubbed: boolean;

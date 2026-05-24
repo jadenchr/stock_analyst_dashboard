@@ -3,12 +3,12 @@ import type { SubscriptionTier } from "@/lib/supabase/types";
 
 /**
  * Centralized feature gating. The single source of truth for "can this
- * tier do X?" — both server-side helpers and client hooks consult this.
+ * tier do X?" - both server-side helpers and client hooks consult this.
  *
  * Tiers:
- *   guest   — not signed in
- *   free    — signed in, default tier
- *   pro     — paid (manually upgraded for now; Stripe wires in 7b)
+ *   guest   - not signed in
+ *   free    - signed in, default tier
+ *   pro     - paid (manually upgraded for now; Stripe wires in 7b)
  */
 
 export type Tier = "guest" | SubscriptionTier;

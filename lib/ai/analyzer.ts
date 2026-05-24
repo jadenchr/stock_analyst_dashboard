@@ -65,7 +65,7 @@ async function callOpenRouter(userPrompt: string, model: string): Promise<string
       // Gemini 2.5 Pro is a reasoning model: completion budget covers BOTH
       // hidden reasoning tokens AND visible output. Combined with the
       // 'low' reasoning-effort hint below, 1800 reserves ~1500 for visible
-      // JSON — enough for our schema. Production tip: bump to 3000+ once
+      // JSON - enough for our schema. Production tip: bump to 3000+ once
       // your OpenRouter balance comfortably supports it ($5+ recommended).
       max_tokens: Number(process.env.OPENROUTER_MAX_TOKENS ?? "1800"),
       response_format: { type: "json_object" },
@@ -82,7 +82,7 @@ async function callOpenRouter(userPrompt: string, model: string): Promise<string
     throw new ProviderError(PROVIDER, "OpenRouter authentication failed", 503);
   }
   if (res.status === 402) {
-    // OpenRouter's "402 Payment Required" — out of credits. Surface a
+    // OpenRouter's "402 Payment Required" - out of credits. Surface a
     // dedicated error class so the route handler can return a friendly
     // user-facing message instead of a generic "upstream unavailable".
     const body = await res.text().catch(() => "");
@@ -129,7 +129,7 @@ function unwrapJson(raw: string): string {
  *   • Trailing commas:  {"a": 1,}
  *   • Smart quotes from copy-paste:  “key”
  *
- * Throws on unrecoverable input — the analyzer will retry / fall back.
+ * Throws on unrecoverable input - the analyzer will retry / fall back.
  */
 function permissiveJsonParse(raw: string): unknown {
   // 1. Strict parse
@@ -144,7 +144,7 @@ function permissiveJsonParse(raw: string): unknown {
   // 2. Replace smart quotes with straight quotes
   s = s.replace(/[“”‘’]/g, '"');
 
-  // 3. Quote bare property names — match unquoted keys at object boundaries.
+  // 3. Quote bare property names - match unquoted keys at object boundaries.
   //    Conservative: only matches keys preceded by `{` or `,` and followed by `:`.
   s = s.replace(/([{,]\s*)([A-Za-z_$][A-Za-z0-9_$]*)\s*:/g, '$1"$2":');
 
@@ -202,7 +202,7 @@ export async function analyzeStock(data: StockDataForAnalysis): Promise<AnalyzeO
     }
   }
 
-  // All retries exhausted — return fallback so the page never crashes
+  // All retries exhausted - return fallback so the page never crashes
   console.error(`[analyzer] all retries failed for ${data.ticker}:`, lastError);
 
   const isCreditsError = lastError instanceof OpenRouterInsufficientCreditsError;

@@ -24,7 +24,7 @@ const SLIDES = [
     tone: "primary" as const,
     eyebrow: "Welcome to StockVision",
     title: "Analyst-grade intelligence for every public stock",
-    body: "Live quotes, fundamentals, AI ratings, news sentiment, and insider activity — in one terminal-fast workspace. US · India · Sri Lanka · UK · Crypto.",
+    body: "Live quotes, fundamentals, AI ratings, news sentiment, and insider activity - in one terminal-fast workspace. US · India · Sri Lanka · UK · Crypto.",
   },
   {
     id: "features",
@@ -99,14 +99,14 @@ export function OnboardingFlow({ nextPath }: Props) {
   }
 
   function skipToSignIn() {
-    // Sign-in is mandatory — guests don't get past this. Skip just jumps
+    // Sign-in is mandatory - guests don't get past this. Skip just jumps
     // straight to the sign-in page with the intended `next` preserved.
     router.push(`/auth/signin?next=${encodeURIComponent(nextPath)}`);
   }
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      {/* Ambient background — LiquidEther + aurora wash */}
+      {/* Ambient background - LiquidEther + aurora wash */}
       <LiquidEther intensity={0.22} position="fixed" />
       <div className="bg-aurora pointer-events-none absolute inset-0" aria-hidden />
       <div

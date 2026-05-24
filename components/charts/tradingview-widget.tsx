@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 interface Props {
   /**
-   * TradingView-style symbol — e.g. `CSELK:JKH.N0000` for Colombo,
+   * TradingView-style symbol - e.g. `CSELK:JKH.N0000` for Colombo,
    * `NSE:RELIANCE` for NSE, `NASDAQ:AAPL` for Apple. The component
    * doesn't validate; pass whatever the markets page accepts.
    */
@@ -46,7 +46,7 @@ export function TradingViewWidget({ symbol, interval = "1D", height = 440 }: Pro
       style: "1",
       locale: "en",
 
-      // Full chrome — match TradingView's stand-alone Chart page as
+      // Full chrome - match TradingView's stand-alone Chart page as
       // closely as the embed widget allows.
       enable_publishing: true,         // top-right "Publish" button
       withdateranges: true,            // bottom date-range bar
@@ -60,7 +60,7 @@ export function TradingViewWidget({ symbol, interval = "1D", height = 440 }: Pro
       popup_width: "1400",
       popup_height: "900",
 
-      // Right side-panel — Watchlist + Details + News tabs
+      // Right side-panel - Watchlist + Details + News tabs
       details: true,
       hotlist: true,
       calendar: true,
@@ -78,7 +78,7 @@ export function TradingViewWidget({ symbol, interval = "1D", height = 440 }: Pro
         "NASDAQ:MSFT",
       ],
 
-      // Pre-loaded studies — light-touch defaults that match what most
+      // Pre-loaded studies - light-touch defaults that match what most
       // users want when they open a stock for the first time.
       studies: ["MASimple@tv-basicstudies", "Volume@tv-basicstudies"],
 
@@ -100,7 +100,7 @@ export function TradingViewWidget({ symbol, interval = "1D", height = 440 }: Pro
       // (TradingView's auto-injected iframe + its wrapper divs) to
       // expand to the requested height. TV's embed script sometimes
       // ignores the parent's height when `autosize: true` is on and
-      // the iframe boots before the React style is committed — this
+      // the iframe boots before the React style is committed - this
       // guarantees the chart fills the box once it's there.
       className="tradingview-widget-container [&>*]:!h-full [&_iframe]:!h-full"
       style={

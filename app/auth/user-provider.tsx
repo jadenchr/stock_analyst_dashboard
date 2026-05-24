@@ -19,7 +19,7 @@ import { canAccess, resolveTier, type Feature, type Tier } from "@/lib/auth/enti
  * Un-generic raw client just for the profile self-heal upsert. The
  * `Database` generic on `createBrowserClient<Database>` collapses our
  * Insert shape to `never` at this single call site (a known Supabase
- * SDK deep-inference quirk) — bypassing it here keeps everything else
+ * SDK deep-inference quirk) - bypassing it here keeps everything else
  * strongly typed.
  */
 function getRawClient() {
@@ -111,7 +111,7 @@ export function UserProvider({ children, initialUser, initialProfile }: Props) {
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
 
-    // Backstop sync — if the server-rendered initialUser was missed
+    // Backstop sync - if the server-rendered initialUser was missed
     // (CDN cache, cookies set after a race, etc.), this re-reads the
     // session on mount and updates the header to show the avatar
     // immediately instead of stuck on "Sign in".
@@ -138,13 +138,13 @@ export function UserProvider({ children, initialUser, initialProfile }: Props) {
       }
       if (session?.user) {
         setUser(session.user);
-        // Profile may be brand-new from the signup trigger — fetch fresh
+        // Profile may be brand-new from the signup trigger - fetch fresh
         // (and self-heal if missing).
         void refresh();
       }
     });
     return () => subscription.unsubscribe();
-    // user intentionally NOT in deps — we only want the backstop on mount.
+    // user intentionally NOT in deps - we only want the backstop on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh]);
 

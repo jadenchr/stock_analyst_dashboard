@@ -13,13 +13,13 @@ export const dynamic = "force-dynamic";
  * server-side database errors surface with their real messages on the
  * client. The wrapper rewrites every non-typed error to a generic
  * "Internal server error" which makes the onboarding form impossible to
- * debug when something fails — that exact masking is what trapped users
+ * debug when something fails - that exact masking is what trapped users
  * on the form during the v7c rollout.
  *
  * Behaviour:
- *   1. Validate the payload with Zod (loose — every field optional).
+ *   1. Validate the payload with Zod (loose - every field optional).
  *   2. Try the full v7c upsert (country, exchanges, styles, …).
- *   3. On Postgres 42703 (undefined_column) — i.e. schema is still v7a —
+ *   3. On Postgres 42703 (undefined_column) - i.e. schema is still v7a -
  *      retry with just the columns guaranteed to exist on v7a.
  *   4. Always return a structured JSON body the form can show verbatim.
  */
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     const fieldErrors = parsed.error.issues
       .map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`)
       .join("; ");
-    return jsonError(`Invalid payload — ${fieldErrors}`, 400);
+    return jsonError(`Invalid payload - ${fieldErrors}`, 400);
   }
   const body = parsed.data;
 
@@ -138,12 +138,12 @@ export async function POST(request: Request) {
     );
   }
 
-  // ---------- Anything else — surface the real Postgres message ----------
+  // ---------- Anything else - surface the real Postgres message ----------
   return jsonError(`Profile save failed: ${firstMessage}`, 500);
 }
 
 /**
- * Emergency escape hatch — used by the "Skip & continue" button on the form.
+ * Emergency escape hatch - used by the "Skip & continue" button on the form.
  * Tries to set onboarded=true; if anything fails, still returns ok so the
  * client can navigate away. This endpoint NEVER returns a non-2xx.
  */

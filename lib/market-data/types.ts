@@ -58,7 +58,7 @@ export type HistoricalRange = (typeof HISTORICAL_RANGES)[number];
 
 export const FundamentalsSchema = z.object({
   symbol: z.string(),
-  // Optional profile from Yahoo's `assetProfile` module — used by AI analyzer
+  // Optional profile from Yahoo's `assetProfile` module - used by AI analyzer
   // and the rich overview on /stock/[ticker].
   profile: z
     .object({

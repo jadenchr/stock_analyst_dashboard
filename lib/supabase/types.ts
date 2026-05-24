@@ -3,7 +3,7 @@
  *
  * Keep these in sync with `supabase/schema.sql` and
  * `supabase/migrations/0002_full_profile.sql`. Insert/Update shapes are
- * spelled out as explicit object types (not intersections) — Supabase's
+ * spelled out as explicit object types (not intersections) - Supabase's
  * deep generic inference treats `Omit<Row, k> & { k?: ... }` differently
  * from a plain object type, which collapses to `never` at deep call sites.
  */

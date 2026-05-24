@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Ticker symbol regex — covers:
+ * Ticker symbol regex - covers:
  *   • US tickers:       AAPL, MSFT, BRK.B (1–5 chars, optional .CLASS)
  *   • Indian tickers:   RELIANCE.BO, TCS.BO, INFY.NS (up to 8 base + .BO/.NS)
  *   • Sri Lankan CSE:   JKH.N0000, COMB.N0000, HAYL.N0000 (4 + .NXXXX)
@@ -46,7 +46,7 @@ export function classifyTicker(symbol: string): ExchangeRegion {
   if (s.endsWith(".BO") || s.endsWith(".BSE")) return "IN_BSE";
   if (s.endsWith(".NS")) return "IN_NSE";
   if (s.startsWith("^NSEI")) return "IN_NSE";
-  // CSE Sri Lanka: ticker.NXXXX or ticker.XXXX0 — distinguishable from
+  // CSE Sri Lanka: ticker.NXXXX or ticker.XXXX0 - distinguishable from
   // US class-share dots by having 4–5 alphanumeric chars after the dot.
   if (/^[A-Z]{2,5}\.(N|X|P|R)\d{4}$/.test(s)) return "LK_CSE";
   if (s.endsWith(".L") || s.startsWith("^FTSE")) return "UK";
@@ -66,6 +66,6 @@ export function exchangeLabel(region: ExchangeRegion): string {
     case "US":
       return "US";
     default:
-      return "—";
+      return "-";
   }
 }

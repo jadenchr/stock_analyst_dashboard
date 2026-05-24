@@ -19,7 +19,7 @@ export type Rating = z.infer<typeof RatingEnum>;
 export const AnalysisSchema = z.object({
   rating: RatingEnum,
   confidence: z.coerce.number().int().min(0).max(100),
-  // Some models occasionally return 0; clamp to non-negative — UI handles the 0 case.
+  // Some models occasionally return 0; clamp to non-negative - UI handles the 0 case.
   priceTarget: z.coerce.number().nonnegative(),
   targetHorizon: z.string().default("12 months"),
   upside: z.coerce.number(),
@@ -53,7 +53,7 @@ export const FALLBACK_ANALYSIS: AnalysisResult = {
   targetHorizon: "12 months",
   upside: 0,
   summary:
-    "AI analysis is temporarily unavailable. The data layer is healthy — try refreshing in a few seconds.",
+    "AI analysis is temporarily unavailable. The data layer is healthy - try refreshing in a few seconds.",
   bullCase: ["Live model call not completed."],
   bearCase: ["Live model call not completed."],
   keyRisks: ["Analysis pipeline returned no result."],

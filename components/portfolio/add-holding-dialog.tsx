@@ -94,7 +94,7 @@ export function AddHoldingDialog({ open, onClose, onSaved }: Props) {
       open={open}
       onClose={onClose}
       title="Add holding"
-      description="Record a new lot. Each row is one purchase — adjust shares or cost basis later."
+      description="Record a new lot. Each row is one purchase - adjust shares or cost basis later."
       size="md"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -334,7 +334,7 @@ function safeCurrency(c: string) {
 
 /**
  * Best-effort currency guess from a Yahoo-style search result's exchange.
- * We only know what suffix the symbol has — full FX detection lives server-side.
+ * We only know what suffix the symbol has - full FX detection lives server-side.
  */
 function guessCurrency(row: SearchResult): string {
   const suffix = row.symbol.split(".").pop()?.toUpperCase();

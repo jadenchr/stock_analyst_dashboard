@@ -527,7 +527,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
         AI rating unavailable
       </h3>
       <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
-        The model service didn&rsquo;t respond. Your other data is unaffected — try once more.
+        The model service didn&rsquo;t respond. Your other data is unaffected - try once more.
       </p>
       <button
         type="button"

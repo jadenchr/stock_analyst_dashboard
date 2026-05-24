@@ -10,7 +10,7 @@ export function HeroIntro() {
 
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/40">
-      {/* Layered background — Liquid Ether + aurora + soft grid + radial vignette */}
+      {/* Layered background - Liquid Ether + aurora + soft grid + radial vignette */}
       <LiquidEther intensity={0.22} />
       <div className="bg-aurora absolute inset-0" aria-hidden />
       <div className="bg-grid absolute inset-0 opacity-50" aria-hidden />
@@ -47,7 +47,7 @@ export function HeroIntro() {
           className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base"
         >
           Search any ticker for an institutional-grade view: live fundamentals, technicals,
-          AI ratings, analyst consensus, news sentiment, and insider activity — all in one
+          AI ratings, analyst consensus, news sentiment, and insider activity - all in one
           terminal-fast workspace.
         </motion.p>
 

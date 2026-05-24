@@ -105,7 +105,7 @@ const SHORT_CODE: Record<ExchangeKey, string> = {
 
 /**
  * Compute market status from current time in the exchange's local TZ.
- * Approximation only — does not account for public holidays. Crypto is
+ * Approximation only - does not account for public holidays. Crypto is
  * special-cased to always return OPEN.
  */
 function computeStatus(now: Date, exchange: ExchangeKey): MarketStatus {

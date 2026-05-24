@@ -39,7 +39,7 @@ function getCurrencyFormatter(currency: string): Intl.NumberFormat {
         maximumFractionDigits: 2,
       });
     } catch {
-      // Unknown currency code — fall back to USD format
+      // Unknown currency code - fall back to USD format
       fmt = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -60,7 +60,7 @@ export function formatCurrency(
   value: number | null | undefined,
   currency: string = "USD",
 ): string {
-  if (value == null || Number.isNaN(value)) return "—";
+  if (value == null || Number.isNaN(value)) return "-";
   return getCurrencyFormatter(currency).format(value);
 }
 
@@ -83,24 +83,24 @@ export function formatCompactMoney(
   value: number | null | undefined,
   currency: string = "USD",
 ): string {
-  if (value == null || Number.isNaN(value)) return "—";
+  if (value == null || Number.isNaN(value)) return "-";
   const code = currency.toUpperCase();
   const symbol = CURRENCY_SYMBOLS[code] ?? `${code} `;
   return `${symbol}${compactFormatter.format(value)}`;
 }
 
 export function formatCompact(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "—";
+  if (value == null || Number.isNaN(value)) return "-";
   return compactFormatter.format(value);
 }
 
 export function formatPercent(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "—";
+  if (value == null || Number.isNaN(value)) return "-";
   return percentFormatter.format(value / 100);
 }
 
 export function formatDecimal(value: number | null | undefined): string {
-  if (value == null || Number.isNaN(value)) return "—";
+  if (value == null || Number.isNaN(value)) return "-";
   return decimalFormatter.format(value);
 }
 
@@ -110,7 +110,7 @@ export function formatDelta(value: number | null | undefined): {
   tone: "bull" | "bear" | "neutral";
 } {
   if (value == null || Number.isNaN(value)) {
-    return { sign: "", display: "—", tone: "neutral" };
+    return { sign: "", display: "-", tone: "neutral" };
   }
   if (value > 0) return { sign: "+", display: decimalFormatter.format(value), tone: "bull" };
   if (value < 0)

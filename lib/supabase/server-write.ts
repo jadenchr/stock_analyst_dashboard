@@ -18,7 +18,7 @@ interface CookieToSet {
  *
  * Important: cookies() is async in Next 15+. We can't `await` inside the
  * synchronous client factory, so this function is sync and the cookie
- * adapter awaits on each access. That's fine — RLS still gates rows by
+ * adapter awaits on each access. That's fine - RLS still gates rows by
  * the resolved auth.uid().
  */
 export function createServerWriteClient() {

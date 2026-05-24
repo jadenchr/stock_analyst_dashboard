@@ -6,7 +6,7 @@ import type { ScreenerId, ScreenerResult } from "@/lib/market-data";
 import type { ExchangeKey, InvestmentStyle, RiskTolerance } from "@/lib/supabase/types";
 
 /* ------------------------------------------------------------------ */
-/* Curated regional baskets — used when the user filters by exchange. */
+/* Curated regional baskets - used when the user filters by exchange. */
 /* Yahoo screeners are US-centric, so for non-US exchanges we hand-   */
 /* picked the most-watched names per market and synthesize "picks"    */
 /* from live quotes ranked by intraday % change.                       */
@@ -89,7 +89,7 @@ export const dynamic = "force-dynamic";
  * Guest / not-onboarded users get a sensible default ("most_actives").
  *
  * Phase 8 upgrade path: pass top-20 candidates + profile to Gemini for
- * actual model-generated picks. The contract stays the same — UI just
+ * actual model-generated picks. The contract stays the same - UI just
  * renders whatever `rationale` we put on each pick.
  */
 
@@ -111,7 +111,7 @@ function mapProfileToScreener(
   styles: InvestmentStyle[],
   risk: RiskTolerance,
 ): { screenerId: ScreenerId; primaryStyle: InvestmentStyle | "default" } {
-  // Pick a representative style — the first the user selected wins.
+  // Pick a representative style - the first the user selected wins.
   const style: InvestmentStyle | undefined = styles[0];
 
   if (style === "value") {
@@ -122,7 +122,7 @@ function mapProfileToScreener(
   }
   if (style === "growth") {
     if (risk === "conservative") {
-      // Conservative growth — most-active large names trump small-cap rockets
+      // Conservative growth - most-active large names trump small-cap rockets
       return { screenerId: "most_actives", primaryStyle: "growth" };
     }
     return { screenerId: "growth_technology_stocks", primaryStyle: "growth" };
@@ -143,15 +143,15 @@ function buildRationale(
 
   switch (style) {
     case "growth":
-      return `Aligned with growth — currently ${moveDir} ${pct}% today, ${peStr}.`;
+      return `Aligned with growth - currently ${moveDir} ${pct}% today, ${peStr}.`;
     case "value":
-      return `Value candidate — ${peStr}, currently trading ${moveDir} ${pct}% intraday.`;
+      return `Value candidate - ${peStr}, currently trading ${moveDir} ${pct}% intraday.`;
     case "speculation":
-      return `High-beta name — ${moveDir} ${pct}% today, fits aggressive risk.`;
+      return `High-beta name - ${moveDir} ${pct}% today, fits aggressive risk.`;
     case "income":
-      return `High-volume blue chip — ${peStr}, ${moveDir} ${pct}% intraday.`;
+      return `High-volume blue chip - ${peStr}, ${moveDir} ${pct}% intraday.`;
     default:
-      return `Top-of-volume today — ${moveDir} ${pct}%.`;
+      return `Top-of-volume today - ${moveDir} ${pct}%.`;
   }
 }
 
@@ -195,7 +195,7 @@ function parseExchange(raw: string | null): ExchangeKey | "all" | "US" {
   if (raw === "IN_NSE" || raw === "IN_BSE" || raw === "LK_CSE" || raw === "CRYPTO") {
     return raw;
   }
-  // Unknown / legacy (e.g. "UK") — treat as "all".
+  // Unknown / legacy (e.g. "UK") - treat as "all".
   return "all";
 }
 
@@ -224,7 +224,7 @@ export const GET = apiHandler({ bucket: "picks", limit: 30 }, async ({ url }) =>
     } satisfies PicksResponse & { region?: string };
   }
 
-  // US / "all" — use the Yahoo screener path.
+  // US / "all" - use the Yahoo screener path.
   const rows = await cached(
     cacheKey("picks", user?.id ?? "guest", screenerId),
     TTL.marketOverview,

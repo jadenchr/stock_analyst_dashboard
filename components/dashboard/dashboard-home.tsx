@@ -10,7 +10,7 @@ import { ForYou } from "@/components/market/for-you";
 import { WelcomeBanner } from "@/components/dashboard/welcome-banner";
 
 /**
- * Signed-in dashboard home — the "Markets" workspace. Server-renders the
+ * Signed-in dashboard home - the "Markets" workspace. Server-renders the
  * client widgets which fetch live data via TanStack Query.
  *
  * WelcomeBanner pops a transient confirmation toast when the dashboard

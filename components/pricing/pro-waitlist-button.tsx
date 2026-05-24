@@ -10,14 +10,14 @@ interface Props {
   priceMonthly: number;
   /** CTA label override (default: "Join the waitlist"). */
   label?: string;
-  /** Which tier this button is for — used to scope the localStorage key. */
+  /** Which tier this button is for - used to scope the localStorage key. */
   tier?: "pro" | "max";
 }
 
 /**
  * Pro Pro-tier CTA. Stripe Checkout ships in a later phase; for now this
  * captures the user's intent via the existing Supabase profile (we set a
- * `pro_waitlist` flag in user_metadata.app — see TODO below for when we
+ * `pro_waitlist` flag in user_metadata.app - see TODO below for when we
  * persist this to a dedicated `waitlist` table).
  *
  * Behavior:
@@ -56,7 +56,7 @@ export function ProWaitlistButton({ cadence, priceMonthly, label, tier: targetTi
   }
 
   // If the user is already on Pro, show the active-plan pill (only when
-  // this button represents the user's current tier — Max waitlist still
+  // this button represents the user's current tier - Max waitlist still
   // shows for Pro users).
   if (tier === "pro" && targetTier === "pro") {
     return (
@@ -89,7 +89,7 @@ export function ProWaitlistButton({ cadence, priceMonthly, label, tier: targetTi
           className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-lg border border-bull/30 bg-bull/10 px-4 text-sm font-semibold text-bull"
         >
           <CheckCircle2 className="h-4 w-4" aria-hidden />
-          You&rsquo;re on the list — we&rsquo;ll email you
+          You&rsquo;re on the list - we&rsquo;ll email you
         </motion.div>
       ) : (
         <motion.button

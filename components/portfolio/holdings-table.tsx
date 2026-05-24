@@ -109,7 +109,7 @@ export function HoldingsTable({ holdings, onEdit, onChanged }: Props) {
                     </Link>
                   </td>
                   <td className="max-w-[200px] truncate px-4 py-3 text-muted-foreground">
-                    {h.name ?? "—"}
+                    {h.name ?? "-"}
                   </td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums text-foreground">
                     {h.shares}
@@ -118,10 +118,10 @@ export function HoldingsTable({ holdings, onEdit, onChanged }: Props) {
                     {formatCurrency(h.costBasis, h.currency)}
                   </td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums text-foreground">
-                    {h.currentPrice != null ? formatCurrency(h.currentPrice, h.currency) : "—"}
+                    {h.currentPrice != null ? formatCurrency(h.currentPrice, h.currency) : "-"}
                   </td>
                   <td className="px-4 py-3 text-right font-mono tabular-nums text-foreground">
-                    {h.marketValue != null ? formatCurrency(h.marketValue, h.currency) : "—"}
+                    {h.marketValue != null ? formatCurrency(h.marketValue, h.currency) : "-"}
                   </td>
                   <td
                     className={cn(
@@ -134,7 +134,7 @@ export function HoldingsTable({ holdings, onEdit, onChanged }: Props) {
                     )}
                   >
                     {h.unrealizedPL == null ? (
-                      "—"
+                      "-"
                     ) : (
                       <span className="inline-flex items-center justify-end gap-1">
                         <Arrow className="h-3 w-3" aria-hidden />
@@ -153,7 +153,7 @@ export function HoldingsTable({ holdings, onEdit, onChanged }: Props) {
                           : "text-bear",
                     )}
                   >
-                    {h.unrealizedPLPct == null ? "—" : formatPercent(h.unrealizedPLPct)}
+                    {h.unrealizedPLPct == null ? "-" : formatPercent(h.unrealizedPLPct)}
                   </td>
                   <td
                     className={cn(
@@ -165,7 +165,7 @@ export function HoldingsTable({ holdings, onEdit, onChanged }: Props) {
                           : "text-bear",
                     )}
                   >
-                    {h.dayChange == null ? "—" : formatPercent(h.dayChangePct ?? 0)}
+                    {h.dayChange == null ? "-" : formatPercent(h.dayChangePct ?? 0)}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">

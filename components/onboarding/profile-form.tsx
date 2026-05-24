@@ -80,7 +80,7 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
     riskTolerance: initial?.risk_tolerance ?? "moderate",
   }));
 
-  // Suggest a currency when country changes — but don't override an explicit pick
+  // Suggest a currency when country changes - but don't override an explicit pick
   const suggestedCurrency = useMemo(() => {
     const c = COUNTRY_OPTIONS.find((o) => o.code === form.country);
     return c?.suggestedCurrency ?? "USD";
@@ -122,7 +122,7 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
     // it rehydrates the Supabase session from cookies. The server route
     // re-derives identity from those same cookies, so the save still
     // works. Returning early here was the bug that made the button look
-    // dead — the click fired, nothing happened, no error, no nav.
+    // dead - the click fired, nothing happened, no error, no nav.
     console.log("[profile-form] handleSave fired", { skip: opts.skip, hasUser: Boolean(user) });
     setSaving(true);
     setError(null);
@@ -182,7 +182,7 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
 
     // 2) If the rich save failed, fire the always-ok escape endpoint so
     //    the user is at least marked onboarded and not bounced back here.
-    //    Bounded by the same timeout — we MUST proceed to step 3.
+    //    Bounded by the same timeout - we MUST proceed to step 3.
     if (!saveOk) {
       try {
         await fetchWithTimeout("/api/onboarding/profile", {
@@ -198,8 +198,8 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
     //    re-runs getCurrentSession() and the new onboarded state is
     //    unambiguously picked up. router.push has been observed to no-op
     //    when an RSC fetch is mid-flight, leaving the user staring at
-    //    the form — window.location.assign cannot do that.
-    //    NOTE: we intentionally skip `await refresh()` here — the hard
+    //    the form - window.location.assign cannot do that.
+    //    NOTE: we intentionally skip `await refresh()` here - the hard
     //    reload re-runs the server session/profile fetch anyway, and a
     //    flaky Supabase client roundtrip used to hang this step.
     //    On success we append ?welcome=1 so the dashboard can pop a
@@ -223,7 +223,7 @@ export function ProfileForm({ initial, defaultName, nextPath }: Props) {
   }
 
   /**
-   * Emergency escape hatch — fires the always-ok DELETE endpoint with a
+   * Emergency escape hatch - fires the always-ok DELETE endpoint with a
    * short timeout, then hard-navigates. Never errors visibly. Always
    * reaches the dashboard.
    */

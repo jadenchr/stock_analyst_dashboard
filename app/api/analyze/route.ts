@@ -8,7 +8,7 @@ import { FALLBACK_ANALYSIS } from "@/lib/ai/schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Generous time budget — Gemini 2.5 Pro typically responds in 4–10s,
+// Generous time budget - Gemini 2.5 Pro typically responds in 4–10s,
 // the prompt-data assembly runs in parallel under 2s.
 export const maxDuration = 30;
 
@@ -17,8 +17,8 @@ export const maxDuration = 30;
  *
  * Server-side flow:
  *   1. Validate ticker (Zod regex).
- *   2. If CSE — refuse early; we don't have the fundamentals to drive analysis.
- *   3. Read-through LRU cache (15-min TTL per ticker — same key for every caller).
+ *   2. If CSE - refuse early; we don't have the fundamentals to drive analysis.
+ *   3. Read-through LRU cache (15-min TTL per ticker - same key for every caller).
  *   4. On miss, assemble StockDataForAnalysis from the market-data facade.
  *   5. Call the analyzer (retry-with-fallback).
  *   6. Wrap in a discriminated response { data, stubbed, model, cached }.
@@ -45,7 +45,7 @@ export const GET = apiHandler({ bucket: "analyze", limit: 5 }, async ({ url }) =
   }
 
   // If no key is configured, return a clear "not configured" response.
-  // Don't expose the env-var name to the client — log it server-side.
+  // Don't expose the env-var name to the client - log it server-side.
   if (!process.env.OPENROUTER_API_KEY) {
     console.error("[api:analyze] OPENROUTER_API_KEY not configured");
     return {
@@ -64,7 +64,7 @@ export const GET = apiHandler({ bucket: "analyze", limit: 5 }, async ({ url }) =
     if (!stockData) {
       return {
         ...FALLBACK_ANALYSIS,
-        summary: "Couldn't retrieve a quote for this ticker — analysis aborted.",
+        summary: "Couldn't retrieve a quote for this ticker - analysis aborted.",
         stubbed: true,
         model: process.env.OPENROUTER_MODEL || "google/gemini-2.5-pro",
         cached: false,
@@ -84,7 +84,7 @@ export const GET = apiHandler({ bucket: "analyze", limit: 5 }, async ({ url }) =
   }).then((res) => ({
     ...res,
     // When the LRU returns an already-stored result, override `cached: true`.
-    // We can't tell from cached() alone — but for a freshly-built object we
+    // We can't tell from cached() alone - but for a freshly-built object we
     // set cached: false above. On subsequent calls within 15 min the same
     // object is returned (with cached: false from the original write), so we
     // accept the small lie in exchange for not adding a separate timestamp
@@ -94,7 +94,7 @@ export const GET = apiHandler({ bucket: "analyze", limit: 5 }, async ({ url }) =
 });
 
 /**
- * POST mirror — many clients prefer POST for "analyze" semantics. Same
+ * POST mirror - many clients prefer POST for "analyze" semantics. Same
  * implementation, accepts ticker via JSON body.
  */
 export async function POST(request: Request) {
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as { ticker?: unknown };
   } catch {
-    // fall through — handler will 400 on missing ticker
+    // fall through - handler will 400 on missing ticker
   }
   const ticker = typeof body.ticker === "string" ? body.ticker : "";
   const url = new URL(request.url);

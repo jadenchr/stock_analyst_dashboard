@@ -18,9 +18,9 @@ interface BucketState {
 const BUCKETS = new Map<string, LRUCache<string, BucketState>>();
 
 interface RateLimitOptions {
-  /** Stable identifier for this route's bucket — e.g. "quote" or "analyze". */
+  /** Stable identifier for this route's bucket - e.g. "quote" or "analyze". */
   bucket: string;
-  /** Key per actor — typically the client IP. */
+  /** Key per actor - typically the client IP. */
   key: string;
   /** Max requests per window. */
   limit: number;

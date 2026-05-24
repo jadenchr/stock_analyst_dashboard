@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Sign-out endpoint. POST only — protects against CSRF-by-link.
+ * Sign-out endpoint. POST only - protects against CSRF-by-link.
  * After signout we redirect back to the home page.
  */
 export async function POST(request: NextRequest) {

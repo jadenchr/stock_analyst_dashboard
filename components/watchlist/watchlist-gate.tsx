@@ -9,7 +9,7 @@ import { WatchlistTable } from "./watchlist-table";
  * and the real signed-in table (drag-to-reorder, Supabase synced).
  *
  * Done as a client component because `useUser()` reads the live auth
- * state — server-side would require fetching the session for every page
+ * state - server-side would require fetching the session for every page
  * render, which the global UserProvider already handles.
  */
 export function WatchlistGate() {

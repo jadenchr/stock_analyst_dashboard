@@ -15,7 +15,7 @@ interface Props {
 }
 
 /**
- * Lightweight modal — no Radix dependency. We use it for the three
+ * Lightweight modal - no Radix dependency. We use it for the three
  * portfolio dialogs (add / edit / csv import). Locks body scroll and
  * closes on Escape + backdrop click.
  */

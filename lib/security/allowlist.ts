@@ -1,5 +1,5 @@
 /**
- * SSRF defense — every outbound URL must match this allowlist before fetch().
+ * SSRF defense - every outbound URL must match this allowlist before fetch().
  * Hardcoded; never derived from user input.
  */
 const ALLOWED_HOSTS = new Set<string>([
@@ -10,10 +10,10 @@ const ALLOWED_HOSTS = new Set<string>([
   "newsapi.org",
   "api.anthropic.com",
   "logo.clearbit.com",
-  // Colombo Stock Exchange — public website data feed
+  // Colombo Stock Exchange - public website data feed
   "www.cse.lk",
   "cse.lk",
-  // OpenRouter — Phase 4 AI provider (brokers Gemini, Claude, GPT-4o, etc.)
+  // OpenRouter - Phase 4 AI provider (brokers Gemini, Claude, GPT-4o, etc.)
   "openrouter.ai",
 ]);
 

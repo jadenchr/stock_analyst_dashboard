@@ -144,7 +144,7 @@ function GrowthStat({
     <div className="rounded-md border border-border/60 bg-card/40 p-2.5">
       <p className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
       <p className={`mt-1 font-mono text-base font-semibold tabular-nums ${color}`}>
-        {value == null ? "—" : `${value > 0 ? "+" : ""}${value.toFixed(1)}%`}
+        {value == null ? "-" : `${value > 0 ? "+" : ""}${value.toFixed(1)}%`}
       </p>
     </div>
   );

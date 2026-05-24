@@ -22,7 +22,7 @@ interface BalanceRow {
 }
 
 function fmt(v: number | null): string {
-  return v == null ? "—" : `$${formatCompact(v)}`;
+  return v == null ? "-" : `$${formatCompact(v)}`;
 }
 
 export function BalanceTab({ financials, fundamentals }: Props) {

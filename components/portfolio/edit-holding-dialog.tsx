@@ -96,7 +96,7 @@ export function EditHoldingDialog({ holding, onClose, onSaved }: Props) {
       title={holding ? `Edit ${holding.symbol}` : "Edit holding"}
       description={
         holding
-          ? `Lot purchased ${holding.purchaseDate.slice(0, 10)}. Symbol cannot be changed — delete and re-add to move it.`
+          ? `Lot purchased ${holding.purchaseDate.slice(0, 10)}. Symbol cannot be changed - delete and re-add to move it.`
           : undefined
       }
       size="md"
