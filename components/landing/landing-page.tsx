@@ -174,13 +174,11 @@ function Hero() {
       onMouseMove={onMouseMove}
       className="relative overflow-hidden px-6 pt-16 pb-28 sm:px-10 sm:pt-24 sm:pb-36 lg:px-16 lg:pt-32 lg:pb-44"
     >
-      {/* Layered background — these MUST render before the content
-          motion.div so they stack underneath it. The candlestick chart
-          counts as background here so it can't paint over the CTAs. */}
+      {/* Layered background - LiquidEther plasma + aurora wash + grid +
+          cursor spotlight. Calm and dark, no foreground chart. */}
       <LiquidEther intensity={0.32} />
       <div className="bg-aurora absolute inset-0" aria-hidden />
       <div className="bg-grid absolute inset-0 opacity-40" aria-hidden />
-      <CandlestickChart />
       <motion.div
         style={{ background: spotlight }}
         className="pointer-events-none absolute inset-0"
@@ -298,170 +296,6 @@ function WordReveal({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
-/**
- * Animated candlestick chart that runs along the bottom of the hero.
- * Deterministic random walk (seeded so it's identical between render
- * passes), then each candle pops in left-to-right on a quick stagger.
- * The whole strip lives behind a top-to-bottom fade so it dissolves
- * under any text in the hero - no overlap, no reading problems.
- */
-function CandlestickChart() {
-  const CANDLE_COUNT = 96;
-  const WIDTH = 1600;
-  const HEIGHT = 320;
-  const CHART_TOP = 40;
-  const CHART_BOTTOM = HEIGHT - 30;
-
-  // Seeded PRNG so SSR/CSR agree on the same candle layout.
-  function mulberry32(seed: number) {
-    let t = seed;
-    return () => {
-      t = (t + 0x6d2b79f5) | 0;
-      let r = Math.imul(t ^ (t >>> 15), 1 | t);
-      r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
-      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  const candles = useRef<
-    Array<{ x: number; open: number; close: number; high: number; low: number; bull: boolean }>
-  >([]);
-  if (candles.current.length === 0) {
-    const rand = mulberry32(42);
-    const slot = WIDTH / CANDLE_COUNT;
-    const candleWidth = slot * 0.55;
-    let price = 100;
-    let prevClose = price;
-    const built: typeof candles.current = [];
-    for (let i = 0; i < CANDLE_COUNT; i++) {
-      // Random walk with a mild trend so the eye reads "rising market"
-      const drift = (rand() - 0.45) * 4 + 0.18;
-      const open = prevClose;
-      const close = Math.max(40, open + drift);
-      const wickUp = rand() * 3;
-      const wickDown = rand() * 3;
-      const high = Math.max(open, close) + wickUp;
-      const low = Math.min(open, close) - wickDown;
-      built.push({
-        x: i * slot + slot / 2 - candleWidth / 2,
-        open,
-        close,
-        high,
-        low,
-        bull: close >= open,
-      });
-      prevClose = close;
-    }
-    // Normalise to the SVG viewport.
-    const allLow = Math.min(...built.map((c) => c.low));
-    const allHigh = Math.max(...built.map((c) => c.high));
-    const span = allHigh - allLow || 1;
-    const project = (v: number) =>
-      CHART_BOTTOM - ((v - allLow) / span) * (CHART_BOTTOM - CHART_TOP);
-    candles.current = built.map((c) => ({
-      ...c,
-      open: project(c.open),
-      close: project(c.close),
-      high: project(c.high),
-      low: project(c.low),
-    }));
-  }
-
-  const slot = WIDTH / CANDLE_COUNT;
-  const candleWidth = slot * 0.55;
-  // Horizontal grid lines for the trading-screen feel.
-  const gridYs = [
-    CHART_TOP + (CHART_BOTTOM - CHART_TOP) * 0.25,
-    CHART_TOP + (CHART_BOTTOM - CHART_TOP) * 0.5,
-    CHART_TOP + (CHART_BOTTOM - CHART_TOP) * 0.75,
-  ];
-
-  return (
-    <div
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-40 overflow-hidden sm:h-48 lg:h-56"
-      aria-hidden
-    >
-      {/* No top-fade overlay - the SVG opacity itself makes the candles
-          read as background. Slim height keeps them entirely below the
-          CTAs.  Bottom fade dissolves the chart into the page bg. */}
-      <div className="absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-background to-transparent" />
-
-      <svg
-        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        preserveAspectRatio="none"
-        className="absolute inset-0 h-full w-full opacity-40"
-      >
-        {/* Subtle grid lines */}
-        {gridYs.map((y, i) => (
-          <line
-            key={i}
-            x1={0}
-            x2={WIDTH}
-            y1={y}
-            y2={y}
-            stroke="hsl(var(--border))"
-            strokeWidth={1}
-            strokeDasharray="4 6"
-            opacity={0.35}
-          />
-        ))}
-        {/* Crosshair vertical that drifts slowly across the chart */}
-        <motion.line
-          x1={0}
-          x2={0}
-          y1={CHART_TOP - 10}
-          y2={CHART_BOTTOM + 10}
-          stroke="hsl(var(--primary))"
-          strokeWidth={1}
-          strokeDasharray="4 6"
-          opacity={0.3}
-          initial={{ x: 0 }}
-          animate={{ x: WIDTH }}
-          transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
-        />
-
-        {candles.current.map((c, i) => {
-          const bodyTop = Math.min(c.open, c.close);
-          const bodyHeight = Math.max(2, Math.abs(c.close - c.open));
-          const color = c.bull ? "hsl(var(--bull))" : "hsl(var(--bear))";
-          return (
-            <motion.g
-              key={i}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.45,
-                delay: 0.4 + i * 0.012,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            >
-              {/* Wick */}
-              <line
-                x1={c.x + candleWidth / 2}
-                x2={c.x + candleWidth / 2}
-                y1={c.high}
-                y2={c.low}
-                stroke={color}
-                strokeWidth={1.2}
-                opacity={0.85}
-              />
-              {/* Body */}
-              <rect
-                x={c.x}
-                y={bodyTop}
-                width={candleWidth}
-                height={bodyHeight}
-                fill={color}
-                opacity={0.9}
-                rx={0.6}
-              />
-            </motion.g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------- */
 /* 3. KPI Strip                                                         */
