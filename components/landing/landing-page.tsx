@@ -20,14 +20,12 @@ import {
   LineChart,
   LogIn,
   Newspaper,
-  Search,
   ShieldCheck,
   Sparkles,
   TrendingUp,
   Wallet,
   Zap,
 } from "lucide-react";
-import { useSearch } from "@/lib/store/search";
 import { LiquidEther } from "@/components/effects/liquid-ether";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +47,6 @@ import { cn } from "@/lib/utils";
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function LandingPage() {
-  const openSearch = useSearch((s) => s.setOpen);
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -60,7 +57,7 @@ export function LandingPage() {
       {/* Top ticker tape — runs across the very top of the landing */}
       <TickerTape />
 
-      <Hero onSearch={() => openSearch(true)} />
+      <Hero />
 
       <KpiStrip />
 
@@ -141,7 +138,7 @@ function TickerTape() {
 /* 2. Hero                                                              */
 /* ------------------------------------------------------------------- */
 
-function Hero({ onSearch }: { onSearch: () => void }) {
+function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -240,17 +237,12 @@ function Hero({ onSearch }: { onSearch: () => void }) {
               aria-hidden
             />
           </Link>
-          <button
-            type="button"
-            onClick={onSearch}
-            className="group inline-flex h-12 cursor-pointer items-center gap-2 rounded-xl border border-border/70 bg-card/60 px-5 text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-200 hover:border-border hover:bg-card"
+          <Link
+            href="/pricing"
+            className="inline-flex h-12 cursor-pointer items-center gap-1.5 rounded-xl border border-border/70 bg-card/60 px-5 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-card"
           >
-            <Search className="h-4 w-4 text-muted-foreground" aria-hidden />
-            Try without signing in
-            <kbd className="ml-1 inline-flex items-center rounded border border-border/70 bg-background/60 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-              ⌘K
-            </kbd>
-          </button>
+            See pricing
+          </Link>
         </motion.div>
 
         <motion.div

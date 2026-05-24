@@ -60,19 +60,6 @@ export default async function SignInPage({ searchParams }: PageProps) {
             <SignInButton next={next ?? "/"} />
           </div>
 
-          <div className="mt-4 flex items-center gap-3 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            <span className="h-px flex-1 bg-border" aria-hidden />
-            or
-            <span className="h-px flex-1 bg-border" aria-hidden />
-          </div>
-
-          <Link
-            href="/"
-            className="mt-4 inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-lg border border-border/70 bg-card/60 px-4 text-sm font-medium text-foreground transition-colors hover:bg-card"
-          >
-            Continue as guest
-          </Link>
-
           <div className="mt-6 flex items-start gap-2 rounded-lg border border-border/40 bg-card/40 p-3 text-[11px] leading-relaxed text-muted-foreground">
             <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-bull" aria-hidden />
             <span>

@@ -98,8 +98,10 @@ export function OnboardingFlow({ nextPath }: Props) {
     else if (info.offset.x > threshold && idx > 0) go(idx - 1);
   }
 
-  function continueAsGuest() {
-    router.push(nextPath);
+  function skipToSignIn() {
+    // Sign-in is mandatory — guests don't get past this. Skip just jumps
+    // straight to the sign-in page with the intended `next` preserved.
+    router.push(`/auth/signin?next=${encodeURIComponent(nextPath)}`);
   }
 
   return (
@@ -131,7 +133,7 @@ export function OnboardingFlow({ nextPath }: Props) {
         </Link>
         <button
           type="button"
-          onClick={continueAsGuest}
+          onClick={skipToSignIn}
           className="cursor-pointer rounded-md text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           Skip
@@ -193,15 +195,8 @@ export function OnboardingFlow({ nextPath }: Props) {
               )}
 
               {slide.id === "signup" && (
-                <div className="mt-7 w-full max-w-sm space-y-3">
+                <div className="mt-7 w-full max-w-sm">
                   <SignInButton next={nextPath} />
-                  <button
-                    type="button"
-                    onClick={continueAsGuest}
-                    className="inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-lg border border-border/70 bg-card/60 px-4 text-sm font-medium text-foreground transition-colors hover:bg-card"
-                  >
-                    Continue as guest
-                  </button>
                 </div>
               )}
             </motion.div>
@@ -248,7 +243,7 @@ export function OnboardingFlow({ nextPath }: Props) {
           {isLast ? (
             <button
               type="button"
-              onClick={continueAsGuest}
+              onClick={skipToSignIn}
               className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-elevated"
               aria-label="Finish"
             >
