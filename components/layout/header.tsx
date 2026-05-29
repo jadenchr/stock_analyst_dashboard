@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useSearch } from "@/lib/store/search";
 import { MarketStatusPill } from "./market-status-pill";
 import { ThemeToggle } from "./theme-toggle";
+import { NotificationsBell } from "./notifications-bell";
 import { UserMenu } from "@/components/auth/user-menu";
 import { cn } from "@/lib/utils";
 
@@ -74,6 +75,8 @@ export function Header() {
         </button>
 
         <ThemeToggle />
+
+        <NotificationsBell />
 
         <UserMenu />
 

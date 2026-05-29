@@ -143,6 +143,73 @@ const RecommendationSchema = z.array(
   }),
 );
 
+/* ------------------------------------------------- earnings calendar --- */
+
+const EarningsItemSchema = z.object({
+  date: z.string(),
+  epsActual: z.number().nullable().optional(),
+  epsEstimate: z.number().nullable().optional(),
+  hour: z.string().optional(), // "amc" | "bmo" | "" etc.
+  quarter: z.number().nullable().optional(),
+  revenueActual: z.number().nullable().optional(),
+  revenueEstimate: z.number().nullable().optional(),
+  symbol: z.string(),
+  year: z.number().nullable().optional(),
+});
+
+const EarningsCalendarSchema = z.object({
+  earningsCalendar: z.array(EarningsItemSchema).nullable().optional(),
+});
+
+export interface EarningsEvent {
+  symbol: string;
+  date: string;
+  hour: "bmo" | "amc" | "dmt" | "unknown";
+  quarter: number | null;
+  year: number | null;
+  epsEstimate: number | null;
+  epsActual: number | null;
+  revenueEstimate: number | null;
+  revenueActual: number | null;
+}
+
+function normalizeHour(h: string | undefined): EarningsEvent["hour"] {
+  const v = (h ?? "").toLowerCase();
+  if (v === "amc" || v === "bmo" || v === "dmt") return v;
+  return "unknown";
+}
+
+/**
+ * Pull the earnings calendar between two ISO dates from Finnhub.
+ * Symbol can be passed to scope the calendar to a single ticker; left
+ * empty it returns market-wide events for the window.
+ */
+export async function getEarningsCalendar(args: {
+  from: string;
+  to: string;
+  symbol?: string;
+}): Promise<EarningsEvent[]> {
+  const params: Record<string, string> = { from: args.from, to: args.to };
+  if (args.symbol) params.symbol = args.symbol;
+  const raw = await finnhubFetch<unknown>("/calendar/earnings", params);
+  const parsed = EarningsCalendarSchema.safeParse(raw);
+  if (!parsed.success) {
+    throw new ProviderError(PROVIDER, "earnings calendar shape invalid");
+  }
+  const rows = parsed.data.earningsCalendar ?? [];
+  return rows.map<EarningsEvent>((r) => ({
+    symbol: sanitizeText(r.symbol).slice(0, 16),
+    date: r.date,
+    hour: normalizeHour(r.hour),
+    quarter: r.quarter ?? null,
+    year: r.year ?? null,
+    epsEstimate: r.epsEstimate ?? null,
+    epsActual: r.epsActual ?? null,
+    revenueEstimate: r.revenueEstimate ?? null,
+    revenueActual: r.revenueActual ?? null,
+  }));
+}
+
 export async function getRecommendations(symbol: string): Promise<AnalystConsensus | null> {
   const raw = await finnhubFetch<unknown>("/stock/recommendation", { symbol });
   const parsed = RecommendationSchema.safeParse(raw);

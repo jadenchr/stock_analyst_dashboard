@@ -52,6 +52,35 @@ export interface WatchlistRow {
   created_at: string;
 }
 
+export type AlertDirection = "above" | "below";
+export type NotificationKind = "alert" | "system";
+
+export interface PriceAlertRow {
+  id: string;
+  user_id: string;
+  symbol: string;
+  direction: AlertDirection;
+  target_price: number;
+  currency: string;
+  note: string | null;
+  active: boolean;
+  triggered_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationRow {
+  id: string;
+  user_id: string;
+  kind: NotificationKind;
+  title: string;
+  body: string | null;
+  symbol: string | null;
+  alert_id: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
 export interface PortfolioHoldingRow {
   id: string;
   user_id: string;
@@ -149,6 +178,62 @@ export interface Database {
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      price_alerts: {
+        Row: PriceAlertRow;
+        Insert: {
+          id?: string;
+          user_id: string;
+          symbol: string;
+          direction: AlertDirection;
+          target_price: number;
+          currency?: string;
+          note?: string | null;
+          active?: boolean;
+          triggered_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          symbol?: string;
+          direction?: AlertDirection;
+          target_price?: number;
+          currency?: string;
+          note?: string | null;
+          active?: boolean;
+          triggered_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: NotificationRow;
+        Insert: {
+          id?: string;
+          user_id: string;
+          kind?: NotificationKind;
+          title: string;
+          body?: string | null;
+          symbol?: string | null;
+          alert_id?: string | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          kind?: NotificationKind;
+          title?: string;
+          body?: string | null;
+          symbol?: string | null;
+          alert_id?: string | null;
+          read_at?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };

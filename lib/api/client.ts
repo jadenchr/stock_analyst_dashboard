@@ -200,6 +200,79 @@ export function useStockAnalysis(symbol: string | null, options?: { enabled?: bo
   });
 }
 
+/* --------------------------------------------------- alerts + notifs ---- */
+
+import type { PriceAlertRow, NotificationRow } from "@/lib/supabase/types";
+
+export type { PriceAlertRow, NotificationRow };
+
+export interface NotificationsResponse {
+  items: NotificationRow[];
+  unread: number;
+}
+
+export function useAlerts(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ["alerts"] as const,
+    queryFn: ({ signal }) => apiGet<PriceAlertRow[]>(`/api/alerts`, { signal }),
+    staleTime: 30_000,
+    enabled: options?.enabled ?? true,
+    retry: (n, err) => {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) return false;
+      return n < 1;
+    },
+  });
+}
+
+export function useNotifications(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ["notifications"] as const,
+    queryFn: ({ signal }) => apiGet<NotificationsResponse>(`/api/notifications`, { signal }),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    enabled: options?.enabled ?? true,
+    retry: (n, err) => {
+      if (err instanceof ApiError && err.status >= 400 && err.status < 500) return false;
+      return n < 1;
+    },
+  });
+}
+
+/* --------------------------------------------------- earnings ---------- */
+
+export interface EarningsEvent {
+  symbol: string;
+  date: string;
+  hour: "bmo" | "amc" | "dmt" | "unknown";
+  quarter: number | null;
+  year: number | null;
+  epsEstimate: number | null;
+  epsActual: number | null;
+  revenueEstimate: number | null;
+  revenueActual: number | null;
+}
+
+export interface EarningsResponse {
+  from: string;
+  to: string;
+  days: number;
+  events: EarningsEvent[];
+}
+
+export function useEarnings(args?: { days?: number; symbol?: string }) {
+  const days = args?.days ?? 14;
+  const symbol = args?.symbol;
+  return useQuery({
+    queryKey: ["earnings", days, symbol ?? null] as const,
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({ days: String(days) });
+      if (symbol) params.set("symbol", symbol);
+      return apiGet<EarningsResponse>(`/api/earnings?${params.toString()}`, { signal });
+    },
+    staleTime: 10 * 60_000,
+  });
+}
+
 /* ------------------------------------------------------- portfolio ------ */
 
 import type { PortfolioResponse } from "@/lib/portfolio/types";

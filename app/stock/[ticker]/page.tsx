@@ -6,6 +6,7 @@ import { quote } from "@/lib/market-data";
 import { TickerNotFoundError } from "@/lib/market-data/errors";
 import { LivePriceHeader } from "@/components/stock/live-price-header";
 import { WatchlistToggle } from "@/components/stock/watchlist-toggle";
+import { CreateAlertButton } from "@/components/stock/create-alert-button";
 import { PriceChartSection } from "@/components/charts/price-chart-section";
 import { CompanyOverview } from "@/components/stock/company-overview";
 import { MetricsOverview } from "@/components/stock/metrics-overview";
@@ -56,7 +57,10 @@ export default async function StockPage({ params }: PageProps) {
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
           Back to markets
         </Link>
-        <WatchlistToggle symbol={ticker} />
+        <div className="flex items-center gap-2">
+          <CreateAlertButton symbol={ticker} />
+          <WatchlistToggle symbol={ticker} />
+        </div>
       </div>
 
       <LivePriceHeader symbol={ticker} initial={initial} />

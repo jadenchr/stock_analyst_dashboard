@@ -223,6 +223,17 @@ export async function analystConsensus(symbol: string): Promise<AnalystConsensus
   );
 }
 
+/** Earnings calendar - market-wide if no symbol, else scoped to one. */
+export async function earningsCalendar(args: { from: string; to: string; symbol?: string }) {
+  return cached(
+    cacheKey("earnings", args.symbol ?? "all", args.from, args.to),
+    TTL.fundamentals,
+    () => finnhub.getEarningsCalendar(args),
+  );
+}
+
+export type { EarningsEvent } from "./finnhub";
+
 export const technicals = {
   rsi: (symbol: string, period = 14) =>
     cached(cacheKey("rsi", symbol, period), TTL.historical, () => av.getRSI(symbol, period)),

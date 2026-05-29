@@ -28,6 +28,15 @@
     },
     "app/api/market/sectors/route.ts": {
       "maxDuration": 20
+    },
+    "app/api/cron/check-alerts/route.ts": {
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/check-alerts",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
