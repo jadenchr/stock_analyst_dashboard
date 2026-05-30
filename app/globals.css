@@ -74,45 +74,48 @@
   /* Tuned for ≥4.5:1 text contrast and visible borders. Same lavender
      brand accent (deeper for white-bg contrast). */
   .light {
-    --background: 270 30% 99%;
-    --foreground: 270 30% 10%;
+    /* Off-white page bg so `bg-card` (pure white) has visible weight
+       on top of it. AAA contrast with the foreground. */
+    --background: 270 30% 97%;
+    --foreground: 270 30% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 270 30% 10%;
+    --card-foreground: 270 30% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 270 30% 10%;
+    --popover-foreground: 270 30% 9%;
 
-    --primary: 275 45% 42%; /* deeper lavender for contrast */
+    --primary: 275 50% 38%; /* deeper lavender, ~6:1 on white */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 270 18% 96%;
-    --secondary-foreground: 270 30% 10%;
+    --secondary: 270 16% 93%;
+    --secondary-foreground: 270 30% 9%;
 
-    --muted: 270 18% 96%;
-    --muted-foreground: 270 10% 38%;
+    --muted: 270 16% 93%;
+    --muted-foreground: 270 10% 34%; /* darker for >5:1 on bg */
 
-    --accent: 275 45% 42%;
+    --accent: 275 50% 38%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 350 84% 50%;
+    --destructive: 350 84% 44%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 15% 88%;
-    --input: 270 15% 92%;
-    --ring: 275 45% 42%;
+    --border: 270 15% 86%;
+    --input: 270 15% 90%;
+    --ring: 275 50% 38%;
 
-    --bull: 150 75% 32%;
-    --bull-glow: 150 75% 42%;
-    --bear: 350 84% 48%;
-    --bear-glow: 350 84% 58%;
-    --neutral: 38 92% 42%;
-    --neutral-glow: 38 92% 52%;
+    /* Bull / bear bumped for >=4.5:1 small-text contrast on white. */
+    --bull: 150 78% 26%;
+    --bull-glow: 150 78% 36%;
+    --bear: 350 84% 42%;
+    --bear-glow: 350 84% 52%;
+    --neutral: 38 92% 38%;
+    --neutral-glow: 38 92% 48%;
 
     --sidebar: 270 25% 98%;
-    --sidebar-foreground: 270 25% 28%;
-    --sidebar-border: 270 15% 88%;
-    --sidebar-accent: 270 20% 94%;
+    --sidebar-foreground: 270 25% 22%;
+    --sidebar-border: 270 15% 86%;
+    --sidebar-accent: 270 20% 93%;
   }
 }
 

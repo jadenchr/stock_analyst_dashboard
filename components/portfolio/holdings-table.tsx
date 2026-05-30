@@ -61,7 +61,8 @@ export function HoldingsTable({ holdings, onEdit, onChanged }: Props) {
 
   return (
     <div className="glass overflow-hidden rounded-2xl">
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border/60 bg-card/40 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
@@ -198,6 +199,114 @@ export function HoldingsTable({ holdings, onEdit, onChanged }: Props) {
           </tbody>
         </table>
       </div>
+
+      {/* Mobile card stack */}
+      <ul className="flex flex-col divide-y divide-border/30 md:hidden">
+        {sorted.map((h) => {
+          const positive = (h.unrealizedPL ?? 0) >= 0;
+          const Arrow = positive ? ArrowUpRight : ArrowDownRight;
+          return (
+            <li key={h.id} className="flex flex-col gap-2 px-4 py-3">
+              <div className="flex items-start justify-between gap-2">
+                <Link
+                  href={`/stock/${h.symbol}`}
+                  className="flex min-w-0 items-center gap-2 text-foreground"
+                >
+                  <span className="font-mono text-base font-semibold">{h.symbol}</span>
+                  {h.exchange && (
+                    <span className="badge-ticker">{h.exchange.slice(0, 8)}</span>
+                  )}
+                </Link>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(h)}
+                    className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-transparent text-muted-foreground hover:border-border/70 hover:bg-card hover:text-foreground"
+                    aria-label={`Edit ${h.symbol}`}
+                  >
+                    <Pencil className="h-3.5 w-3.5" aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(h)}
+                    disabled={deletingId === h.id}
+                    className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-transparent text-muted-foreground hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                    aria-label={`Delete ${h.symbol}`}
+                  >
+                    {deletingId === h.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                    ) : (
+                      <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {h.name && (
+                <p className="truncate text-[11px] text-muted-foreground">{h.name}</p>
+              )}
+
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border/30 pt-2">
+                <div className="flex flex-col gap-0.5">
+                  <dt className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Shares
+                  </dt>
+                  <dd className="font-mono text-xs tabular-nums">{h.shares}</dd>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <dt className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Cost / sh
+                  </dt>
+                  <dd className="font-mono text-xs tabular-nums text-muted-foreground">
+                    {formatCurrency(h.costBasis, h.currency)}
+                  </dd>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <dt className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Price
+                  </dt>
+                  <dd className="font-mono text-xs tabular-nums">
+                    {h.currentPrice != null ? formatCurrency(h.currentPrice, h.currency) : "-"}
+                  </dd>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <dt className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    Value
+                  </dt>
+                  <dd className="font-mono text-xs tabular-nums">
+                    {h.marketValue != null ? formatCurrency(h.marketValue, h.currency) : "-"}
+                  </dd>
+                </div>
+                <div className="col-span-2 flex items-center justify-between border-t border-border/30 pt-2">
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    P&amp;L
+                  </span>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1 font-mono text-sm tabular-nums",
+                      h.unrealizedPL == null
+                        ? "text-muted-foreground"
+                        : positive
+                          ? "text-bull"
+                          : "text-bear",
+                    )}
+                  >
+                    {h.unrealizedPL != null && <Arrow className="h-3 w-3" aria-hidden />}
+                    {h.unrealizedPL != null
+                      ? `${positive ? "+" : ""}${formatCurrency(h.unrealizedPL, h.currency)}`
+                      : "-"}
+                    {h.unrealizedPLPct != null && (
+                      <span className="text-[11px] text-muted-foreground">
+                        ({formatPercent(h.unrealizedPLPct)})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </dl>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

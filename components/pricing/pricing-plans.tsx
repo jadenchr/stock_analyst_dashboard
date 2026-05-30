@@ -6,6 +6,7 @@ import { Bell, Brain, Check, Compass, FolderOpen, Mail, Sparkles, Star, Wallet }
 import { useState } from "react";
 import { useUser } from "@/app/auth/user-provider";
 import { ProWaitlistButton } from "./pro-waitlist-button";
+import { SubscribeButton } from "./subscribe-button";
 import { cn } from "@/lib/utils";
 
 type Cadence = "monthly" | "yearly";
@@ -79,7 +80,13 @@ const PLANS: Plan[] = [
   },
 ];
 
-export function PricingPlans() {
+interface PricingPlansProps {
+  /** Per-tier flag from the server: when true, render real Stripe Checkout
+   *  buttons; when false, fall back to the waitlist button. */
+  liveTiers?: { pro?: boolean; max?: boolean };
+}
+
+export function PricingPlans({ liveTiers }: PricingPlansProps = {}) {
   const [cadence, setCadence] = useState<Cadence>("yearly");
   const { tier, user } = useUser();
   const yearlyEquivalent = (PRO_YEARLY / 12).toFixed(2);
@@ -217,14 +224,22 @@ export function PricingPlans() {
 
               <div className="mt-6">
                 {plan.cta.variant === "pro" ? (
-                  <ProWaitlistButton cadence={cadence} priceMonthly={PRO_MONTHLY} />
+                  liveTiers?.pro ? (
+                    <SubscribeButton tier="pro" cadence={cadence} currentTier={tier} />
+                  ) : (
+                    <ProWaitlistButton cadence={cadence} priceMonthly={PRO_MONTHLY} />
+                  )
                 ) : plan.cta.variant === "max" ? (
-                  <ProWaitlistButton
-                    cadence={cadence}
-                    priceMonthly={MAX_MONTHLY}
-                    label="Join the Max waitlist"
-                    tier="max"
-                  />
+                  liveTiers?.max ? (
+                    <SubscribeButton tier="max" cadence={cadence} currentTier={tier} />
+                  ) : (
+                    <ProWaitlistButton
+                      cadence={cadence}
+                      priceMonthly={MAX_MONTHLY}
+                      label="Join the Max waitlist"
+                      tier="max"
+                    />
+                  )
                 ) : (
                   <Link
                     href={plan.cta.href ?? "/"}

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { SettingsThemeCard } from "@/components/settings/settings-theme-card";
 import { SettingsAccountCard } from "@/components/settings/settings-account-card";
+import { SettingsBillingCard } from "@/components/settings/settings-billing-card";
+import { SettingsExchangesCard } from "@/components/settings/settings-exchanges-card";
+import { SettingsNotificationsCard } from "@/components/settings/settings-notifications-card";
 
 export const metadata: Metadata = {
   title: "Settings",
@@ -16,11 +19,14 @@ export default function SettingsPage() {
           Settings
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Account, appearance, and integration preferences.
+          Account, billing, preferences, and appearance.
         </p>
       </header>
 
       <SettingsAccountCard />
+      <SettingsBillingCard />
+      <SettingsExchangesCard />
+      <SettingsNotificationsCard />
       <SettingsThemeCard />
     </div>
   );

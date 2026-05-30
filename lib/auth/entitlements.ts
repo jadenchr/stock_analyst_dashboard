@@ -29,18 +29,18 @@ export type Feature =
 const MATRIX: Record<Feature, ReadonlyArray<Tier>> = {
   // Guest-visible: nothing premium.
   // Free unlocks the core dashboard.
-  ai_rating: ["free", "pro"],
-  fundamentals: ["free", "pro"],
-  financials: ["free", "pro"],
-  news_feed: ["free", "pro"],
-  insider_feed: ["free", "pro"],
-  watchlist_sync: ["free", "pro"],
-  screener_basic: ["free", "pro"],
-  // Pro-only:
-  screener_pro: ["pro"],
-  cse_advanced: ["pro"],
-  alerts: ["pro"],
-  portfolio: ["pro"],
+  ai_rating: ["free", "pro", "max"],
+  fundamentals: ["free", "pro", "max"],
+  financials: ["free", "pro", "max"],
+  news_feed: ["free", "pro", "max"],
+  insider_feed: ["free", "pro", "max"],
+  watchlist_sync: ["free", "pro", "max"],
+  screener_basic: ["free", "pro", "max"],
+  // Pro and above:
+  screener_pro: ["pro", "max"],
+  cse_advanced: ["pro", "max"],
+  alerts: ["pro", "max"],
+  portfolio: ["pro", "max"],
 };
 
 export function canAccess(tier: Tier, feature: Feature): boolean {
@@ -81,4 +81,5 @@ export const TIER_LABEL: Record<Tier, string> = {
   guest: "Guest",
   free: "Free",
   pro: "Pro",
+  max: "Max",
 };

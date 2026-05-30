@@ -8,7 +8,7 @@
  * from a plain object type, which collapses to `never` at deep call sites.
  */
 
-export type SubscriptionTier = "free" | "pro";
+export type SubscriptionTier = "free" | "pro" | "max";
 export type InvestmentStyle = "growth" | "value" | "income" | "speculation";
 export type RiskTolerance = "conservative" | "moderate" | "aggressive";
 export type NotificationFrequency = "daily" | "weekly" | "monthly" | "never";
@@ -42,6 +42,13 @@ export interface Profile {
   notification_frequency: NotificationFrequency;
   risk_tolerance: RiskTolerance;
   onboarded: boolean;
+  // Stripe billing columns (added by migration 0006)
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  stripe_price_id?: string | null;
+  stripe_status?: string | null;
+  current_period_end?: string | null;
+  cancel_at_period_end?: boolean;
 }
 
 export interface WatchlistRow {
