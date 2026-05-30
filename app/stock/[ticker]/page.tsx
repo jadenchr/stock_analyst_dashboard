@@ -15,7 +15,6 @@ import { AnalystPanel } from "@/components/stock/analyst-panel";
 import { AIRating } from "@/components/stock/ai-rating";
 import { NewsFeed } from "@/components/stock/news-feed";
 import { InsiderFeed } from "@/components/stock/insider-feed";
-import { ExchangeLimitedNotice } from "@/components/stock/exchange-limited-notice";
 import { FeatureGate } from "@/components/auth/feature-gate";
 
 interface PageProps {
@@ -73,18 +72,10 @@ export default async function StockPage({ params }: PageProps) {
 
       {isCSE ? (
         // CSE: cse.lk doesn't expose fundamentals or financials, so the
-        // dashboard collapses to chart + AI placeholder + news.
+        // dashboard collapses to chart + AI placeholder + news. The
+        // "limited data" upsell notice has been removed - everything
+        // the CSE feed can produce is shown for free.
         <>
-          <ExchangeLimitedNotice
-            exchange="CSE"
-            sections={[
-              "fundamentals",
-              "income statement",
-              "analyst consensus",
-              "insider transactions",
-            ]}
-          />
-
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <FeatureGate
