@@ -203,25 +203,33 @@ export async function getHistorical(
 export async function getFundamentals(symbol: string): Promise<Fundamentals> {
   let summary;
   try {
-    summary = await yf.quoteSummary(symbol, {
-      modules: [
-        "summaryDetail",
-        "financialData",
-        "defaultKeyStatistics",
-        "calendarEvents",
-        "assetProfile",
-      ],
-    });
+    summary = await yf.quoteSummary(
+      symbol,
+      {
+        modules: [
+          "summaryDetail",
+          "financialData",
+          "defaultKeyStatistics",
+          "calendarEvents",
+          "assetProfile",
+        ],
+      },
+      // Yahoo drifts shape - bypass yahoo-finance2's strict validator.
+      { validateResult: false },
+    );
   } catch (err) {
     throw new ProviderError(PROVIDER, `fundamentals failed: ${(err as Error).message}`);
   }
 
   if (!summary) throw new TickerNotFoundError(symbol);
 
-  const sd = (summary.summaryDetail ?? {}) as Record<string, unknown>;
-  const fd = (summary.financialData ?? {}) as Record<string, unknown>;
-  const ks = (summary.defaultKeyStatistics ?? {}) as Record<string, unknown>;
-  const ap = (summary.assetProfile ?? {}) as Record<string, unknown>;
+  // validateResult: false widens the return to `{}`; the modules are
+  // still in there - we just read them by key.
+  const s = summary as unknown as Record<string, unknown>;
+  const sd = (s.summaryDetail ?? {}) as Record<string, unknown>;
+  const fd = (s.financialData ?? {}) as Record<string, unknown>;
+  const ks = (s.defaultKeyStatistics ?? {}) as Record<string, unknown>;
+  const ap = (s.assetProfile ?? {}) as Record<string, unknown>;
 
   // Pick a CEO from companyOfficers - prefer titles containing CEO/Chief Exec.
   const officers = (ap.companyOfficers as Array<Record<string, unknown>> | undefined) ?? [];
@@ -326,16 +334,26 @@ function rowPeriod(endDate: string, quarterly: boolean): string {
 }
 
 export async function getFinancials(symbol: string) {
-  let summary;
+  // yahoo-finance2 validates the response against a strict Zod schema by
+  // default. Yahoo drifts these statement modules frequently (renamed
+  // fields, new ones, optionals that go missing). We turn the validation
+  // off here so the call returns whatever Yahoo sent, then we hand-pick
+  // the fields we need. Without this, the cashflow/balance modules can
+  // silently come back empty.
+  let summary: Record<string, unknown> | null = null;
   try {
-    summary = await yf.quoteSummary(symbol, {
-      modules: [
-        "incomeStatementHistory",
-        "incomeStatementHistoryQuarterly",
-        "cashflowStatementHistory",
-        "balanceSheetHistory",
-      ],
-    });
+    summary = (await yf.quoteSummary(
+      symbol,
+      {
+        modules: [
+          "incomeStatementHistory",
+          "incomeStatementHistoryQuarterly",
+          "cashflowStatementHistory",
+          "balanceSheetHistory",
+        ],
+      },
+      { validateResult: false },
+    )) as Record<string, unknown> | null;
   } catch (err) {
     throw new ProviderError(PROVIDER, `financials failed: ${(err as Error).message}`);
   }

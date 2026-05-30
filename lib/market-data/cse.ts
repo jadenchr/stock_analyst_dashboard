@@ -81,6 +81,25 @@ const CseQuoteSchema = z
         tradeVolume: z.number().nullable().optional(),
         hiTrade: z.number().nullable().optional(),
         loTrade: z.number().nullable().optional(),
+
+        // Optional richer fields - CSE doesn't document them but the
+        // public summery endpoint sometimes returns these for liquid
+        // tickers. We pick them up if present.
+        eps: z.number().nullable().optional(),
+        per: z.number().nullable().optional(), // P/E ratio
+        pe: z.number().nullable().optional(),
+        peRatio: z.number().nullable().optional(),
+        high52Week: z.number().nullable().optional(),
+        low52Week: z.number().nullable().optional(),
+        weekHigh52: z.number().nullable().optional(),
+        weekLow52: z.number().nullable().optional(),
+        hi52: z.number().nullable().optional(),
+        lo52: z.number().nullable().optional(),
+        dividendYield: z.number().nullable().optional(),
+        divYield: z.number().nullable().optional(),
+        avgVolume: z.number().nullable().optional(),
+        averageVolume: z.number().nullable().optional(),
+        beta: z.number().nullable().optional(),
       })
       .passthrough()
       .optional(),
@@ -88,16 +107,32 @@ const CseQuoteSchema = z
   .passthrough();
 
 export async function getQuote(symbol: string): Promise<Quote> {
-  let raw: unknown;
-  try {
-    raw = await csePost("/api/companyInfoSummery", { symbol });
-  } catch (err) {
-    throw new ProviderError(PROVIDER, `quote failed: ${(err as Error).message}`);
+  // Hit two endpoints in parallel: the summary (price + market cap),
+  // and the fuller companyInfo response which sometimes carries 52-week
+  // range, EPS, and PE for liquid tickers. If the second one fails we
+  // still get the basic quote.
+  const [sumRaw, infoRaw] = await Promise.allSettled([
+    csePost<unknown>("/api/companyInfoSummery", { symbol }),
+    csePost<unknown>("/api/companyInfo", { symbol }),
+  ]);
+
+  if (sumRaw.status !== "fulfilled") {
+    throw new ProviderError(
+      PROVIDER,
+      `quote failed: ${(sumRaw.reason as Error)?.message ?? "unknown"}`,
+    );
   }
 
-  const parsed = CseQuoteSchema.safeParse(raw);
-  const info = parsed.success ? parsed.data.reqSymbolInfo : undefined;
-  if (!info || !info.symbol) throw new TickerNotFoundError(symbol);
+  const parsed = CseQuoteSchema.safeParse(sumRaw.value);
+  const sumInfo = parsed.success ? parsed.data.reqSymbolInfo : undefined;
+  if (!sumInfo || !sumInfo.symbol) throw new TickerNotFoundError(symbol);
+
+  // Merge the richer payload on top of the summary if it parsed cleanly.
+  const infoParsed =
+    infoRaw.status === "fulfilled" ? CseQuoteSchema.safeParse(infoRaw.value) : null;
+  const richInfo =
+    infoParsed && infoParsed.success ? infoParsed.data.reqSymbolInfo ?? {} : {};
+  const info = { ...sumInfo, ...richInfo } as typeof sumInfo & typeof richInfo;
 
   const price = num(info.lastTradedPrice);
   const prev = num(info.previousClose);
@@ -106,6 +141,15 @@ export async function getQuote(symbol: string): Promise<Quote> {
   const change = num(info.change) ?? (prev != null ? price - prev : 0);
   const changePercent =
     num(info.changePercentage) ?? (prev != null && prev !== 0 ? ((price - prev) / prev) * 100 : 0);
+
+  // Pick whichever alias CSE chose to emit for each field.
+  const yearHigh =
+    num(info.high52Week) ?? num(info.weekHigh52) ?? num(info.hi52);
+  const yearLow =
+    num(info.low52Week) ?? num(info.weekLow52) ?? num(info.lo52);
+  const peRatio = num(info.peRatio) ?? num(info.pe) ?? num(info.per);
+  const dividendYield = num(info.dividendYield) ?? num(info.divYield);
+  const avgVolume = num(info.avgVolume) ?? num(info.averageVolume);
 
   return {
     symbol,
@@ -118,16 +162,16 @@ export async function getQuote(symbol: string): Promise<Quote> {
     changePercent,
     dayHigh: num(info.hiTrade) ?? num(info.high),
     dayLow: num(info.loTrade) ?? num(info.low),
-    yearHigh: null,
-    yearLow: null,
+    yearHigh,
+    yearLow,
     volume: num(info.tradeVolume),
-    avgVolume: null,
+    avgVolume,
     marketCap: num(info.marketCap),
-    peRatio: null,
+    peRatio,
     forwardPe: null,
-    eps: null,
-    dividendYield: null,
-    beta: null,
+    eps: num(info.eps),
+    dividendYield,
+    beta: num(info.beta),
     marketState: "CLOSED", // CSE provides no realtime state flag in this endpoint
     updatedAt: new Date().toISOString(),
   };

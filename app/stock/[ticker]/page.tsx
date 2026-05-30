@@ -69,7 +69,7 @@ export default async function StockPage({ params }: PageProps) {
       <CompanyOverview symbol={ticker} />
 
       {/* Historical chart - universal across exchanges */}
-      <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={600} />
+      <PriceChartSection symbol={ticker} exchange={initial?.exchange} height={540} />
 
       {isCSE ? (
         // CSE: cse.lk doesn't expose fundamentals or financials, so the

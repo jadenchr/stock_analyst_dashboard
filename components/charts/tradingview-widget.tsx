@@ -96,21 +96,14 @@ export function TradingViewWidget({ symbol, interval = "1D", height = 440 }: Pro
   return (
     <div
       ref={containerRef}
-      // CSS variable + descendant selector forces every child
-      // (TradingView's auto-injected iframe + its wrapper divs) to
-      // expand to the requested height. TV's embed script sometimes
-      // ignores the parent's height when `autosize: true` is on and
-      // the iframe boots before the React style is committed - this
-      // guarantees the chart fills the box once it's there.
+      // Descendant selector forces TradingView's auto-injected wrapper
+      // div + iframe to fill the box. Without these, TV's iframe boots
+      // before our style commits and the box ends up with empty space
+      // below the chart. We DON'T set minHeight here so that on the
+      // rare occasion TV renders something shorter, the parent shrinks
+      // with it (avoids the giant black gap the user reported).
       className="tradingview-widget-container [&>*]:!h-full [&_iframe]:!h-full"
-      style={
-        {
-          ["--tv-h" as string]: `${height}px`,
-          height,
-          minHeight: height,
-          width: "100%",
-        } as React.CSSProperties
-      }
+      style={{ height, width: "100%" }}
     />
   );
 }
