@@ -23,18 +23,13 @@ interface Props {
 }
 
 /**
- * Features that stay gated even when sign-in walls are disabled. These
- * are the genuinely Pro-only sections (Portfolio, advanced screeners,
- * custom alerts). Everything else - AI ratings, fundamentals, news,
- * insider feed, etc. - is currently open to guests so the dashboard
- * is fully explorable without an account.
+ * Features that stay gated even when sign-in walls are disabled.
+ *
+ * TEMPORARY: empty set - all features open for end-to-end testing.
+ * To re-gate the Pro-only sections, add them back:
+ *   new Set(["screener_pro", "alerts", "portfolio", "cse_advanced"]);
  */
-const STILL_GATED: ReadonlySet<Feature> = new Set([
-  "screener_pro",
-  "alerts",
-  "portfolio",
-  "cse_advanced",
-]);
+const STILL_GATED: ReadonlySet<Feature> = new Set<Feature>();
 
 /**
  * Wraps premium sections. The product is in an "open dashboard" phase:

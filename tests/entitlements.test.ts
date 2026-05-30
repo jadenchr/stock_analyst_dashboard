@@ -15,9 +15,13 @@ describe("entitlements", () => {
     expect(canAccess("free", "news_feed")).toBe(true);
     expect(canAccess("free", "insider_feed")).toBe(true);
     expect(canAccess("free", "watchlist_sync")).toBe(true);
-    expect(canAccess("free", "alerts")).toBe(false);
-    expect(canAccess("free", "portfolio")).toBe(false);
-    expect(canAccess("free", "screener_pro")).toBe(false);
+
+    // NOTE: while the temporary all-access mode is on (see comment in
+    // lib/auth/entitlements.ts), free also reaches the Pro-only
+    // features. When that revert ships, flip these back to .toBe(false).
+    expect(canAccess("free", "alerts")).toBe(true);
+    expect(canAccess("free", "portfolio")).toBe(true);
+    expect(canAccess("free", "screener_pro")).toBe(true);
   });
 
   it("pro unlocks pro features", () => {

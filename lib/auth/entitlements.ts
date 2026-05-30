@@ -26,21 +26,35 @@ export type Feature =
   | "alerts"
   | "portfolio";
 
+/**
+ * NOTE: TEMPORARY all-access mode for end-to-end testing.
+ * Every signed-in tier ("free", "pro", "max") gets every feature so the
+ * dashboard owner can verify Portfolio, Alerts, Pro screeners, and CSE
+ * advanced data without manually upgrading their Supabase tier.
+ *
+ * TO REVERT to the real entitlement matrix, restore the per-feature
+ * lists below to:
+ *
+ *   ai_rating / fundamentals / financials / news_feed / insider_feed
+ *   / watchlist_sync / screener_basic        -> ["free", "pro", "max"]
+ *   screener_pro / cse_advanced / alerts / portfolio  -> ["pro", "max"]
+ *
+ * Guests still get nothing premium - the middleware redirects them to
+ * /auth/signin before any of these checks run.
+ */
+const ALL_SIGNED_IN: ReadonlyArray<Tier> = ["free", "pro", "max"];
 const MATRIX: Record<Feature, ReadonlyArray<Tier>> = {
-  // Guest-visible: nothing premium.
-  // Free unlocks the core dashboard.
-  ai_rating: ["free", "pro", "max"],
-  fundamentals: ["free", "pro", "max"],
-  financials: ["free", "pro", "max"],
-  news_feed: ["free", "pro", "max"],
-  insider_feed: ["free", "pro", "max"],
-  watchlist_sync: ["free", "pro", "max"],
-  screener_basic: ["free", "pro", "max"],
-  // Pro and above:
-  screener_pro: ["pro", "max"],
-  cse_advanced: ["pro", "max"],
-  alerts: ["pro", "max"],
-  portfolio: ["pro", "max"],
+  ai_rating: ALL_SIGNED_IN,
+  fundamentals: ALL_SIGNED_IN,
+  financials: ALL_SIGNED_IN,
+  news_feed: ALL_SIGNED_IN,
+  insider_feed: ALL_SIGNED_IN,
+  watchlist_sync: ALL_SIGNED_IN,
+  screener_basic: ALL_SIGNED_IN,
+  screener_pro: ALL_SIGNED_IN,
+  cse_advanced: ALL_SIGNED_IN,
+  alerts: ALL_SIGNED_IN,
+  portfolio: ALL_SIGNED_IN,
 };
 
 export function canAccess(tier: Tier, feature: Feature): boolean {
