@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { SettingsThemeCard } from "@/components/settings/settings-theme-card";
 import { SettingsAccountCard } from "@/components/settings/settings-account-card";
-import { SettingsBillingCard } from "@/components/settings/settings-billing-card";
 import { SettingsExchangesCard } from "@/components/settings/settings-exchanges-card";
 import { SettingsNotificationsCard } from "@/components/settings/settings-notifications-card";
 
 export const metadata: Metadata = {
   title: "Settings",
-  description: "Manage your StockVision account, plan, and appearance preferences.",
+  description: "Manage your StockVision account and appearance preferences.",
   robots: { index: false, follow: false },
 };
 
@@ -19,12 +18,11 @@ export default function SettingsPage() {
           Settings
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Account, billing, preferences, and appearance.
+          Account, preferences, and appearance.
         </p>
       </header>
 
       <SettingsAccountCard />
-      <SettingsBillingCard />
       <SettingsExchangesCard />
       <SettingsNotificationsCard />
       <SettingsThemeCard />

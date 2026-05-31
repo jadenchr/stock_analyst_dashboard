@@ -2,17 +2,14 @@
 
 import { useUser } from "@/app/auth/user-provider";
 import { PortfolioClient } from "./portfolio-client";
-import { PortfolioLocked } from "./portfolio-locked";
 
 /**
- * Routes between the real signed-in-and-Pro experience and the upgrade
- * CTA for free / guest visitors. Done client-side because `useUser()`
- * reads live auth state.
+ * Portfolio is free for everyone signed in. Middleware redirects guests
+ * to /auth/signin before this client gate ever runs, so we just mount
+ * the real client here.
  */
 export function PortfolioGate() {
-  const { user, can, isLoading } = useUser();
+  const { isLoading } = useUser();
   if (isLoading) return null;
-  if (!user) return <PortfolioLocked variant="guest" />;
-  if (!can("portfolio")) return <PortfolioLocked variant="free" />;
   return <PortfolioClient />;
 }

@@ -8,13 +8,11 @@ import {
   LogIn,
   LogOut,
   Settings,
-  Sparkles,
   User as UserIcon,
   Wallet,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/app/auth/user-provider";
-import { TIER_LABEL } from "@/lib/auth/entitlements";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,7 +21,7 @@ import { cn } from "@/lib/utils";
  *   • Signed in → avatar + dropdown (Email, Tier, Settings, Sign out)
  */
 export function UserMenu() {
-  const { user, profile, tier } = useUser();
+  const { user, profile } = useUser();
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
@@ -126,13 +124,6 @@ export function UserMenu() {
               </div>
             </div>
 
-            <div className="border-b border-border/60 px-3 py-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
-                <Sparkles className="h-2.5 w-2.5" aria-hidden />
-                {TIER_LABEL[tier]} tier
-              </span>
-            </div>
-
             <div className="py-1">
               <Link
                 href="/settings"
@@ -157,9 +148,6 @@ export function UserMenu() {
               >
                 <Wallet className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
                 <span className="flex-1">Portfolio</span>
-                <span className="rounded-full border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary">
-                  Pro
-                </span>
               </Link>
               <form onSubmit={handleSignOut}>
                 <button

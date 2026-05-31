@@ -4,11 +4,10 @@ import { PortfolioGate } from "@/components/portfolio/portfolio-gate";
 export const metadata: Metadata = {
   title: "Portfolio",
   description:
-    "Track your real positions with cost basis, live P&L, and per-currency aggregates. Import broker CSV in one click. Pro feature.",
+    "Track your real positions with cost basis, live P&L, and per-currency aggregates. Import broker CSV in one click.",
   openGraph: {
     title: "Portfolio Tracker · StockVision",
-    description:
-      "Cost-basis P&L, multi-currency totals, CSV import. Pro-only.",
+    description: "Cost-basis P&L, multi-currency totals, CSV import.",
   },
 };
 

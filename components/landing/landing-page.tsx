@@ -238,12 +238,9 @@ function Hero() {
               aria-hidden
             />
           </Link>
-          <Link
-            href="/pricing"
-            className="inline-flex h-12 cursor-pointer items-center gap-1.5 rounded-xl border border-border/70 bg-card/60 px-5 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-card"
-          >
-            See pricing
-          </Link>
+          <span className="inline-flex h-12 cursor-default items-center rounded-xl border border-bull/30 bg-bull/10 px-5 text-sm font-semibold text-bull">
+            100% free
+          </span>
         </motion.div>
 
         <motion.div
@@ -1018,13 +1015,10 @@ function FinalCta() {
               aria-hidden
             />
           </Link>
-          <Link
-            href="/pricing"
-            className="inline-flex h-12 cursor-pointer items-center gap-1.5 rounded-xl border border-border/70 bg-card/60 px-5 text-sm font-medium text-foreground backdrop-blur-sm transition-colors hover:bg-card"
-          >
-            See pricing
+          <span className="inline-flex h-12 cursor-default items-center gap-1.5 rounded-xl border border-bull/30 bg-bull/10 px-5 text-sm font-semibold text-bull">
             <ChevronRight className="h-4 w-4" aria-hidden />
-          </Link>
+            Every feature - free forever
+          </span>
         </div>
       </motion.div>
     </section>
@@ -1049,9 +1043,6 @@ function LandingFooter() {
           <span>· Built for serious investors.</span>
         </div>
         <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
-          <Link href="/pricing" className="cursor-pointer hover:text-foreground">
-            Pricing
-          </Link>
           <Link href="/auth/signin" className="cursor-pointer hover:text-foreground">
             Sign in
           </Link>

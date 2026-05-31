@@ -26,9 +26,8 @@ const navItems = [
   { href: "/news", label: "News", icon: Newspaper },
   { href: "/screener", label: "Screener", icon: LineChart },
   { href: "/earnings", label: "Earnings", icon: CalendarClock },
-  { href: "/portfolio", label: "Portfolio", icon: Wallet, pro: true },
-  { href: "/alerts", label: "Alerts", icon: Bell, pro: true },
-  { href: "/pricing", label: "Pricing", icon: Crown },
+  { href: "/portfolio", label: "Portfolio", icon: Wallet },
+  { href: "/alerts", label: "Alerts", icon: Bell },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -81,7 +80,6 @@ export function Sidebar() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
-            const isPro = "pro" in item && item.pro;
             return (
               <li key={item.href}>
                 <Link
@@ -110,11 +108,6 @@ export function Sidebar() {
                     aria-hidden
                   />
                   <span className="flex-1">{item.label}</span>
-                  {isPro && (
-                    <span className="rounded-full border border-primary/40 bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary">
-                      Pro
-                    </span>
-                  )}
                 </Link>
               </li>
             );
