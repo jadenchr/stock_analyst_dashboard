@@ -1,7 +1,7 @@
 import { apiHandler, requiredQuery } from "@/lib/api/handler";
 import { cached, cacheKey, TTL } from "@/lib/cache";
 import { ValidationFailedError } from "@/lib/market-data/errors";
-import { TickerSchema, classifyTicker } from "@/lib/utils/validators";
+import { TickerSchema } from "@/lib/utils/validators";
 import { analyzeStock } from "@/lib/ai/analyzer";
 import { buildStockData } from "@/lib/ai/stock-data";
 import { FALLBACK_ANALYSIS } from "@/lib/ai/schema";
@@ -17,11 +17,14 @@ export const maxDuration = 30;
  *
  * Server-side flow:
  *   1. Validate ticker (Zod regex).
- *   2. If CSE - refuse early; we don't have the fundamentals to drive analysis.
- *   3. Read-through LRU cache (15-min TTL per ticker - same key for every caller).
- *   4. On miss, assemble StockDataForAnalysis from the market-data facade.
- *   5. Call the analyzer (retry-with-fallback).
- *   6. Wrap in a discriminated response { data, stubbed, model, cached }.
+ *   2. Read-through LRU cache (15-min TTL per ticker - same key for every caller).
+ *   3. On miss, assemble StockDataForAnalysis from the market-data facade.
+ *   4. Call the analyzer (retry-with-fallback).
+ *   5. Wrap in a discriminated response { data, stubbed, model, cached }.
+ *
+ * CSE tickers are analyzed too - `buildStockData` tolerates missing
+ * fundamentals, so the model rates the name off the live quote (price,
+ * market cap, day range) even though cse.lk doesn't expose statements.
  *
  * Rate-limited 5 req/min per IP via the shared `apiHandler` wrapper.
  */
@@ -30,19 +33,6 @@ export const GET = apiHandler({ bucket: "analyze", limit: 5 }, async ({ url }) =
   const parsed = TickerSchema.safeParse(raw);
   if (!parsed.success) throw new ValidationFailedError("Invalid ticker symbol");
   const ticker = parsed.data;
-
-  // CSE: free-tier providers don't expose fundamentals, so analysis is meaningless
-  if (classifyTicker(ticker) === "LK_CSE") {
-    return {
-      ...FALLBACK_ANALYSIS,
-      summary:
-        "AI ratings require fundamentals and financial statements. CSE coverage on the free tier is limited to live quotes, so analysis isn't available for this ticker.",
-      stubbed: true,
-      model: process.env.OPENROUTER_MODEL || "google/gemini-2.5-pro",
-      cached: false,
-      reason: "cse-unsupported" as const,
-    };
-  }
 
   // If no key is configured, return a clear "not configured" response.
   // Don't expose the env-var name to the client - log it server-side.
